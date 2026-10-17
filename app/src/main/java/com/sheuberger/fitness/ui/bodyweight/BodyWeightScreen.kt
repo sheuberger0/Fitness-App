@@ -122,6 +122,8 @@ fun BodyWeightScreen(
                     icon = { Icon(Icons.Filled.Add, contentDescription = null) },
                     onClick = { sheet = SheetTarget.New },
                     expanded = fabExpanded,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                 )
             }
         },

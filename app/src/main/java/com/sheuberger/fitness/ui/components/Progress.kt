@@ -49,3 +49,9 @@ fun List<ExerciseLog>.latest(): ExerciseLog? = maxWithOrNull(compareBy({ it.date
 /** Der beste Eintrag: höchstes Gewicht, bei Gleichstand der frühere (dort wurde der Rekord aufgestellt). */
 fun List<ExerciseLog>.personalBest(): ExerciseLog? =
     maxWithOrNull(compareBy<ExerciseLog> { it.weightKg }.thenByDescending { it.date }.thenByDescending { it.id })
+
+/** Der schwerste Satz am letzten Trainingstag. Passt zum letzten Punkt im Graphen. */
+fun List<ExerciseLog>.latestDayBest(): ExerciseLog? {
+    val lastDate = maxOfOrNull { it.date } ?: return null
+    return filter { it.date == lastDate }.maxWithOrNull(compareBy({ it.weightKg }, { it.id }))
+}

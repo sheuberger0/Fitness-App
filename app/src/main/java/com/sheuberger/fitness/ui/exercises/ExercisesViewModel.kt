@@ -7,7 +7,7 @@ import com.sheuberger.fitness.data.ExerciseLog
 import com.sheuberger.fitness.data.FitnessRepository
 import com.sheuberger.fitness.data.MuscleGroups
 import com.sheuberger.fitness.ui.components.dailyBest
-import com.sheuberger.fitness.ui.components.latest
+import com.sheuberger.fitness.ui.components.latestDayBest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -56,7 +56,7 @@ class ExercisesViewModel(private val repository: FitnessRepository) : ViewModel(
                 val exerciseLogs = logsByExercise[exercise.id].orEmpty()
                 ExerciseRowState(
                     exercise = exercise,
-                    latest = exerciseLogs.latest(),
+                    latest = exerciseLogs.latestDayBest(),
                     trend = exerciseLogs.dailyBest().takeLast(SparklineDays).map { it.value },
                 )
             }
