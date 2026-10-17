@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FitnessCenter
-import androidx.compose.material.icons.outlined.ListAlt
+import androidx.compose.material.icons.automirrored.outlined.ListAlt
 import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,7 +38,7 @@ import com.sheuberger.fitness.ui.workouts.WorkoutsScreen
 /** Die drei Tabs der unteren Navigationsleiste. */
 private enum class Tab(val route: String, val label: String, val icon: ImageVector) {
     Workouts("workouts", "Workouts", Icons.Outlined.FitnessCenter),
-    Exercises("exercises", "Übungen", Icons.Outlined.ListAlt),
+    Exercises("exercises", "Übungen", Icons.AutoMirrored.Outlined.ListAlt),
     BodyWeight("bodyweight", "Körpergewicht", Icons.Outlined.MonitorWeight),
 }
 
