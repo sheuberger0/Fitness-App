@@ -1,6 +1,15 @@
 package com.sheuberger.fitness.ui.bodyweight
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import com.sheuberger.fitness.ui.components.AnimatedFab
+import com.sheuberger.fitness.ui.components.AnimatedNumber
+import com.sheuberger.fitness.ui.components.Entrance
+import com.sheuberger.fitness.ui.components.FadeSwap
+import com.sheuberger.fitness.ui.components.StateCrossfade
+import com.sheuberger.fitness.ui.components.entrance
+import com.sheuberger.fitness.ui.components.pressScale
+import com.sheuberger.fitness.ui.components.rememberEntrance
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -74,6 +83,8 @@ private sealed interface SheetTarget {
 
 private val CardShape = RoundedCornerShape(16.dp)
 
+private enum class WeightContent { Loading, Empty, List }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BodyWeightScreen(
@@ -90,6 +101,7 @@ fun BodyWeightScreen(
     var selected by remember(state.points) { mutableStateOf<ChartPoint?>(null) }
     // Der FAB zeigt seinen Text nur ganz oben, beim Scrollen schrumpft er zum runden Knopf.
     val fabExpanded by remember { derivedStateOf { listState.firstVisibleItemIndex == 0 } }
+    val entrance = rememberEntrance()
 
     fun deleteWithUndo(entry: BodyWeightEntry) {
         viewModel.delete(entry)
@@ -116,7 +128,7 @@ fun BodyWeightScreen(
             )
         },
         floatingActionButton = {
-            if (!state.loading && state.entries.isNotEmpty()) {
+            AnimatedFab(visible = !state.loading && state.entries.isNotEmpty()) {
                 ExtendedFloatingActionButton(
                     text = { Text("Eintragen") },
                     icon = { Icon(Icons.Filled.Add, contentDescription = null) },
@@ -129,10 +141,16 @@ fun BodyWeightScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
-        when {
+        val content = when {
+            state.loading -> WeightContent.Loading
+            state.entries.isEmpty() -> WeightContent.Empty
+            else -> WeightContent.List
+        }
+        StateCrossfade(content) { shown ->
+        when (shown) {
             // Während des Ladens nichts zeigen, damit der leere Zustand nicht kurz aufblitzt.
-            state.loading -> Unit
-            state.entries.isEmpty() -> EmptyState(
+            WeightContent.Loading -> Unit
+            WeightContent.Empty -> EmptyState(
                 title = "Noch kein Gewicht eingetragen",
                 message = "Wiege dich regelmäßig, am besten morgens vor dem Frühstück. " +
                     "Hier siehst du dann deinen Verlauf.",
@@ -145,7 +163,7 @@ fun BodyWeightScreen(
                     }
                 },
             )
-            else -> BodyWeightContent(
+            WeightContent.List -> BodyWeightContent(
                 state = state,
                 selected = selected,
                 onSelect = { selected = it },
@@ -153,7 +171,9 @@ fun BodyWeightScreen(
                 onOpenEntry = { sheet = SheetTarget.Edit(it) },
                 listState = listState,
                 contentPadding = innerPadding.withContent(),
+                entrance = entrance,
             )
+        }
         }
     }
 
@@ -197,32 +217,44 @@ private fun BodyWeightContent(
     onOpenEntry: (BodyWeightEntry) -> Unit,
     listState: LazyListState,
     contentPadding: PaddingValues,
+    entrance: Entrance,
 ) {
     LazyColumn(
         state = listState,
         contentPadding = contentPadding,
     ) {
         item(key = "header") {
-            Header(state = state, selected = selected)
+            Header(state = state, selected = selected, modifier = Modifier.entrance(entrance, 0))
         }
         item(key = "range") {
             RangeSelector(
                 selected = state.range,
                 onSelect = onSelectRange,
-                modifier = Modifier.padding(top = 20.dp, bottom = 12.dp),
+                modifier = Modifier
+                    .entrance(entrance, 1)
+                    .padding(top = 20.dp, bottom = 12.dp),
             )
         }
         item(key = "chart") {
-            ChartCard(state = state, onSelect = onSelect)
+            ChartCard(state = state, onSelect = onSelect, modifier = Modifier.entrance(entrance, 2))
         }
         item(key = "stats") {
-            Column(Modifier.padding(top = 24.dp)) {
+            Column(
+                Modifier
+                    .entrance(entrance, 3)
+                    .padding(top = 24.dp),
+            ) {
                 SectionLabel("Statistik", Modifier.padding(start = 4.dp, bottom = 8.dp))
                 StatsCard(state)
             }
         }
         item(key = "history-label") {
-            SectionLabel("Verlauf", Modifier.padding(start = 4.dp, top = 24.dp, bottom = 8.dp))
+            SectionLabel(
+                "Verlauf",
+                Modifier
+                    .entrance(entrance, 4)
+                    .padding(start = 4.dp, top = 24.dp, bottom = 8.dp),
+            )
         }
         itemsIndexed(state.entries, key = { _, entry -> entry.id }) { index, entry ->
             // Die Liste ist absteigend sortiert, der vorherige (ältere) Eintrag steht also eins weiter unten.
@@ -241,7 +273,7 @@ private fun BodyWeightContent(
 
 /** Große Zahl oben wie in Apple Health: aktueller Wert oder der gerade im Graphen gewählte Punkt. */
 @Composable
-private fun Header(state: BodyWeightUiState, selected: ChartPoint?) {
+private fun Header(state: BodyWeightUiState, selected: ChartPoint?, modifier: Modifier = Modifier) {
     val latest = state.latest ?: return
     val stats = state.stats
     val value = selected?.value ?: latest.weightKg
@@ -262,12 +294,14 @@ private fun Header(state: BodyWeightUiState, selected: ChartPoint?) {
         else -> "Keine Einträge ${state.range.description}" to 0.0
     }
 
-    Column(Modifier.padding(horizontal = 4.dp)) {
-        SectionLabel(if (selected != null) "Ausgewählt" else "Aktuell")
+    Column(modifier.padding(horizontal = 4.dp)) {
+        FadeSwap(targetState = if (selected != null) "Ausgewählt" else "Aktuell") { SectionLabel(it) }
         Spacer(Modifier.height(6.dp))
         Row {
-            Text(
-                text = Format.number(value),
+            // Zählt beim neuen Wert hoch/runter, beim Scrubben springt die Zahl sofort mit.
+            AnimatedNumber(
+                value = value,
+                instant = selected != null,
                 style = MaterialTheme.typography.displaySmall,
                 modifier = Modifier.alignByBaseline(),
             )
@@ -279,23 +313,41 @@ private fun Header(state: BodyWeightUiState, selected: ChartPoint?) {
             )
         }
         Spacer(Modifier.height(2.dp))
-        Text(
-            text = dateText,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Text(
-            text = changeText,
-            style = MaterialTheme.typography.bodyMedium,
-            color = trendColor(delta, neutral = true),
-        )
+        // Überblendet nur beim Wechsel zwischen Auswahl und Übersicht oder beim Zeitraum,
+        // beim Scrubben selbst wird der Text direkt aktualisiert.
+        FadeSwap(
+            targetState = HeaderLines(dateText, changeText, delta, isSelection = selected != null, range = state.range),
+            contentKey = { it.isSelection to it.range },
+        ) { (date, change, diff) ->
+            Column {
+                Text(
+                    text = date,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = change,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = trendColor(diff, neutral = true),
+                )
+            }
+        }
     }
 }
 
+/** Was unter der großen Zahl steht, als ein Zustand für die Überblendung. */
+private data class HeaderLines(
+    val date: String,
+    val change: String,
+    val delta: Double,
+    val isSelection: Boolean,
+    val range: TimeRange,
+)
+
 @Composable
-private fun ChartCard(state: BodyWeightUiState, onSelect: (ChartPoint?) -> Unit) {
+private fun ChartCard(state: BodyWeightUiState, onSelect: (ChartPoint?) -> Unit, modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(CardShape)
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
@@ -367,11 +419,16 @@ private fun HistoryRow(
         isLast -> RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
         else -> RectangleShape
     }
+    val interaction = remember { MutableInteractionSource() }
     Surface(
         onClick = onClick,
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
-        modifier = modifier.fillMaxWidth(),
+        interactionSource = interaction,
+        // Zeilen einer gruppierten Karte geben nur ganz leicht nach.
+        modifier = modifier
+            .fillMaxWidth()
+            .pressScale(interaction, pressedScale = 0.98f),
     ) {
         Column {
             if (!isFirst) {

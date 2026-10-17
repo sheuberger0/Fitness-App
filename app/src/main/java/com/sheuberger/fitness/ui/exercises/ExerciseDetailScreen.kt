@@ -12,7 +12,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material3.ripple
+import com.sheuberger.fitness.ui.components.AnimatedFab
+import com.sheuberger.fitness.ui.components.AnimatedNumber
+import com.sheuberger.fitness.ui.components.FadeSwap
+import com.sheuberger.fitness.ui.components.StateCrossfade
+import com.sheuberger.fitness.ui.components.entrance
+import com.sheuberger.fitness.ui.components.pressScale
+import com.sheuberger.fitness.ui.components.rememberEntrance
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -99,6 +111,7 @@ fun ExerciseDetailScreen(
     var showDelete by rememberSaveable { mutableStateOf(false) }
     var adding by rememberSaveable { mutableStateOf(false) }
     var editing by remember { mutableStateOf<ExerciseLog?>(null) }
+    val entrance = rememberEntrance()
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -158,7 +171,7 @@ fun ExerciseDetailScreen(
             )
         },
         floatingActionButton = {
-            if (exercise != null) {
+            AnimatedFab(visible = !state.loading && exercise != null) {
                 ExtendedFloatingActionButton(
                     onClick = { adding = true },
                     icon = { Icon(Icons.Filled.Add, contentDescription = null) },
@@ -169,34 +182,51 @@ fun ExerciseDetailScreen(
             }
         },
     ) { innerPadding ->
-        if (state.loading || exercise == null) return@Scaffold
+        // Weich vom Laden zum Inhalt überblenden statt hart aufzuploppen.
+        StateCrossfade(targetState = !state.loading && exercise != null) { ready ->
+            if (!ready) return@StateCrossfade
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = innerPadding.withContent(),
-        ) {
-            item(key = "progress") {
-                ProgressCard(state = state, onRangeChange = viewModel::setRange)
-            }
-            if (state.logs.isNotEmpty()) {
-                item(key = "stats") {
-                    StatsCard(state, Modifier.padding(top = 12.dp))
-                }
-                item(key = "history-label") {
-                    SectionLabel(
-                        "Verlauf",
-                        Modifier.padding(start = 4.dp, top = 28.dp, bottom = 8.dp),
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = innerPadding.withContent(),
+            ) {
+                item(key = "progress") {
+                    ProgressCard(
+                        state = state,
+                        onRangeChange = viewModel::setRange,
+                        modifier = Modifier.entrance(entrance, 0),
                     )
                 }
-                items(state.history, key = { it.date.toEpochDay() }) { day ->
-                    DayCard(
-                        day = day,
-                        personalBestId = state.personalBest?.id,
-                        onClickLog = { editing = it },
-                        modifier = Modifier
-                            .animateItem()
-                            .padding(bottom = 12.dp),
-                    )
+                if (state.logs.isNotEmpty()) {
+                    item(key = "stats") {
+                        StatsCard(
+                            state,
+                            Modifier
+                                .animateItem()
+                                .entrance(entrance, 1)
+                                .padding(top = 12.dp),
+                        )
+                    }
+                    item(key = "history-label") {
+                        SectionLabel(
+                            "Verlauf",
+                            Modifier
+                                .animateItem()
+                                .entrance(entrance, 2)
+                                .padding(start = 4.dp, top = 28.dp, bottom = 8.dp),
+                        )
+                    }
+                    itemsIndexed(state.history, key = { _, day -> day.date.toEpochDay() }) { index, day ->
+                        DayCard(
+                            day = day,
+                            personalBestId = state.personalBest?.id,
+                            onClickLog = { editing = it },
+                            modifier = Modifier
+                                .animateItem()
+                                .entrance(entrance, 3 + index)
+                                .padding(bottom = 12.dp),
+                        )
+                    }
                 }
             }
         }
@@ -282,14 +312,17 @@ fun ExerciseDetailScreen(
 private fun ProgressCard(
     state: ExerciseDetailUiState,
     onRangeChange: (TimeRange) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     // Der Punkt, den man gerade im Graphen antippt oder überstreicht. Neue Punkte = keine Auswahl.
     var selected by remember(state.rangePoints) { mutableStateOf<ChartPoint?>(null) }
     val last = state.points.lastOrNull()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
+            // Wenn der erste Eintrag oder der Graph dazukommt, wächst die Karte weich mit.
+            .animateContentSize(tween(250, easing = FastOutSlowInEasing))
             .clip(CardShape)
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .padding(16.dp),
@@ -311,8 +344,10 @@ private fun ProgressCard(
 
         val shown = selected ?: last
         Row {
-            Text(
-                text = Format.number(shown.value),
+            // Zählt beim neuen Wert hoch/runter, beim Scrubben springt die Zahl sofort mit.
+            AnimatedNumber(
+                value = shown.value,
+                instant = selected != null,
                 style = MaterialTheme.typography.displaySmall,
                 modifier = Modifier.alignByBaseline(),
             )
@@ -323,13 +358,22 @@ private fun ProgressCard(
                 modifier = Modifier.alignByBaseline(),
             )
         }
-        Text(
-            text = selected?.let { Format.weekdayDate(it.date) }
-                ?: "Zuletzt ${Format.relative(last.date).replaceFirstChar { it.lowercase() }}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        ChangeLine(selected = selected, range = state.range, rangePoints = state.rangePoints)
+        // Überblendet nur beim Wechsel zwischen Auswahl und Übersicht oder beim Zeitraum,
+        // beim Scrubben selbst wird der Text direkt aktualisiert.
+        FadeSwap(
+            targetState = HeaderLines(selected, last, state.range, state.rangePoints),
+            contentKey = { (it.selected != null) to it.range },
+        ) { lines ->
+            Column {
+                Text(
+                    text = lines.selected?.let { Format.weekdayDate(it.date) }
+                        ?: "Zuletzt ${Format.relative(lines.last.date).replaceFirstChar { it.lowercase() }}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                ChangeLine(selected = lines.selected, range = lines.range, rangePoints = lines.rangePoints)
+            }
+        }
 
         if (state.points.size < 2) {
             Spacer(Modifier.height(16.dp))
@@ -347,6 +391,14 @@ private fun ProgressCard(
         }
     }
 }
+
+/** Was unter der großen Zahl steht, als ein Zustand für die Überblendung. */
+private data class HeaderLines(
+    val selected: ChartPoint?,
+    val last: ChartPoint,
+    val range: TimeRange,
+    val rangePoints: List<ChartPoint>,
+)
 
 /**
  * Veränderung im Zeitraum, z. B. "+2,5 kg in den letzten 3 Monaten".
@@ -480,11 +532,13 @@ private fun DayCard(
                     modifier = Modifier.padding(start = 48.dp),
                 )
             }
+            val interaction = remember { MutableInteractionSource() }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onClickLog(log) }
+                    .pressScale(interaction, pressedScale = 0.98f)
+                    .clickable(interactionSource = interaction, indication = ripple()) { onClickLog(log) }
                     .padding(horizontal = 16.dp, vertical = 10.dp),
             ) {
                 // Satznummer, gedämpft wie die Spalte "Set" in Strong.
