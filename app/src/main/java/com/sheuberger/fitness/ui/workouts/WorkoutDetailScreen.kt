@@ -1,6 +1,14 @@
 package com.sheuberger.fitness.ui.workouts
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import com.sheuberger.fitness.ui.components.AnimatedFab
+import com.sheuberger.fitness.ui.components.StateCrossfade
+import com.sheuberger.fitness.ui.components.entrance
+import com.sheuberger.fitness.ui.components.pressScale
+import com.sheuberger.fitness.ui.components.rememberEntrance
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -102,6 +110,7 @@ fun WorkoutDetailScreen(
     var showDelete by rememberSaveable { mutableStateOf(false) }
     var showPicker by rememberSaveable { mutableStateOf(false) }
     var logTarget by remember { mutableStateOf<WorkoutExerciseRow?>(null) }
+    val entrance = rememberEntrance()
 
     // Workout gelöscht (hier oder anderswo): zurück zur Liste. Nur einmal, damit nicht doppelt zurück navigiert wird.
     LaunchedEffect(state.deleted) {
@@ -158,7 +167,7 @@ fun WorkoutDetailScreen(
             )
         },
         floatingActionButton = {
-            if (state.exercises.isNotEmpty()) {
+            AnimatedFab(visible = !state.loading && !state.deleted && state.exercises.isNotEmpty()) {
                 ExtendedFloatingActionButton(
                     onClick = { showPicker = true },
                     icon = { Icon(Icons.Filled.Add, contentDescription = null) },
@@ -169,9 +178,15 @@ fun WorkoutDetailScreen(
             }
         },
     ) { innerPadding ->
-        when {
-            state.loading || state.deleted -> Unit
-            state.exercises.isEmpty() -> EmptyState(
+        val content = when {
+            state.loading || state.deleted -> DetailContent.Loading
+            state.exercises.isEmpty() -> DetailContent.Empty
+            else -> DetailContent.List
+        }
+        StateCrossfade(content) { shown ->
+        when (shown) {
+            DetailContent.Loading -> Unit
+            DetailContent.Empty -> EmptyState(
                 title = "Noch keine Übungen",
                 message = "Füge Übungen hinzu und trage bei jedem Training dein Gewicht ein. So siehst du deinen Fortschritt.",
                 modifier = Modifier
@@ -185,13 +200,18 @@ fun WorkoutDetailScreen(
                     }
                 },
             )
-            else -> LazyColumn(
+            DetailContent.List -> LazyColumn(
                 contentPadding = innerPadding.withContent(),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
                 item(key = "header") {
-                    Column(Modifier.padding(bottom = 2.dp)) {
+                    Column(
+                        Modifier
+                            .animateItem()
+                            .entrance(entrance, 0)
+                            .padding(bottom = 2.dp),
+                    ) {
                         SectionLabel(Format.exerciseCount(state.exercises.size))
                         // Hinweis nur, solange noch nie etwas eingetragen wurde.
                         if (state.exercises.all { it.latest == null }) {
@@ -214,10 +234,13 @@ fun WorkoutDetailScreen(
                         onMoveUp = { viewModel.moveExercise(row.exercise.id, up = true) },
                         onMoveDown = { viewModel.moveExercise(row.exercise.id, up = false) },
                         onRemove = { viewModel.removeExercise(row.exercise.id) },
-                        modifier = Modifier.animateItem(),
+                        modifier = Modifier
+                            .animateItem()
+                            .entrance(entrance, index + 1),
                     )
                 }
             }
+        }
         }
     }
 
@@ -279,6 +302,8 @@ fun WorkoutDetailScreen(
     }
 }
 
+private enum class DetailContent { Loading, Empty, List }
+
 /** Eine Übung im Workout: Name, letzter Satz, Mini-Verlauf und ein schneller Weg zum Eintragen. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -297,11 +322,16 @@ private fun ExerciseRowCard(
     val bests = row.recentBests
     val sparkColor = if (bests.size >= 2) trendColor(bests.last() - bests.first()) else MaterialTheme.colorScheme.primary
 
+    val interaction = remember { MutableInteractionSource() }
+
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
-        modifier = modifier.fillMaxWidth(),
+        interactionSource = interaction,
+        modifier = modifier
+            .fillMaxWidth()
+            .pressScale(interaction),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -487,6 +517,7 @@ private fun ExercisePickerSheet(
                 if (canCreate) {
                     item(key = "create") {
                         CreateExerciseRow(
+                            modifier = Modifier.animateItem(),
                             name = trimmed,
                             onClick = {
                                 onCreate(trimmed)
@@ -501,19 +532,27 @@ private fun ExercisePickerSheet(
                             text = "Keine Übungen vorhanden.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
+                            modifier = Modifier
+                                .animateItem()
+                                .padding(horizontal = 24.dp, vertical = 16.dp),
                         )
                     }
                 }
                 groups.forEach { (group, exercises) ->
                     item(key = "group-$group") {
-                        SectionLabel(group, Modifier.padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 4.dp))
+                        SectionLabel(
+                            group,
+                            Modifier
+                                .animateItem()
+                                .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 4.dp),
+                        )
                     }
                     items(exercises, key = { it.id }) { exercise ->
                         PickerRow(
                             name = exercise.name,
                             added = exercise.id in addedIds,
                             onClick = { onAdd(exercise.id) },
+                            modifier = Modifier.animateItem(),
                         )
                     }
                 }
@@ -524,10 +563,10 @@ private fun ExercisePickerSheet(
 }
 
 @Composable
-private fun PickerRow(name: String, added: Boolean, onClick: () -> Unit) {
+private fun PickerRow(name: String, added: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             // Bereits hinzugefügte Übungen sind nicht mehr antippbar.
             .clickable(enabled = !added, onClick = onClick)
@@ -542,19 +581,22 @@ private fun PickerRow(name: String, added: Boolean, onClick: () -> Unit) {
             modifier = Modifier.weight(1f),
         )
         Spacer(Modifier.width(12.dp))
-        if (added) {
-            Icon(Icons.Filled.Check, contentDescription = "Bereits im Workout", tint = MaterialTheme.colorScheme.primary)
-        } else {
-            Icon(Icons.Filled.Add, contentDescription = "Hinzufügen", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        // Plus wird beim Hinzufügen weich zum Häkchen.
+        Crossfade(targetState = added, animationSpec = tween(200), label = "added") { isAdded ->
+            if (isAdded) {
+                Icon(Icons.Filled.Check, contentDescription = "Bereits im Workout", tint = MaterialTheme.colorScheme.primary)
+            } else {
+                Icon(Icons.Filled.Add, contentDescription = "Hinzufügen", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
     }
 }
 
 @Composable
-private fun CreateExerciseRow(name: String, onClick: () -> Unit) {
+private fun CreateExerciseRow(name: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(horizontal = 24.dp, vertical = 12.dp),

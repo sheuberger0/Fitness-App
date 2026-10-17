@@ -3,6 +3,13 @@ package com.sheuberger.fitness.ui.exercises
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material3.ripple
+import androidx.compose.runtime.remember
+import com.sheuberger.fitness.ui.components.StateCrossfade
+import com.sheuberger.fitness.ui.components.entrance
+import com.sheuberger.fitness.ui.components.pressScale
+import com.sheuberger.fitness.ui.components.rememberEntrance
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -73,6 +80,7 @@ fun ExercisesScreen(
     // Der Suchtext lebt im Screen, damit das Textfeld beim schnellen Tippen keine Zeichen verliert.
     var query by rememberSaveable { mutableStateOf("") }
     var showCreate by rememberSaveable { mutableStateOf(false) }
+    val entrance = rememberEntrance()
 
     Scaffold(
         topBar = {
@@ -96,14 +104,21 @@ fun ExercisesScreen(
             )
         },
     ) { innerPadding ->
-        when {
-            state.loading -> Unit
-            !state.hasExercises -> EmptyState(
+        val content = when {
+            state.loading -> ListContent.Loading
+            !state.hasExercises -> ListContent.NoExercises
+            state.sections.isEmpty() -> ListContent.NoMatches
+            else -> ListContent.List
+        }
+        StateCrossfade(content) { shown ->
+        when (shown) {
+            ListContent.Loading -> Unit
+            ListContent.NoExercises -> EmptyState(
                 title = "Noch keine Übungen",
                 message = "Lege deine erste Übung an, um dein Gewicht und deinen Fortschritt festzuhalten.",
                 modifier = Modifier.padding(innerPadding),
             )
-            state.sections.isEmpty() -> EmptyState(
+            ListContent.NoMatches -> EmptyState(
                 title = "Keine Treffer",
                 message = if (query.isBlank()) {
                     "In dieser Muskelgruppe gibt es noch keine Übungen."
@@ -112,7 +127,7 @@ fun ExercisesScreen(
                 },
                 modifier = Modifier.padding(innerPadding),
             )
-            else -> {
+            ListContent.List -> {
                 // Die Liste beginnt unter dem Kopfbereich, damit die Abschnittsüberschriften
                 // dort "kleben" bleiben und nicht hinter Suche und Filtern verschwinden.
                 val direction = LocalLayoutDirection.current
@@ -127,11 +142,16 @@ fun ExercisesScreen(
                         bottom = innerPadding.calculateBottomPadding() + 104.dp,
                     ),
                 ) {
+                    // Fortlaufende Position für die versetzte Eingangsanimation der ersten Elemente.
+                    var position = 0
                     state.sections.forEach { section ->
+                        val headerPosition = position
+                        position += section.rows.size + 1
                         stickyHeader(key = "header-${section.group}") {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
+                                    .entrance(entrance, headerPosition)
                                     .fillMaxWidth()
                                     .background(MaterialTheme.colorScheme.background)
                                     .padding(start = 4.dp, end = 4.dp, top = 16.dp, bottom = 8.dp),
@@ -150,12 +170,15 @@ fun ExercisesScreen(
                                 isFirst = index == 0,
                                 isLast = index == section.rows.lastIndex,
                                 onClick = { onOpenExercise(row.exercise.id) },
-                                modifier = Modifier.animateItem(),
+                                modifier = Modifier
+                                    .animateItem()
+                                    .entrance(entrance, headerPosition + 1 + index),
                             )
                         }
                     }
                 }
             }
+        }
         }
     }
 
@@ -174,6 +197,8 @@ fun ExercisesScreen(
         )
     }
 }
+
+private enum class ListContent { Loading, NoExercises, NoMatches, List }
 
 /** Großer Titel, Suchfeld und die Filter-Chips. Bleibt beim Scrollen stehen, wie bei Strong. */
 @Composable
@@ -308,12 +333,15 @@ private fun ExerciseRow(
         bottomEnd = if (isLast) corner else 0.dp,
         bottomStart = if (isLast) corner else 0.dp,
     )
+    val interaction = remember { MutableInteractionSource() }
     Column(
         modifier = modifier
             .fillMaxWidth()
+            // Zeilen einer gruppierten Karte geben nur ganz leicht nach.
+            .pressScale(interaction, pressedScale = 0.98f)
             .clip(shape)
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .clickable(onClick = onClick),
+            .clickable(interactionSource = interaction, indication = ripple(), onClick = onClick),
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

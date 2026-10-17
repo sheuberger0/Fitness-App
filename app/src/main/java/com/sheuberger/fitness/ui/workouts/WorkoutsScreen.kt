@@ -14,7 +14,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material3.ripple
+import com.sheuberger.fitness.ui.components.AnimatedFab
+import com.sheuberger.fitness.ui.components.StateCrossfade
+import com.sheuberger.fitness.ui.components.entrance
+import com.sheuberger.fitness.ui.components.pressScale
+import com.sheuberger.fitness.ui.components.rememberEntrance
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -65,11 +72,12 @@ fun WorkoutsScreen(
     var showCreate by rememberSaveable { mutableStateOf(false) }
     var renameTarget by remember { mutableStateOf<Workout?>(null) }
     var deleteTarget by remember { mutableStateOf<Workout?>(null) }
+    val entrance = rememberEntrance()
 
     Scaffold(
         floatingActionButton = {
             // Bei leerer Liste übernimmt der Button im leeren Zustand diese Aufgabe.
-            if (state.workouts.isNotEmpty()) {
+            AnimatedFab(visible = !state.loading && state.workouts.isNotEmpty()) {
                 ExtendedFloatingActionButton(
                     onClick = { showCreate = true },
                     icon = { Icon(Icons.Filled.Add, contentDescription = null) },
@@ -80,9 +88,15 @@ fun WorkoutsScreen(
             }
         },
     ) { innerPadding ->
-        when {
-            state.loading -> Unit
-            state.workouts.isEmpty() -> Column(Modifier.padding(innerPadding)) {
+        val content = when {
+            state.loading -> ScreenContent.Loading
+            state.workouts.isEmpty() -> ScreenContent.Empty
+            else -> ScreenContent.List
+        }
+        StateCrossfade(content) { shown ->
+        when (shown) {
+            ScreenContent.Loading -> Unit
+            ScreenContent.Empty -> Column(Modifier.padding(innerPadding)) {
                 ScreenTitle(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
                 EmptyState(
                     title = "Noch keine Workouts",
@@ -98,13 +112,13 @@ fun WorkoutsScreen(
                     },
                 )
             }
-            else -> LazyColumn(
+            ScreenContent.List -> LazyColumn(
                 contentPadding = innerPadding.withContent(),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxSize(),
             ) {
                 item(key = "title") {
-                    Column {
+                    Column(Modifier.entrance(entrance, 0)) {
                         ScreenTitle()
                         Text(
                             text = if (state.workouts.size == 1) "1 Workout" else "${state.workouts.size} Workouts",
@@ -114,16 +128,19 @@ fun WorkoutsScreen(
                         Spacer(Modifier.height(4.dp))
                     }
                 }
-                items(state.workouts, key = { it.workout.id }) { summary ->
+                itemsIndexed(state.workouts, key = { _, it -> it.workout.id }) { index, summary ->
                     WorkoutCard(
                         summary = summary,
                         onClick = { onOpenWorkout(summary.workout.id) },
                         onRename = { renameTarget = summary.workout },
                         onDelete = { deleteTarget = summary.workout },
-                        modifier = Modifier.animateItem(),
+                        modifier = Modifier
+                            .animateItem()
+                            .entrance(entrance, index + 1),
                     )
                 }
             }
+        }
         }
     }
 
@@ -168,6 +185,8 @@ fun WorkoutsScreen(
     }
 }
 
+private enum class ScreenContent { Loading, Empty, List }
+
 @Composable
 private fun ScreenTitle(modifier: Modifier = Modifier) {
     Text(
@@ -190,15 +209,19 @@ private fun WorkoutCard(
     var menuOpen by remember { mutableStateOf(false) }
     val haptics = LocalHapticFeedback.current
     val shape = RoundedCornerShape(16.dp)
+    val interaction = remember { MutableInteractionSource() }
 
     Surface(
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         modifier = modifier
             .fillMaxWidth()
+            .pressScale(interaction)
             .clip(shape)
             // Langes Drücken öffnet dasselbe Menü wie die drei Punkte.
             .combinedClickable(
+                interactionSource = interaction,
+                indication = ripple(),
                 onClick = onClick,
                 onLongClick = {
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
