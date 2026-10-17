@@ -1,8 +1,19 @@
 package com.sheuberger.fitness.ui
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
@@ -19,8 +30,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -54,13 +67,18 @@ fun FitnessAppRoot() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
-    val showBottomBar = Tab.entries.any { it.route == currentDestination?.route }
+    val showBottomBar = currentDestination == null || Tab.entries.any { it.route == currentDestination.route }
 
     Scaffold(
         // Die einzelnen Screens kümmern sich selbst um Status- und Navigationsleiste.
         contentWindowInsets = WindowInsets(0),
         bottomBar = {
-            if (showBottomBar) {
+            // Die Leiste fährt beim Öffnen einer Detailseite nach unten weg, statt zu verschwinden.
+            AnimatedVisibility(
+                visible = showBottomBar,
+                enter = expandVertically(tween(SlideMillis, easing = NavEasing), expandFrom = Alignment.Top),
+                exit = shrinkVertically(tween(SlideMillis, easing = NavEasing), shrinkTowards = Alignment.Top),
+            ) {
                 NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainerLow) {
                     Tab.entries.forEach { tab ->
                         NavigationBarItem(
@@ -92,8 +110,10 @@ fun FitnessAppRoot() {
             modifier = Modifier
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding),
-            enterTransition = { fadeIn(tween(200)) },
-            exitTransition = { fadeOut(tween(200)) },
+            enterTransition = { enter() },
+            exitTransition = { exit() },
+            popEnterTransition = { popEnter() },
+            popExitTransition = { popExit() },
         ) {
             composable(Tab.Workouts.route) {
                 WorkoutsScreen(onOpenWorkout = { navController.navigate(Routes.workout(it)) })
@@ -122,3 +142,40 @@ fun FitnessAppRoot() {
         }
     }
 }
+
+// --- Seitenübergänge ---
+// Zwischen den Tabs wird nur kurz überblendet (wie bei Instagram oder Apple Health),
+// Detailseiten schieben sich von rechts herein und beim Zurückgehen wieder hinaus.
+// So "fühlt" man, ob man tiefer in die App geht oder nur den Bereich wechselt.
+
+private const val SlideMillis = 320
+private val NavEasing = FastOutSlowInEasing
+
+private fun NavBackStackEntry.isTab() = Tab.entries.any { it.route == destination.route }
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.isTabSwitch() =
+    initialState.isTab() && targetState.isTab()
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.enter(): EnterTransition =
+    if (isTabSwitch()) {
+        fadeIn(tween(220, delayMillis = 60, easing = LinearOutSlowInEasing)) +
+            scaleIn(tween(220, delayMillis = 60, easing = LinearOutSlowInEasing), initialScale = 0.98f)
+    } else {
+        slideInHorizontally(tween(SlideMillis, easing = NavEasing)) { it / 4 } + fadeIn(tween(SlideMillis))
+    }
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.exit(): ExitTransition =
+    if (isTabSwitch()) {
+        fadeOut(tween(80))
+    } else {
+        // Die alte Seite rückt nur ein Stück nach links und wird dunkler, wie ein Stapel Karten.
+        slideOutHorizontally(tween(SlideMillis, easing = NavEasing)) { -it / 10 } + fadeOut(tween(SlideMillis), targetAlpha = 0.6f)
+    }
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.popEnter(): EnterTransition =
+    if (isTabSwitch()) enter()
+    else slideInHorizontally(tween(SlideMillis, easing = NavEasing)) { -it / 10 } + fadeIn(tween(SlideMillis), initialAlpha = 0.6f)
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.popExit(): ExitTransition =
+    if (isTabSwitch()) exit()
+    else slideOutHorizontally(tween(SlideMillis, easing = NavEasing)) { it / 4 } + fadeOut(tween(SlideMillis))

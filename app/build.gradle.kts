@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -17,8 +19,25 @@ android {
         versionName = "1.0"
     }
 
+    // Signatur für die Release-APK. Android installiert nur signierte Apps, und Updates
+    // müssen mit demselben Schlüssel signiert sein. Die Zugangsdaten liegen in keystore.properties
+    // (nicht im Git). Fehlt die Datei, wird mit dem Debug-Schlüssel signiert, damit die APK trotzdem installierbar ist.
+    val keystoreFile = rootProject.file("keystore.properties")
+    signingConfigs {
+        if (keystoreFile.exists()) {
+            val props = Properties().apply { keystoreFile.inputStream().use(::load) }
+            create("release") {
+                storeFile = file(props.getProperty("storeFile"))
+                storePassword = props.getProperty("storePassword")
+                keyAlias = props.getProperty("keyAlias")
+                keyPassword = props.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

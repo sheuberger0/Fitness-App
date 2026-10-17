@@ -37,6 +37,21 @@ Alternativ auf der Kommandozeile (Android SDK muss installiert sein):
 ./gradlew installDebug         # installiert sie auf dem angeschlossenen Handy
 ```
 
+### Fertige APK direkt installieren
+
+Ohne Android Studio geht es auch mit einer fertigen APK-Datei:
+
+1. Die APK aufs Handy laden, z. B. per Download oder per Kabel kopieren.
+2. Die Datei antippen. Android fragt beim ersten Mal, ob die App (z. B. Chrome oder „Dateien“)
+   **unbekannte Apps installieren** darf. Das erlauben und zurückgehen.
+3. **Installieren** tippen. Play Protect warnt eventuell, weil die App nicht aus dem Play Store kommt;
+   dort „Trotzdem installieren“ wählen.
+
+Die Release-APK baust du mit `./gradlew assembleRelease` (liegt danach in `app/build/outputs/apk/release/`).
+Signiert wird sie mit dem Schlüssel aus `keystore.properties` (gehört nicht ins Git). Updates lassen sich nur
+über eine App mit demselben Schlüssel installieren, deshalb den Schlüssel gut aufheben. Fehlt die Datei, wird
+mit dem Debug-Schlüssel signiert.
+
 ## Wie der Code aufgebaut ist
 
 Die App folgt der Architektur, die Google für Android empfiehlt: **Daten → Repository → ViewModel → Oberfläche**.
