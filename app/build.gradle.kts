@@ -40,6 +40,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Eigene Paket-ID für Debug-Builds: So können Debug- und Release-Version nebeneinander
+            // installiert sein, statt sich gegenseitig zu blockieren ("App wurde nicht installiert").
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+        }
         release {
             signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
             isMinifyEnabled = true
