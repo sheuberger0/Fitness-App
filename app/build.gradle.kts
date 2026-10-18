@@ -12,11 +12,11 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.sheuberger.fitness"
+        applicationId = "com.sheuberger.fitnesstracker"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
     }
 
     // Signatur für die Release-APK. Android installiert nur signierte Apps, und Updates
