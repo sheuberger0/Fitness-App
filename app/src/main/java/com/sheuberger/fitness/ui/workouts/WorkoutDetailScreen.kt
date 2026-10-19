@@ -51,6 +51,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -73,6 +74,9 @@ import com.sheuberger.fitness.ui.components.AnimatedFab
 import com.sheuberger.fitness.ui.components.AppCard
 import com.sheuberger.fitness.ui.components.AppFab
 import com.sheuberger.fitness.ui.components.AppFieldShape
+import com.sheuberger.fitness.ui.components.AppMenu
+import com.sheuberger.fitness.ui.components.AppMenuDivider
+import com.sheuberger.fitness.ui.components.AppMenuItem
 import com.sheuberger.fitness.ui.components.AppSheet
 import com.sheuberger.fitness.ui.components.AppSheetHeader
 import com.sheuberger.fitness.ui.components.CircleIconButton
@@ -83,6 +87,7 @@ import com.sheuberger.fitness.ui.components.Format
 import com.sheuberger.fitness.ui.components.NameDialog
 import com.sheuberger.fitness.ui.components.PrimaryButton
 import com.sheuberger.fitness.ui.components.QuietButton
+import com.sheuberger.fitness.ui.components.SearchField
 import com.sheuberger.fitness.ui.components.SectionLabel
 import com.sheuberger.fitness.ui.components.Sparkline
 import com.sheuberger.fitness.ui.components.StateCrossfade
@@ -91,8 +96,10 @@ import com.sheuberger.fitness.ui.components.appClickable
 import com.sheuberger.fitness.ui.components.appTextFieldColors
 import com.sheuberger.fitness.ui.components.entrance
 import com.sheuberger.fitness.ui.components.rememberEntrance
+import com.sheuberger.fitness.ui.components.rememberFabScrollState
 import com.sheuberger.fitness.ui.components.trendColor
 import com.sheuberger.fitness.ui.components.withContent
+import com.sheuberger.fitness.ui.theme.LocalAccentFill
 import java.text.Collator
 import java.time.LocalDate
 import java.util.Locale
@@ -280,19 +287,22 @@ fun WorkoutDetailScreen(
     logTarget?.let { row ->
         // Vorbelegt mit dem letzten Satz: meist trainiert man mit demselben Gewicht oder etwas mehr.
         // Das Sheet fährt beim Speichern erst weg und ruft dann onSave/onDismiss – beide setzen nur logTarget zurück.
-        WeightEntrySheet(
-            title = row.exercise.name,
-            initialDate = LocalDate.now(),
-            initialWeight = row.latest?.weightKg,
-            initialReps = row.latest?.reps,
-            showReps = true,
-            step = 2.5,
-            onDismiss = { logTarget = null },
-            onSave = { date, weight, reps ->
-                viewModel.logWeight(row.exercise.id, date, weight, reps)
-                logTarget = null
-            },
-        )
+        // key: Für eine andere Übung entsteht ein frisches Sheet, statt Eingaben der vorherigen zu übernehmen.
+        key(row.exercise.id) {
+            WeightEntrySheet(
+                title = row.exercise.name,
+                initialDate = LocalDate.now(),
+                initialWeight = row.latest?.weightKg,
+                initialReps = row.latest?.reps,
+                showReps = true,
+                step = 2.5,
+                onDismiss = { logTarget = null },
+                onSave = { date, weight, reps ->
+                    viewModel.logWeight(row.exercise.id, date, weight, reps)
+                    logTarget = null
+                },
+            )
+        }
     }
 
     if (showPicker) {
@@ -359,7 +369,8 @@ private fun ExerciseRowCard(
     AppCard(
         onClick = onClick,
         onClickLabel = "Verlauf öffnen",
-        contentPadding = PaddingValues(start = 18.dp, top = 16.dp, bottom = 16.dp, end = 6.dp),
+        // Text 20 dp vom Rand wie in allen Karten; rechts wenig, weil die runden Buttons eigene Luft mitbringen.
+        contentPadding = PaddingValues(start = 20.dp, top = 16.dp, bottom = 16.dp, end = 6.dp),
         modifier = modifier.fillMaxWidth(),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -496,37 +507,11 @@ private fun ExercisePickerSheet(
             // dismiss() lässt das Sheet erst wegfahren, danach kommt onDismiss.
             QuietButton(text = "Fertig", onClick = { dismiss() })
         }
-        TextField(
-            value = query,
-            onValueChange = { query = it },
-            singleLine = true,
-            placeholder = { Text("Übung suchen") },
-            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
-            trailingIcon = {
-                // Das Kreuz blendet weich ein, sobald etwas getippt wurde.
-                AnimatedVisibility(
-                    visible = query.isNotEmpty(),
-                    enter = fadeIn(tween(150)) + scaleIn(tween(150), initialScale = 0.6f),
-                    exit = fadeOut(tween(100)) + scaleOut(tween(100), targetScale = 0.6f),
-                ) {
-                    CircleIconButton(
-                        icon = Icons.Filled.Close,
-                        contentDescription = "Suche leeren",
-                        onClick = { query = "" },
-                        style = CircleIconButtonStyle.Plain,
-                        size = 36.dp,
-                    )
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
-                imeAction = ImeAction.Done,
-            ),
-            shape = AppFieldShape,
-            colors = appTextFieldColors(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
+        // Dasselbe Suchfeld wie in der Übungsbibliothek, damit Suchen überall gleich aussieht.
+        SearchField(
+            query = query,
+            onQueryChange = { query = it },
+            modifier = Modifier.padding(horizontal = 24.dp),
         )
         Spacer(Modifier.height(8.dp))
 
@@ -667,6 +652,9 @@ private fun AddedBadge(added: Boolean) {
 
 @Composable
 private fun CreateExerciseRow(name: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    // Gefüllter Akzent-Kreis mit weißem "+" wie bei den anderen gefüllten Buttons (tiefere Füllfarbe,
+    // damit Weiß auch im dunklen Theme gut lesbar ist).
+    val fill = LocalAccentFill.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -679,12 +667,12 @@ private fun CreateExerciseRow(name: String, onClick: () -> Unit, modifier: Modif
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .size(36.dp)
-                .background(MaterialTheme.colorScheme.primary, CircleShape),
+                .background(fill.container, CircleShape),
         ) {
             Icon(
                 Icons.Filled.Add,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = fill.content,
                 modifier = Modifier.size(20.dp),
             )
         }

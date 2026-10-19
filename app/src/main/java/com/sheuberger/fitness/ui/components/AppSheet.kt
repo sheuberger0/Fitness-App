@@ -8,6 +8,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
@@ -43,6 +44,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
@@ -54,9 +56,12 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -67,9 +72,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -109,9 +116,11 @@ internal val LocalOverlayHost = staticCompositionLocalOf<OverlayHost?> { null }
 @Composable
 fun AppOverlayHost(content: @Composable () -> Unit) {
     val host = remember { OverlayHost() }
+    // derivedStateOf: nur neu aufbauen, wenn sich "irgendetwas offen ja/nein" ändert, nicht bei jedem Eintrag.
+    val anyOpen by remember(host) { derivedStateOf { host.entries.isNotEmpty() } }
     CompositionLocalProvider(LocalOverlayHost provides host) {
         Box(Modifier.fillMaxSize()) {
-            content()
+            ModalLayer(blocked = anyOpen, content = content)
             OverlayEntries(host)
         }
     }
@@ -120,8 +129,33 @@ fun AppOverlayHost(content: @Composable () -> Unit) {
 // Eigene Funktion, damit beim Öffnen/Schließen nur diese Ebene neu aufgebaut wird, nicht die ganze App.
 @Composable
 private fun OverlayEntries(host: OverlayHost) {
-    // Später geöffnete Ebenen liegen oben (z. B. ein Dialog über einem Sheet).
-    host.entries.forEach { entry -> key(entry) { entry.content() } }
+    // Später geöffnete Ebenen liegen oben (z. B. ein Dialog über einem Sheet). Nur die oberste ist bedienbar.
+    val top = host.entries.lastOrNull()
+    host.entries.forEach { entry ->
+        key(entry) { ModalLayer(blocked = entry !== top) { entry.content() } }
+    }
+}
+
+/**
+ * Eine Ebene, die "gesperrt" werden kann, sobald ein Sheet oder Dialog über ihr liegt. Früher waren das
+ * eigene System-Fenster, die das automatisch erledigt haben; in unserer Overlay-Ebene machen wir es selbst:
+ * - TalkBack: Der verdeckte Inhalt verschwindet aus dem Bedienungshilfen-Baum (clearAndSetSemantics),
+ *   sonst könnte man per Doppeltipp Zeilen oder Buttons HINTER dem Sheet auslösen.
+ * - Tastatur (Tab/Pfeiltasten): Der Fokus darf nicht in die verdeckte Ebene hineinwandern (enter = Cancel).
+ * Die Fokus-Gruppe bleibt immer bestehen und nur ihr Verhalten wechselt – so geht kein Fokus-Zustand verloren.
+ */
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun ModalLayer(blocked: Boolean, content: @Composable () -> Unit) {
+    val isBlocked by rememberUpdatedState(blocked)
+    Box(
+        Modifier
+            .focusProperties { enter = { if (isBlocked) FocusRequester.Cancel else FocusRequester.Default } }
+            .focusGroup()
+            .then(if (blocked) Modifier.clearAndSetSemantics {} else Modifier),
+    ) {
+        content()
+    }
 }
 
 /**
@@ -144,9 +178,14 @@ internal fun AppOverlay(onBack: () -> Unit, content: @Composable () -> Unit) {
         return
     }
     val entry = remember { OverlayEntry(content) }
+    val focusManager = LocalFocusManager.current
     // Nach jedem Neuaufbau den aktuellen Inhalt weitergeben (er kann neue Werte enthalten).
     SideEffect { entry.content = content }
     DisposableEffect(host, entry) {
+        // Fokus (und damit die Tastatur) von dem lösen, was gleich verdeckt wird – sonst bliebe z. B. die Tastatur
+        // eines Feldes darunter offen. Das neue Overlay ist hier noch nicht gezeichnet; ein Textfeld darin
+        // holt sich den Fokus also erst danach und behält ihn.
+        focusManager.clearFocus(force = true)
         host.entries.add(entry)
         onDispose { host.entries.remove(entry) }
     }
@@ -160,11 +199,29 @@ internal fun AppOverlay(onBack: () -> Unit, content: @Composable () -> Unit) {
 @Composable
 internal fun Scrim(alpha: () -> Float, tapToDismiss: Boolean, onTap: () -> Unit) {
     val currentOnTap by rememberUpdatedState(onTap)
+    // Farbe aus dem Theme (colorScheme.scrim) statt fest Schwarz.
+    val scrimColor = MaterialTheme.colorScheme.scrim
     Box(
         Modifier
             .fillMaxSize()
-            .drawBehind { drawRect(Color.Black, alpha = alpha().coerceIn(0f, 1f)) }
-            .pointerInput(tapToDismiss) { detectTapGestures { if (tapToDismiss) currentOnTap() } },
+            .drawBehind { drawRect(scrimColor, alpha = alpha().coerceIn(0f, 1f)) }
+            .pointerInput(tapToDismiss) { detectTapGestures { if (tapToDismiss) currentOnTap() } }
+            .then(
+                if (tapToDismiss) {
+                    // Für TalkBack wie beim Material-Sheet: Die Fläche daneben ist ein "Schließen"-Ziel.
+                    // traversalIndex = 1: beim Durchwischen erst der Inhalt, dann diese Aktion.
+                    Modifier.semantics {
+                        traversalIndex = 1f
+                        contentDescription = "Schließen"
+                        onClick {
+                            currentOnTap()
+                            true
+                        }
+                    }
+                } else {
+                    Modifier
+                },
+            ),
     )
 }
 
@@ -223,7 +280,10 @@ class AppSheetState internal constructor(private val scope: CoroutineScope) {
         coroutineScope {
             launch { scrim.animateTo(1f, tween(ScrimInMillis, easing = LinearOutSlowInEasing)) }
             launch { contentAlpha.animateTo(1f, tween(ContentFadeMillis, delayMillis = ContentFadeDelayMillis)) }
-            hidden.animateTo(0f, OpenSpring)
+            // Bewusst ein eigenes launch: Packt der Finger das Sheet noch während der Animation (stop/snapTo),
+            // bricht Compose nur diese Bewegung ab. Liefe sie direkt hier im Block, würde der ganze Block
+            // abgebrochen – Abdunkeln und Einblenden blieben dann halb fertig stehen.
+            launch { hidden.animateTo(0f, OpenSpring) }
         }
     }
 
@@ -411,7 +471,9 @@ private fun SheetFrame(
     LaunchedEffect(state) { state.animateIn() }
     // Beim Schließen die Tastatur gleich mit wegschicken, statt sie bis zum Ende stehen zu lassen.
     LaunchedEffect(state.isClosing) { if (state.isClosing) focusManager.clearFocus(force = true) }
-    BackHandler(enabled = !state.isClosing) { state.dismiss() }
+    // Immer aktiv, auch während der Schließ-Animation: Sonst ginge ein zweites "Zurück" am noch sichtbaren
+    // Sheet vorbei an den Screen darunter. dismiss() tut beim Schließen ohnehin nichts mehr.
+    BackHandler { state.dismiss() }
 
     val nestedScroll = remember(state) { SheetNestedScroll(state) }
     val dragState = rememberDraggableState { delta -> state.dragBy(delta) }

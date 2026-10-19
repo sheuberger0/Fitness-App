@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
@@ -112,8 +114,12 @@ private class AppDialogScopeImpl(private val state: AppDialogState) : AppDialogS
  * abgedunkeltem Hintergrund, bleibt über der Tastatur. Schließt per Zurück-Taste, Tipp daneben oder
  * [AppDialogScope.dismiss]; [onDismiss] kommt erst nach der Schließ-Animation.
  *
- * Der Inhalt liegt in einer Spalte mit 24 dp Innenabstand und scrollt, falls er zu hoch wird.
- * Für den Standardfall (Titel, Text, zwei Buttons) gibt es [AppAlertDialog]; Buttons unten mit [AppDialogButtons].
+ * Der Inhalt liegt in einer Spalte mit [contentPadding] Innenabstand (Standard 24 dp) und scrollt, falls er
+ * zu hoch wird. Für den Standardfall (Titel, Text, zwei Buttons) gibt es [AppAlertDialog]; Buttons unten mit
+ * [AppDialogButtons].
+ *
+ * @param contentPadding z. B. 0 dp für Inhalte, die ihre eigenen Abstände mitbringen (Kalender).
+ * @param screenMargin seitlicher Mindestabstand der Karte zum Bildschirmrand.
  */
 @Composable
 fun AppDialog(
@@ -122,11 +128,13 @@ fun AppDialog(
     state: AppDialogState = rememberAppDialogState(),
     dismissOnScrimTap: Boolean = true,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
+    contentPadding: PaddingValues = PaddingValues(24.dp),
+    screenMargin: Dp = 24.dp,
     content: @Composable AppDialogScope.() -> Unit,
 ) {
     SideEffect { state.onDismissed = onDismiss }
     AppOverlay(onBack = { state.dismiss() }) {
-        DialogFrame(state, modifier, dismissOnScrimTap, containerColor, content)
+        DialogFrame(state, modifier, dismissOnScrimTap, containerColor, contentPadding, screenMargin, content)
     }
 }
 
@@ -231,12 +239,16 @@ private fun DialogFrame(
     modifier: Modifier,
     dismissOnScrimTap: Boolean,
     containerColor: Color,
+    contentPadding: PaddingValues,
+    screenMargin: Dp,
     content: @Composable AppDialogScope.() -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
     LaunchedEffect(state) { state.animateIn() }
     LaunchedEffect(state.isClosing) { if (state.isClosing) focusManager.clearFocus(force = true) }
-    BackHandler(enabled = !state.isClosing) { state.dismiss() }
+    // Immer aktiv, auch während der Schließ-Animation: Sonst ginge ein zweites "Zurück" am noch sichtbaren
+    // Dialog vorbei an den Screen darunter (oder schickt die App in den Hintergrund). dismiss() ignoriert es.
+    BackHandler { state.dismiss() }
 
     Box(Modifier.fillMaxSize()) {
         Scrim(
@@ -250,7 +262,7 @@ private fun DialogFrame(
                 .fillMaxSize()
                 // Die Karte bleibt mittig im freien Bereich, also auch über der Tastatur.
                 .windowInsetsPadding(WindowInsets.systemBars.union(WindowInsets.ime))
-                .padding(horizontal = 24.dp, vertical = 16.dp),
+                .padding(horizontal = screenMargin, vertical = 16.dp),
         ) {
             Surface(
                 color = containerColor,
@@ -270,7 +282,7 @@ private fun DialogFrame(
                 Column(
                     Modifier
                         .verticalScroll(rememberScrollState())
-                        .padding(24.dp),
+                        .padding(contentPadding),
                 ) {
                     val scope = remember(state) { AppDialogScopeImpl(state) }
                     scope.content()

@@ -63,7 +63,10 @@ internal fun ExerciseDialog(
     state: AppDialogState = rememberAppDialogState(),
 ) {
     // Der Zustand lebt hier und nicht im Dialog-Inhalt, damit er beim Neuaufbau des Inhalts erhalten bleibt.
-    var name by remember { mutableStateOf(TextFieldValue(initialName, TextRange(initialName.length))) }
+    // rememberSaveable: Der getippte Name überlebt das Drehen des Handys.
+    var name by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(initialName, TextRange(initialName.length)))
+    }
     var group by rememberSaveable { mutableStateOf(initialGroup) }
 
     val trimmed = name.text.trim()
@@ -112,7 +115,8 @@ internal fun ExerciseDialog(
             }
         }
 
-        Spacer(Modifier.height(28.dp))
+        // 24 dp wie in AppAlertDialog, damit alle Dialoge unten gleich enden.
+        Spacer(Modifier.height(24.dp))
         AppDialogButtons(
             confirmLabel = confirmLabel,
             onConfirm = { onConfirm(trimmed, group) },

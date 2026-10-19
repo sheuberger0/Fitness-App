@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -52,6 +53,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sheuberger.fitness.ui.theme.LocalAccentFill
+import com.sheuberger.fitness.ui.theme.LocalDarkTheme
 
 // Ein gemeinsames Button-System für die ganze App. Alle Buttons sind "Pillen" (ganz runde Enden),
 // geben beim Drücken leicht nach, färben sich minimal dunkler und lösen ein feines Haptik-Tick aus.
@@ -132,6 +135,8 @@ fun PrimaryButton(
     compact: Boolean = false,
 ) {
     val colors = MaterialTheme.colorScheme
+    // Eigene Füllfarbe statt colors.primary: Sie ist tief genug für weiße Schrift (4,5:1) in beiden Themes.
+    val fill = LocalAccentFill.current
     PillButton(
         text = text,
         onClick = onClick,
@@ -139,9 +144,9 @@ fun PrimaryButton(
         enabled = enabled,
         leadingIcon = leadingIcon,
         compact = compact,
-        container = colors.primary,
-        pressedContainer = lerp(colors.primary, Color.Black, 0.12f),
-        content = colors.onPrimary,
+        container = fill.container,
+        pressedContainer = lerp(fill.container, Color.Black, 0.12f),
+        content = fill.content,
         disabledContainer = colors.surfaceContainerHigh,
         disabledContent = colors.onSurface.copy(alpha = 0.38f),
     )
@@ -191,6 +196,11 @@ fun DestructiveButton(
     compact: Boolean = false,
 ) {
     val colors = MaterialTheme.colorScheme
+    // Hell: kräftig rote Fläche mit weißer Schrift. Dunkel: gedämpfte rote Fläche mit hellrosa Schrift –
+    // ein grelles Rot wäre auf dem dunklen Grund zu laut, und weiße Schrift darauf schlecht lesbar.
+    val dark = LocalDarkTheme.current
+    val container = if (dark) colors.errorContainer else colors.error
+    val content = if (dark) colors.onErrorContainer else colors.onError
     PillButton(
         text = text,
         onClick = onClick,
@@ -198,9 +208,10 @@ fun DestructiveButton(
         enabled = enabled,
         leadingIcon = leadingIcon,
         compact = compact,
-        container = colors.error,
-        pressedContainer = lerp(colors.error, Color.Black, 0.12f),
-        content = colors.onError,
+        container = container,
+        // Gedrückt: im Hellen etwas dunkler, im Dunklen etwas heller (Richtung Schriftfarbe).
+        pressedContainer = if (dark) lerp(container, content, 0.08f) else lerp(container, Color.Black, 0.12f),
+        content = content,
         disabledContainer = colors.surfaceContainerHigh,
         disabledContent = colors.onSurface.copy(alpha = 0.38f),
     )
@@ -262,9 +273,10 @@ fun CircleIconButton(
     size: Dp = 44.dp,
 ) {
     val colors = MaterialTheme.colorScheme
+    val fill = LocalAccentFill.current
     val (container, content) = when (style) {
         CircleIconButtonStyle.Tonal -> colors.surfaceContainerHigh to colors.onSurface
-        CircleIconButtonStyle.Filled -> colors.primary to colors.onPrimary
+        CircleIconButtonStyle.Filled -> fill.container to fill.content
         CircleIconButtonStyle.Plain -> Color.Transparent to colors.onSurface
     }
     val pressed = when (style) {
@@ -311,15 +323,15 @@ fun AppFab(
     modifier: Modifier = Modifier,
     expanded: Boolean = true,
 ) {
-    val colors = MaterialTheme.colorScheme
+    val fill = LocalAccentFill.current
     val interaction = remember { MutableInteractionSource() }
     val haptics = LocalHapticFeedback.current
     val background = animatedFill(
         interaction = interaction,
         enabled = true,
-        container = colors.primary,
-        pressed = lerp(colors.primary, Color.Black, 0.12f),
-        disabled = colors.primary,
+        container = fill.container,
+        pressed = lerp(fill.container, Color.Black, 0.12f),
+        disabled = fill.container,
     )
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -337,7 +349,7 @@ fun AppFab(
             .drawBehind { drawRect(background.value) }
             .clickable(
                 interactionSource = interaction,
-                indication = ripple(color = colors.onPrimary),
+                indication = ripple(color = fill.content),
                 role = Role.Button,
             ) {
                 haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -350,7 +362,7 @@ fun AppFab(
             imageVector = icon,
             // Eingeklappt fehlt der Text, dann muss das Icon selbst beschrieben sein.
             contentDescription = if (expanded) null else text,
-            tint = colors.onPrimary,
+            tint = fill.content,
             modifier = Modifier.size(24.dp),
         )
         AnimatedVisibility(
@@ -365,7 +377,7 @@ fun AppFab(
                 Text(
                     text = text,
                     style = buttonTextStyle(compact = false),
-                    color = colors.onPrimary,
+                    color = fill.content,
                     maxLines = 1,
                 )
                 Spacer(Modifier.width(6.dp))
@@ -400,6 +412,8 @@ fun AppFilterChip(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         modifier = modifier
+            // Sichtbar 36 dp hoch, reserviert aber 48 dp Platz: So groß sollte eine Tippfläche mindestens sein.
+            .minimumInteractiveComponentSize()
             .semantics { this.selected = selected }
             .appClickable(onClick = onClick, shape = CircleShape, pressedScale = 0.95f, role = Role.Checkbox)
             .drawBehind { drawRect(container) }
@@ -409,7 +423,15 @@ fun AppFilterChip(
         if (leadingIcon != null) {
             Icon(leadingIcon, contentDescription = null, tint = content, modifier = Modifier.size(18.dp))
         }
-        Text(label, style = MaterialTheme.typography.labelLarge, color = content, maxLines = 1)
+        // Gleiche Höhe und Schriftstärken wie die [RangeSelector], damit beide wie ein System wirken.
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge.copy(
+                fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+            ),
+            color = content,
+            maxLines = 1,
+        )
     }
 }
 

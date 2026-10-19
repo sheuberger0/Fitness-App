@@ -19,16 +19,19 @@ import androidx.compose.ui.graphics.Color
 //   outlineVariant            = feine Trennlinien ("Hairlines")
 private val DarkColors = darkColorScheme(
     primary = AccentDark,
-    onPrimary = Color.White,
+    // Auf dem hellen Dunkel-Akzent ist dunkle Schrift lesbar (5,3:1), weiße nicht (3,1:1). So sind alle
+    // Material-Bausteine mit primary/onPrimary (z. B. der DatePicker) automatisch gut lesbar.
+    // Unsere Buttons mit weißer Schrift nutzen dafür die tiefere Füllung aus [LocalAccentFill].
+    onPrimary = DarkBackground,
     primaryContainer = DarkAccentContainer,
     onPrimaryContainer = DarkOnAccentContainer,
-    inversePrimary = AccentLight,
+    inversePrimary = AccentInverseForDark,
     secondary = AccentDark,
-    onSecondary = Color.White,
+    onSecondary = DarkBackground,
     secondaryContainer = DarkAccentContainer,
     onSecondaryContainer = DarkOnAccentContainer,
     tertiary = AccentDark,
-    onTertiary = Color.White,
+    onTertiary = DarkBackground,
     tertiaryContainer = DarkAccentContainer,
     onTertiaryContainer = DarkOnAccentContainer,
     background = DarkBackground,
@@ -51,7 +54,7 @@ private val DarkColors = darkColorScheme(
     outline = DarkOutline,
     outlineVariant = DarkOutlineVariant,
     error = ErrorDark,
-    onError = Color.White,
+    onError = DarkBackground,
     errorContainer = DarkErrorContainer,
     onErrorContainer = DarkOnErrorContainer,
     scrim = Color.Black,
@@ -62,7 +65,7 @@ private val LightColors = lightColorScheme(
     onPrimary = Color.White,
     primaryContainer = LightAccentContainer,
     onPrimaryContainer = LightOnAccentContainer,
-    inversePrimary = AccentDark,
+    inversePrimary = AccentInverseForLight,
     secondary = AccentLight,
     onSecondary = Color.White,
     secondaryContainer = LightAccentContainer,
@@ -103,6 +106,16 @@ data class TrendColors(val positive: Color, val negative: Color)
 val LocalTrendColors = staticCompositionLocalOf { TrendColors(PositiveDark, NegativeDark) }
 
 /**
+ * Farben für gefüllte Akzent-Flächen mit weißer Schrift (Primär-Button, FAB, "+"-Kreis).
+ * Getrennt von `colorScheme.primary`, weil eine einzige Farbe im dunklen Theme nicht beides kann:
+ * als Text auf Fast-Schwarz lesbar sein UND weiße Schrift auf sich tragen.
+ */
+@Immutable
+data class AccentFillColors(val container: Color, val content: Color)
+
+val LocalAccentFill = staticCompositionLocalOf { AccentFillColors(AccentFill, Color.White) }
+
+/**
  * true im dunklen Theme. Praktisch für kleine Unterschiede, z. B. eine feine Kartenkante,
  * die nur im hellen Theme nötig ist.
  */
@@ -118,6 +131,7 @@ fun FitnessTheme(
     val trend = if (darkTheme) TrendColors(PositiveDark, NegativeDark) else TrendColors(PositiveLight, NegativeLight)
     CompositionLocalProvider(
         LocalTrendColors provides trend,
+        LocalAccentFill provides AccentFillColors(AccentFill, Color.White),
         LocalDarkTheme provides darkTheme,
     ) {
         MaterialTheme(

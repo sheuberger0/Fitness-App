@@ -3,6 +3,7 @@ package com.sheuberger.fitness.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +17,6 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +35,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.sheuberger.fitness.ui.theme.LocalAccentFill
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -183,7 +185,10 @@ private fun DateRow(date: LocalDate, onClick: () -> Unit) {
     }
 }
 
-/** Großes Zahlenfeld mit − und + daneben, wie in gängigen Trainings-Apps. */
+/**
+ * Großes Zahlenfeld mit − und + daneben, wie in gängigen Trainings-Apps.
+ * Feld, Buttons und die Datumszeile sind alle 56 dp hoch, damit die Zeilen ruhig untereinander stehen.
+ */
 @Composable
 private fun Stepper(
     text: String,
@@ -202,14 +207,15 @@ private fun Stepper(
             icon = Icons.Filled.Remove,
             contentDescription = "Weniger",
             onClick = onDecrement,
-            size = 52.dp,
+            size = 56.dp,
         )
         TextField(
             value = text,
             onValueChange = { new -> onTextChange(new.filter { it.isDigit() || it == ',' || it == '.' }) },
             singleLine = true,
             isError = isError,
-            textStyle = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center),
+            // Zeilenhöhe 24 sp: 16 dp + 24 + 16 dp = 56 dp Feldhöhe (mit der Standard-Zeilenhöhe wären es 64 dp).
+            textStyle = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center, lineHeight = 24.sp),
             suffix = { Text(suffix) },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done),
             shape = AppFieldShape,
@@ -220,12 +226,12 @@ private fun Stepper(
             icon = Icons.Filled.Add,
             contentDescription = "Mehr",
             onClick = onIncrement,
-            size = 52.dp,
+            size = 56.dp,
         )
     }
 }
 
-/** Kalender zum Wählen des Datums, in den Farben der App und mit Pillen-Buttons. */
+/** Kalender zum Wählen des Datums, in den Farben der App, als animierter [AppDialog] mit Pillen-Buttons. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DatePickerSheet(
@@ -242,45 +248,43 @@ private fun DatePickerSheet(
         },
     )
     val colorScheme = MaterialTheme.colorScheme
+    // Ausgewählter Tag in der tieferen Akzentfüllung, damit die weiße Zahl gut lesbar ist.
+    val fill = LocalAccentFill.current
     val colors = DatePickerDefaults.colors(
         containerColor = colorScheme.surfaceContainerLow,
         titleContentColor = colorScheme.onSurfaceVariant,
         headlineContentColor = colorScheme.onSurface,
         weekdayContentColor = colorScheme.onSurfaceVariant,
-        selectedDayContainerColor = colorScheme.primary,
-        selectedDayContentColor = colorScheme.onPrimary,
+        selectedDayContainerColor = fill.container,
+        selectedDayContentColor = fill.content,
         todayContentColor = colorScheme.primary,
         todayDateBorderColor = colorScheme.primary,
-        selectedYearContainerColor = colorScheme.primary,
-        selectedYearContentColor = colorScheme.onPrimary,
+        selectedYearContainerColor = fill.container,
+        selectedYearContentColor = fill.content,
         dividerColor = colorScheme.outlineVariant,
     )
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            PrimaryButton(
-                text = "OK",
-                onClick = {
-                    state.selectedDateMillis?.let { millis ->
-                        onPick(Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate())
-                    }
-                },
-                enabled = state.selectedDateMillis != null,
-                compact = true,
-                modifier = Modifier.padding(start = 8.dp, end = 4.dp, bottom = 4.dp),
-            )
-        },
-        dismissButton = {
-            QuietButton(
-                text = "Abbrechen",
-                onClick = onDismiss,
-                tone = ButtonTone.Neutral,
-                modifier = Modifier.padding(bottom = 4.dp),
-            )
-        },
-        colors = colors,
+    // Unser AppDialog statt Materials DatePickerDialog: Der wäre ein eigenes System-Fenster und würde den
+    // Hintergrund ein zweites Mal (fast schwarz) abdunkeln, mit anderer Animation und anderen Buttons.
+    AppDialog(
+        onDismiss = onDismiss,
+        // Der Kalender bringt seine eigenen Abstände mit und braucht ~360 dp Breite, daher weniger Rand.
+        contentPadding = PaddingValues(0.dp),
+        screenMargin = 12.dp,
     ) {
-        DatePicker(state = state, showModeToggle = false, colors = colors)
+        DatePicker(state = state, showModeToggle = false, colors = colors, modifier = Modifier.fillMaxWidth())
+        AppDialogButtons(
+            confirmLabel = "OK",
+            confirmEnabled = state.selectedDateMillis != null,
+            onConfirm = {
+                state.selectedDateMillis?.let { millis ->
+                    val picked = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
+                    // Erst zufahren, dann das Datum übernehmen.
+                    dismiss { onPick(picked) }
+                }
+            },
+            onCancel = { dismiss() },
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 24.dp),
+        )
     }
 }
 

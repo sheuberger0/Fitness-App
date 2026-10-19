@@ -1,18 +1,8 @@
 package com.sheuberger.fitness.ui.exercises
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -30,44 +20,28 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -79,10 +53,10 @@ import com.sheuberger.fitness.ui.components.AnimatedFab
 import com.sheuberger.fitness.ui.components.AppCardShape
 import com.sheuberger.fitness.ui.components.AppFab
 import com.sheuberger.fitness.ui.components.AppFilterChip
-import com.sheuberger.fitness.ui.components.CircleIconButton
-import com.sheuberger.fitness.ui.components.CircleIconButtonStyle
 import com.sheuberger.fitness.ui.components.EmptyState
 import com.sheuberger.fitness.ui.components.Format
+import com.sheuberger.fitness.ui.components.PrimaryButton
+import com.sheuberger.fitness.ui.components.SearchField
 import com.sheuberger.fitness.ui.components.SectionLabel
 import com.sheuberger.fitness.ui.components.Sparkline
 import com.sheuberger.fitness.ui.components.StateCrossfade
@@ -90,6 +64,8 @@ import com.sheuberger.fitness.ui.components.appClickable
 import com.sheuberger.fitness.ui.components.entrance
 import com.sheuberger.fitness.ui.components.rememberAppDialogState
 import com.sheuberger.fitness.ui.components.rememberEntrance
+import com.sheuberger.fitness.ui.components.rememberFabScrollState
+import com.sheuberger.fitness.ui.components.trendColor
 import com.sheuberger.fitness.ui.theme.LocalDarkTheme
 
 /** Die Übungsbibliothek: Suche, Filter nach Muskelgruppe und eine nach Gruppen sortierte Liste. */
@@ -121,8 +97,9 @@ fun ExercisesScreen(
             )
         },
         floatingActionButton = {
-            // Erscheint mit leichtem Zoom, sobald die Liste geladen ist.
-            AnimatedFab(visible = !state.loading) {
+            // Erscheint mit leichtem Zoom, sobald die Liste geladen ist. Ohne Übungen übernimmt der Button
+            // im leeren Zustand, damit nicht zwei gleiche Aktionen auf dem Bildschirm stehen.
+            AnimatedFab(visible = !state.loading && state.hasExercises) {
                 AppFab(
                     text = "Übung",
                     icon = Icons.Filled.Add,
@@ -144,7 +121,17 @@ fun ExercisesScreen(
                 ListContent.NoExercises -> EmptyState(
                     title = "Noch keine Übungen",
                     message = "Lege deine erste Übung an, um dein Gewicht und deinen Fortschritt festzuhalten.",
-                    modifier = Modifier.padding(innerPadding),
+                    // Etwas nach oben versetzt, damit der Inhalt optisch mittig wirkt.
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .padding(bottom = 64.dp),
+                    action = {
+                        PrimaryButton(
+                            text = "Übung anlegen",
+                            onClick = { showCreate = true },
+                            leadingIcon = Icons.Filled.Add,
+                        )
+                    },
                 )
                 ListContent.NoMatches -> EmptyState(
                     title = "Keine Treffer",
@@ -182,7 +169,7 @@ fun ExercisesScreen(
                                         .entrance(entrance, headerPosition)
                                         .fillMaxWidth()
                                         .background(MaterialTheme.colorScheme.background)
-                                        .padding(start = 6.dp, end = 6.dp, top = 20.dp, bottom = 10.dp),
+                                        .padding(start = 4.dp, end = 4.dp, top = 20.dp, bottom = 10.dp),
                                 ) {
                                     SectionLabel(section.group, Modifier.weight(1f))
                                     Text(
@@ -280,86 +267,6 @@ private fun ExercisesHeader(
     }
 }
 
-/** Suchfeld als Pille auf warmer Fläche; beim Tippen wird die Fläche einen Hauch kräftiger. */
-@Composable
-private fun SearchField(
-    query: String,
-    onQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val focusManager = LocalFocusManager.current
-    val interaction = remember { MutableInteractionSource() }
-    val focused by interaction.collectIsFocusedAsState()
-    val container by animateColorAsState(
-        targetValue = if (focused) {
-            MaterialTheme.colorScheme.surfaceContainerHighest
-        } else {
-            MaterialTheme.colorScheme.surfaceContainerHigh
-        },
-        animationSpec = tween(180),
-        label = "searchContainer",
-    )
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .clip(CircleShape)
-            // Farbe erst beim Zeichnen lesen: Die Animation zeichnet nur neu, statt alles neu aufzubauen.
-            .drawBehind { drawRect(container) }
-            .padding(start = 16.dp, end = 6.dp),
-    ) {
-        Icon(
-            Icons.Filled.Search,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(20.dp),
-        )
-        Spacer(Modifier.width(10.dp))
-        // BasicTextField statt OutlinedTextField: schlank, ohne Rahmen, wie ein iOS-Suchfeld.
-        BasicTextField(
-            value = query,
-            onValueChange = onQueryChange,
-            singleLine = true,
-            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
-                imeAction = ImeAction.Search,
-            ),
-            keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
-            interactionSource = interaction,
-            modifier = Modifier.weight(1f),
-            decorationBox = { innerTextField ->
-                Box(contentAlignment = Alignment.CenterStart) {
-                    if (query.isEmpty()) {
-                        Text(
-                            "Übung suchen",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    innerTextField()
-                }
-            },
-        )
-        // Das "×" ploppt weich auf, sobald etwas im Feld steht.
-        AnimatedVisibility(
-            visible = query.isNotEmpty(),
-            enter = fadeIn(tween(150)) + scaleIn(tween(180), initialScale = 0.6f),
-            exit = fadeOut(tween(120)) + scaleOut(tween(120), targetScale = 0.6f),
-        ) {
-            CircleIconButton(
-                icon = Icons.Filled.Close,
-                contentDescription = "Suche löschen",
-                onClick = { onQueryChange("") },
-                style = CircleIconButtonStyle.Plain,
-                size = 36.dp,
-            )
-        }
-    }
-}
-
 /**
  * Eine Übung als Zeile einer gruppierten Karte: Nur die erste und letzte Zeile eines Abschnitts haben
  * runde Ecken, so wirken alle Zeilen einer Muskelgruppe wie eine gemeinsame Karte. Keine Trennlinien
@@ -391,9 +298,10 @@ private fun ExerciseRow(
             .appClickable(onClick = onClick, shape = shape, pressedScale = 0.98f, haptic = false)
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
             .then(if (hairline) Modifier.groupOutline(isFirst, isLast, outline, corner) else Modifier)
+            // 20 dp seitlich wie in allen Karten (AppCard), damit Texte über die Screens hinweg fluchten.
             .padding(
-                start = 16.dp,
-                end = 16.dp,
+                start = 20.dp,
+                end = 20.dp,
                 top = if (isFirst) 16.dp else 12.dp,
                 bottom = if (isLast) 16.dp else 12.dp,
             ),
@@ -423,11 +331,13 @@ private fun ExerciseRow(
             )
         } else {
             if (row.trend.size >= 2) {
+                // Grün/Rot je nach Tendenz statt Akzentfarbe: Farbe nur dort, wo sie etwas bedeutet.
                 Sparkline(
                     values = row.trend,
+                    color = trendColor(row.trend.last() - row.trend.first()),
                     modifier = Modifier
                         .padding(start = 12.dp)
-                        .size(width = 52.dp, height = 24.dp),
+                        .size(width = 56.dp, height = 28.dp),
                 )
                 Spacer(Modifier.width(12.dp))
             }
@@ -464,30 +374,3 @@ private fun Modifier.groupOutline(isFirst: Boolean, isLast: Boolean, color: Colo
             style = Stroke(width = stroke),
         )
     }
-
-// --- Floating Action Button, der beim Scrollen einklappt ---
-
-/**
- * Klappt den Floating Action Button beim Runterscrollen zu einem Kreis ein und beim Hochscrollen
- * wieder aus (wie in Gmail). Als NestedScrollConnection bekommt sie jede Scroll-Bewegung der Liste
- * mitgeteilt, verbraucht selbst aber nichts – die Liste scrollt ganz normal weiter.
- */
-@Stable
-internal class FabScrollState : NestedScrollConnection {
-    var expanded by mutableStateOf(true)
-        private set
-
-    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-        // Kleine Schwelle, damit leichtes Zittern des Fingers den Button nicht hin- und herspringen lässt.
-        when {
-            available.y < -FabToggleThresholdPx -> expanded = false
-            available.y > FabToggleThresholdPx -> expanded = true
-        }
-        return Offset.Zero
-    }
-}
-
-private const val FabToggleThresholdPx = 4f
-
-@Composable
-internal fun rememberFabScrollState(): FabScrollState = remember { FabScrollState() }

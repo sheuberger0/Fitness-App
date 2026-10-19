@@ -21,8 +21,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarData
@@ -31,11 +29,11 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,12 +41,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -93,17 +88,14 @@ private val SnackbarShape = RoundedCornerShape(16.dp)
 
 private enum class WeightContent { Loading, Empty, List }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BodyWeightScreen(
     viewModel: BodyWeightViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val listState = rememberLazyListState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val colors = MaterialTheme.colorScheme
 
     var sheet by remember { mutableStateOf<SheetTarget?>(null) }
     // Beim Wischen über den Graphen gewählter Punkt. Neue Punkte (anderer Zeitraum) setzen ihn zurück.
@@ -124,36 +116,9 @@ fun BodyWeightScreen(
         }
     }
 
+    // Keine Top-App-Bar: Der Titel steht wie bei "Workouts" und "Übungen" als erste Zeile im Inhalt,
+    // damit er beim Wechsel zwischen den Tabs an derselben Stelle und in derselben Größe bleibt.
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            LargeTopAppBar(
-                // Serifenschrift kommt aus dem Theme (headlineMedium groß, titleLarge eingeklappt).
-                title = { Text("Körpergewicht") },
-                scrollBehavior = scrollBehavior,
-                // Leiste im selben warmen Ton wie die Seite, auch eingeklappt (kein grauer Balken).
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = colors.background,
-                    scrolledContainerColor = colors.background,
-                ),
-                // Stattdessen erscheint beim Einklappen eine feine Linie unter der Leiste.
-                // collapsedFraction wird erst beim Zeichnen gelesen: Scrollen löst nur Neuzeichnen aus.
-                modifier = Modifier.drawWithContent {
-                    drawContent()
-                    val fraction = scrollBehavior.state.collapsedFraction
-                    if (fraction > 0f) {
-                        val stroke = 1.dp.toPx()
-                        val y = size.height - stroke / 2
-                        drawLine(
-                            color = colors.outlineVariant.copy(alpha = fraction.coerceIn(0f, 1f)),
-                            start = Offset(0f, y),
-                            end = Offset(size.width, y),
-                            strokeWidth = stroke,
-                        )
-                    }
-                },
-            )
-        },
         floatingActionButton = {
             AnimatedFab(visible = !state.loading && state.entries.isNotEmpty()) {
                 AppFab(
@@ -176,22 +141,24 @@ fun BodyWeightScreen(
             when (shown) {
                 // Während des Ladens nichts zeigen, damit der leere Zustand nicht kurz aufblitzt.
                 WeightContent.Loading -> Unit
-                WeightContent.Empty -> EmptyState(
-                    title = "Noch kein Gewicht eingetragen",
-                    message = "Wiege dich regelmäßig, am besten morgens vor dem Frühstück. " +
-                        "Hier siehst du dann deinen Verlauf.",
-                    // Etwas nach oben versetzt, damit der Inhalt optisch mittig wirkt.
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .padding(bottom = 64.dp),
-                    action = {
-                        PrimaryButton(
-                            text = "Gewicht eintragen",
-                            onClick = { sheet = SheetTarget.New },
-                            leadingIcon = Icons.Filled.Add,
-                        )
-                    },
-                )
+                WeightContent.Empty -> Column(Modifier.padding(innerPadding)) {
+                    // Gleiche Lage wie in der Liste: 20 dp vom linken Rand, 20 dp unter der Statusleiste.
+                    ScreenHeadline(Modifier.padding(start = 20.dp, top = 20.dp))
+                    EmptyState(
+                        title = "Noch kein Gewicht eingetragen",
+                        message = "Wiege dich regelmäßig, am besten morgens vor dem Frühstück. " +
+                            "Hier siehst du dann deinen Verlauf.",
+                        // Etwas nach oben versetzt, damit der Inhalt optisch mittig wirkt.
+                        modifier = Modifier.padding(bottom = 64.dp),
+                        action = {
+                            PrimaryButton(
+                                text = "Gewicht eintragen",
+                                onClick = { sheet = SheetTarget.New },
+                                leadingIcon = Icons.Filled.Add,
+                            )
+                        },
+                    )
+                }
                 WeightContent.List -> BodyWeightContent(
                     state = state,
                     selected = selected,
@@ -221,21 +188,24 @@ fun BodyWeightScreen(
                 viewModel.save(BodyWeightEntry(date = date, weightKg = weightKg))
             },
         )
-        is SheetTarget.Edit -> WeightEntrySheet(
-            title = "Eintrag bearbeiten",
-            initialDate = target.entry.date,
-            initialWeight = target.entry.weightKg,
-            step = 0.1,
-            onDismiss = { sheet = null },
-            onSave = { date, weightKg, _ ->
-                sheet = null
-                viewModel.save(target.entry.copy(date = date, weightKg = weightKg))
-            },
-            onDelete = {
-                sheet = null
-                deleteWithUndo(target.entry)
-            },
-        )
+        // key: Für einen anderen Eintrag entsteht ein frisches Sheet mit dessen Werten.
+        is SheetTarget.Edit -> key(target.entry.id) {
+            WeightEntrySheet(
+                title = "Eintrag bearbeiten",
+                initialDate = target.entry.date,
+                initialWeight = target.entry.weightKg,
+                step = 0.1,
+                onDismiss = { sheet = null },
+                onSave = { date, weightKg, _ ->
+                    sheet = null
+                    viewModel.save(target.entry.copy(date = date, weightKg = weightKg))
+                },
+                onDelete = {
+                    sheet = null
+                    deleteWithUndo(target.entry)
+                },
+            )
+        }
     }
 }
 
@@ -254,25 +224,34 @@ private fun BodyWeightContent(
         state = listState,
         contentPadding = contentPadding,
     ) {
+        item(key = "title") {
+            // Die Liste rückt schon 16 dp (seitlich) und 8 dp (oben) ein. Zusammen ergibt das
+            // 20 dp vom Rand und 20 dp unter der Statusleiste, wie bei den anderen Tabs.
+            ScreenHeadline(
+                Modifier
+                    .entrance(entrance, 0)
+                    .padding(start = 4.dp, top = 12.dp, bottom = 16.dp),
+            )
+        }
         item(key = "header") {
-            Header(state = state, selected = selected, modifier = Modifier.entrance(entrance, 0))
+            Header(state = state, selected = selected, modifier = Modifier.entrance(entrance, 1))
         }
         item(key = "range") {
             RangeSelector(
                 selected = state.range,
                 onSelect = onSelectRange,
                 modifier = Modifier
-                    .entrance(entrance, 1)
+                    .entrance(entrance, 2)
                     .padding(top = 24.dp, bottom = 16.dp),
             )
         }
         item(key = "chart") {
-            ChartCard(state = state, onSelect = onSelect, modifier = Modifier.entrance(entrance, 2))
+            ChartCard(state = state, onSelect = onSelect, modifier = Modifier.entrance(entrance, 3))
         }
         item(key = "stats") {
             Column(
                 Modifier
-                    .entrance(entrance, 3)
+                    .entrance(entrance, 4)
                     .padding(top = 32.dp),
             ) {
                 SectionLabel("Statistik", Modifier.padding(start = 4.dp, bottom = 10.dp))
@@ -302,6 +281,17 @@ private fun BodyWeightContent(
             )
         }
     }
+}
+
+/** Großer Bildschirm-Titel in der Serifenschrift (headlineLarge aus dem Theme), wie auf den anderen Tabs. */
+@Composable
+private fun ScreenHeadline(modifier: Modifier = Modifier) {
+    Text(
+        text = "Körpergewicht",
+        style = MaterialTheme.typography.headlineLarge,
+        color = MaterialTheme.colorScheme.onSurface,
+        modifier = modifier,
+    )
 }
 
 /** Große Zahl oben wie in Apple Health: aktueller Wert oder der gerade im Graphen gewählte Punkt. */
@@ -340,11 +330,11 @@ private fun Header(state: BodyWeightUiState, selected: ChartPoint?, modifier: Mo
             )
             Text(
                 text = " kg",
-                // titleLarge ist jetzt eine Serifenschrift (für Titel). Die Einheit gehört zur Zahl
-                // und bleibt deshalb serifenlos.
+                // titleLarge ist eine Serifenschrift (für Titel). Die Einheit gehört zur Zahl, bleibt
+                // deshalb serifenlos und normal, damit sie ruhig daneben steht (wie bei den Übungen).
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontFamily = FontFamily.Default,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Normal,
                 ),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.alignByBaseline(),
@@ -361,11 +351,13 @@ private fun Header(state: BodyWeightUiState, selected: ChartPoint?, modifier: Mo
                 Text(
                     text = date,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                // Etwas kräftiger als das Datum, damit die Veränderung ins Auge fällt.
                 Text(
                     text = change,
                     style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
                     color = trendColor(diff, neutral = true),
                 )
             }
@@ -420,7 +412,7 @@ private fun StatsCard(state: BodyWeightUiState) {
     val stats = state.stats
     AppCard(
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 18.dp),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 18.dp),
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             StatTile("Start", stats?.start?.value.kgOrDash(), Modifier.weight(1f))
@@ -447,7 +439,7 @@ private fun HistoryRow(
     AppCard(
         onClick = onClick,
         onClickLabel = "Bearbeiten",
-        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 14.dp),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp),
         modifier = modifier.fillMaxWidth(),
     ) {
         Row(
@@ -494,7 +486,7 @@ private fun AppSnackbar(data: SnackbarData) {
             .fillMaxWidth()
             .graphicsLayer { translationY = (1f - rise.value) * 16.dp.toPx() }
             .shadow(
-                elevation = 6.dp,
+                elevation = 3.dp,
                 shape = SnackbarShape,
                 ambientColor = Color.Black.copy(alpha = 0.3f),
                 spotColor = Color.Black.copy(alpha = 0.3f),

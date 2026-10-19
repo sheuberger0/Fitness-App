@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,15 +36,17 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.sheuberger.fitness.ui.theme.LocalDarkTheme
 import com.sheuberger.fitness.ui.theme.LocalTrendColors
-import com.sheuberger.fitness.ui.theme.SectionLabelStyle
 
 /** Innenabstand des Scaffolds plus eigener Rand, unten Platz für den Floating Action Button. */
 @Composable
@@ -61,11 +64,14 @@ fun PaddingValues.withContent(
     )
 }
 
+// Ruhige Zwischenüberschrift wie in der Claude-App: normale Schreibweise, ohne GROSSBUCHSTABEN und Sperrung.
+private val SectionLabelTextStyle = TextStyle(fontSize = 14.sp, lineHeight = 20.sp, fontWeight = FontWeight.Medium)
+
 @Composable
 fun SectionLabel(text: String, modifier: Modifier = Modifier) {
     Text(
-        text = text.uppercase(),
-        style = SectionLabelStyle,
+        text = text,
+        style = SectionLabelTextStyle,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier,
     )
@@ -137,13 +143,14 @@ val AppFieldShape = RoundedCornerShape(16.dp)
 /**
  * Karte im App-Stil: Fläche `surfaceContainerLow`, 20 dp Ecken, kein Schatten. Im hellen Theme mit
  * feiner Kante, damit sich Weiß vom warmen Hintergrund abhebt. Mit [onClick] gibt sie beim Drücken leicht nach.
+ * Text beginnt in allen Karten 20 dp vom linken Rand, damit Titel über die Screens hinweg fluchten.
  */
 @Composable
 fun AppCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     onClickLabel: String? = null,
-    contentPadding: PaddingValues = PaddingValues(16.dp),
+    contentPadding: PaddingValues = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -212,7 +219,10 @@ fun NameDialog(
     placeholder: String = "",
     validate: (String) -> String? = { null },
 ) {
-    var value by remember { mutableStateOf(TextFieldValue(initial, TextRange(initial.length))) }
+    // rememberSaveable: Der getippte Name übersteht das Drehen des Bildschirms (der Dialog selbst auch).
+    var value by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(initial, TextRange(initial.length)))
+    }
     val trimmed = value.text.trim()
     val error = if (trimmed.isEmpty()) null else validate(trimmed)
     val valid = trimmed.isNotEmpty() && error == null

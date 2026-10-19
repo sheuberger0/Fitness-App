@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -49,8 +50,10 @@ fun RangeSelector(
     val ranges = TimeRange.entries
     BoxWithConstraints(
         modifier = modifier
+            // Sichtbar 36 dp (wie die Filter-Chips), reserviert aber 48 dp Höhe als Tippfläche.
+            .minimumInteractiveComponentSize()
             .fillMaxWidth()
-            .height(38.dp)
+            .height(36.dp)
             .clip(CircleShape)
             .background(colors.surfaceContainerHigh)
             .padding(3.dp),

@@ -3,7 +3,6 @@ package com.sheuberger.fitness.ui.exercises
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -24,19 +22,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -50,9 +44,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -69,6 +63,9 @@ import com.sheuberger.fitness.ui.components.AnimatedFab
 import com.sheuberger.fitness.ui.components.AnimatedNumber
 import com.sheuberger.fitness.ui.components.AppCard
 import com.sheuberger.fitness.ui.components.AppFab
+import com.sheuberger.fitness.ui.components.AppMenu
+import com.sheuberger.fitness.ui.components.AppMenuDivider
+import com.sheuberger.fitness.ui.components.AppMenuItem
 import com.sheuberger.fitness.ui.components.ChartPoint
 import com.sheuberger.fitness.ui.components.CircleIconButton
 import com.sheuberger.fitness.ui.components.CircleIconButtonStyle
@@ -86,8 +83,10 @@ import com.sheuberger.fitness.ui.components.appClickable
 import com.sheuberger.fitness.ui.components.entrance
 import com.sheuberger.fitness.ui.components.rememberAppDialogState
 import com.sheuberger.fitness.ui.components.rememberEntrance
+import com.sheuberger.fitness.ui.components.rememberFabScrollState
 import com.sheuberger.fitness.ui.components.trendColor
 import com.sheuberger.fitness.ui.components.withContent
+import com.sheuberger.fitness.ui.theme.LocalAccentFill
 import java.time.LocalDate
 
 /** Ecken der gedrückten Fläche einer Satz-Zeile innerhalb einer Karte. */
@@ -126,14 +125,15 @@ fun ExerciseDetailScreen(
     var editing by remember { mutableStateOf<ExerciseLog?>(null) }
     val entrance = rememberEntrance()
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    // Großer Titel, der beim Scrollen zur schmalen Leiste einklappt – genau wie bei den Workout-Details.
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val fab = rememberFabScrollState()
 
     Scaffold(
         modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
             // Klappt "Eintragen" beim Runterscrollen zum Kreis ein, beim Hochscrollen wieder aus.
-            .nestedScroll(fab),
+            .nestedScroll(fab)
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             DetailTopBar(
                 title = exercise?.name.orEmpty(),
@@ -191,7 +191,7 @@ fun ExerciseDetailScreen(
                             Modifier
                                 .animateItem()
                                 .entrance(entrance, 2)
-                                .padding(start = 6.dp, top = 32.dp, bottom = 10.dp),
+                                .padding(start = 4.dp, top = 32.dp, bottom = 10.dp),
                         )
                     }
                     itemsIndexed(state.history, key = { _, day -> day.date.toEpochDay() }) { index, day ->
@@ -228,23 +228,26 @@ fun ExerciseDetailScreen(
     }
 
     editing?.let { log ->
-        WeightEntrySheet(
-            title = "Eintrag bearbeiten",
-            initialDate = log.date,
-            initialWeight = log.weightKg,
-            initialReps = log.reps,
-            showReps = true,
-            step = 2.5,
-            onDismiss = { editing = null },
-            onSave = { date, weight, reps ->
-                viewModel.saveLog(log, date, weight, reps)
-                editing = null
-            },
-            onDelete = {
-                viewModel.deleteLog(log)
-                editing = null
-            },
-        )
+        // key: Für einen anderen Eintrag entsteht ein frisches Sheet mit dessen Werten.
+        key(log.id) {
+            WeightEntrySheet(
+                title = "Eintrag bearbeiten",
+                initialDate = log.date,
+                initialWeight = log.weightKg,
+                initialReps = log.reps,
+                showReps = true,
+                step = 2.5,
+                onDismiss = { editing = null },
+                onSave = { date, weight, reps ->
+                    viewModel.saveLog(log, date, weight, reps)
+                    editing = null
+                },
+                onDelete = {
+                    viewModel.deleteLog(log)
+                    editing = null
+                },
+            )
+        }
     }
 
     if (showEdit && exercise != null) {
@@ -290,8 +293,9 @@ fun ExerciseDetailScreen(
 }
 
 /**
- * Titelleiste: Zurück, Name der Übung (Serif) und das Menü. Sie bleibt in der Hintergrundfarbe;
- * erst wenn Inhalt darunter scrollt, blendet eine feine Linie ein (statt einer grauen Fläche).
+ * Titelleiste wie bei den Workout-Details: großer Serif-Titel, der beim Scrollen zur schmalen Leiste
+ * einklappt. Sie bleibt in der Hintergrundfarbe; erst beim Einklappen blendet eine feine Linie ein
+ * (statt einer grauen Fläche).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -305,62 +309,73 @@ private fun DetailTopBar(
     onDelete: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
-    Column {
-        TopAppBar(
-            title = {
-                Text(
-                    text = title,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            },
-            navigationIcon = {
+    val colors = MaterialTheme.colorScheme
+    LargeTopAppBar(
+        title = {
+            // Die Serifenschrift kommt aus dem Theme (groß: headlineMedium, eingeklappt: titleLarge).
+            Text(
+                text = title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        navigationIcon = {
+            CircleIconButton(
+                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Zurück",
+                onClick = onBack,
+                style = CircleIconButtonStyle.Plain,
+                modifier = Modifier.padding(start = 2.dp),
+            )
+        },
+        actions = {
+            // Box, damit sich das Menü am Button ausrichtet.
+            Box(Modifier.padding(end = 6.dp)) {
                 CircleIconButton(
-                    icon = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Zurück",
-                    onClick = onBack,
+                    icon = Icons.Filled.MoreHoriz,
+                    contentDescription = "Optionen",
+                    onClick = { onShowMenu(true) },
                     style = CircleIconButtonStyle.Plain,
+                    enabled = menuEnabled,
                 )
-            },
-            actions = {
-                // Box, damit sich das Menü am Button ausrichtet.
-                Box(Modifier.padding(end = 4.dp)) {
-                    CircleIconButton(
-                        icon = Icons.Filled.MoreVert,
-                        contentDescription = "Mehr",
-                        onClick = { onShowMenu(true) },
-                        style = CircleIconButtonStyle.Plain,
-                        enabled = menuEnabled,
-                    )
-                    ExerciseMenu(
-                        expanded = showMenu,
-                        onDismiss = { onShowMenu(false) },
-                        onEdit = {
-                            onShowMenu(false)
-                            onEdit()
-                        },
-                        onDelete = {
-                            onShowMenu(false)
-                            onDelete()
-                        },
-                    )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.background,
-                scrolledContainerColor = MaterialTheme.colorScheme.background,
-            ),
-            scrollBehavior = scrollBehavior,
-        )
-        HorizontalDivider(
-            color = MaterialTheme.colorScheme.outlineVariant,
-            // Wert erst beim Zeichnen lesen: Beim Scrollen wird nur neu gezeichnet, nicht neu aufgebaut.
-            modifier = Modifier.graphicsLayer { alpha = scrollBehavior.state.overlappedFraction },
-        )
-    }
+                ExerciseMenu(
+                    expanded = showMenu,
+                    onDismiss = { onShowMenu(false) },
+                    onEdit = {
+                        onShowMenu(false)
+                        onEdit()
+                    },
+                    onDelete = {
+                        onShowMenu(false)
+                        onDelete()
+                    },
+                )
+            }
+        },
+        colors = TopAppBarDefaults.largeTopAppBarColors(
+            containerColor = colors.background,
+            scrolledContainerColor = colors.background,
+        ),
+        scrollBehavior = scrollBehavior,
+        // collapsedFraction erst beim Zeichnen lesen: Beim Scrollen wird nur neu gezeichnet, nicht neu aufgebaut.
+        modifier = Modifier.drawWithContent {
+            drawContent()
+            val fraction = scrollBehavior.state.collapsedFraction
+            if (fraction > 0f) {
+                val stroke = 1.dp.toPx()
+                val y = size.height - stroke / 2
+                drawLine(
+                    color = colors.outlineVariant.copy(alpha = fraction.coerceIn(0f, 1f)),
+                    start = Offset(0f, y),
+                    end = Offset(size.width, y),
+                    strokeWidth = stroke,
+                )
+            }
+        },
+    )
 }
 
-/** Überlaufmenü im App-Stil: weiße Karte mit 16 dp Ecken, feiner Kante und Zeilen mit runder Druckfläche. */
+/** Überlaufmenü der Übung, mit denselben Bausteinen wie alle anderen Menüs der App. */
 @Composable
 private fun ExerciseMenu(
     expanded: Boolean,
@@ -368,45 +383,11 @@ private fun ExerciseMenu(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(16.dp),
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-        // Keine Akzent-Tönung, nur ein weicher Schatten und eine Haarlinie zur Abgrenzung.
-        tonalElevation = 0.dp,
-        shadowElevation = 6.dp,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        modifier = Modifier.widthIn(min = 200.dp),
-    ) {
-        MenuRow(text = "Bearbeiten", icon = Icons.Outlined.Edit, onClick = onEdit)
-        MenuRow(
-            text = "Übung löschen",
-            icon = Icons.Outlined.Delete,
-            color = MaterialTheme.colorScheme.error,
-            onClick = onDelete,
-        )
+    AppMenu(expanded = expanded, onDismissRequest = onDismiss) {
+        AppMenuItem(text = "Bearbeiten", icon = Icons.Outlined.Edit, onClick = onEdit)
+        AppMenuDivider()
+        AppMenuItem(text = "Übung löschen", icon = Icons.Outlined.Delete, onClick = onDelete, destructive = true)
     }
-}
-
-@Composable
-private fun MenuRow(
-    text: String,
-    icon: ImageVector,
-    onClick: () -> Unit,
-    color: Color = MaterialTheme.colorScheme.onSurface,
-) {
-    DropdownMenuItem(
-        text = { Text(text, style = MaterialTheme.typography.bodyLarge) },
-        leadingIcon = { Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp)) },
-        onClick = onClick,
-        colors = MenuDefaults.itemColors(textColor = color, leadingIconColor = color),
-        contentPadding = PaddingValues(horizontal = 14.dp),
-        // Etwas eingerückt und abgerundet: Beim Drücken erscheint eine weiche Pille statt eines Balkens.
-        modifier = Modifier
-            .padding(horizontal = 6.dp)
-            .clip(RowShape),
-    )
 }
 
 /** Kopfbereich mit großem Wert, Veränderung, Zeitraum-Auswahl und Graph. */
@@ -459,7 +440,7 @@ private fun ProgressCard(
                 modifier = Modifier.alignByBaseline(),
             )
         }
-        Spacer(Modifier.height(2.dp))
+        Spacer(Modifier.height(4.dp))
         // Überblendet nur beim Wechsel zwischen Auswahl und Übersicht oder beim Zeitraum,
         // beim Scrubben selbst wird der Text direkt aktualisiert.
         FadeSwap(
@@ -532,7 +513,7 @@ private fun ChangeLine(selected: ChartPoint?, range: TimeRange, rangePoints: Lis
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Medium,
         color = color,
     )
 }
@@ -677,10 +658,10 @@ private fun PrBadge() {
         style = MaterialTheme.typography.labelSmall,
         fontWeight = FontWeight.SemiBold,
         letterSpacing = 0.6.sp,
-        color = MaterialTheme.colorScheme.onPrimary,
+        color = LocalAccentFill.current.content,
         modifier = Modifier
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primary)
+            .background(LocalAccentFill.current.container)
             .padding(horizontal = 8.dp, vertical = 3.dp),
     )
 }
