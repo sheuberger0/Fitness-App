@@ -1,52 +1,42 @@
 package com.sheuberger.fitness.ui.exercises
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.material3.ripple
-import com.sheuberger.fitness.ui.components.AnimatedFab
-import com.sheuberger.fitness.ui.components.AnimatedNumber
-import com.sheuberger.fitness.ui.components.FadeSwap
-import com.sheuberger.fitness.ui.components.StateCrossfade
-import com.sheuberger.fitness.ui.components.entrance
-import com.sheuberger.fitness.ui.components.pressScale
-import com.sheuberger.fitness.ui.components.rememberEntrance
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -54,31 +44,53 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sheuberger.fitness.data.ExerciseLog
 import com.sheuberger.fitness.data.MuscleGroups
 import com.sheuberger.fitness.ui.AppViewModelProvider
+import com.sheuberger.fitness.ui.components.AnimatedFab
+import com.sheuberger.fitness.ui.components.AnimatedNumber
+import com.sheuberger.fitness.ui.components.AppCard
+import com.sheuberger.fitness.ui.components.AppFab
+import com.sheuberger.fitness.ui.components.AppMenu
+import com.sheuberger.fitness.ui.components.AppMenuDivider
+import com.sheuberger.fitness.ui.components.AppMenuItem
 import com.sheuberger.fitness.ui.components.ChartPoint
+import com.sheuberger.fitness.ui.components.CircleIconButton
+import com.sheuberger.fitness.ui.components.CircleIconButtonStyle
 import com.sheuberger.fitness.ui.components.ConfirmDialog
+import com.sheuberger.fitness.ui.components.FadeSwap
 import com.sheuberger.fitness.ui.components.Format
 import com.sheuberger.fitness.ui.components.LineChart
 import com.sheuberger.fitness.ui.components.RangeSelector
 import com.sheuberger.fitness.ui.components.SectionLabel
 import com.sheuberger.fitness.ui.components.StatTile
+import com.sheuberger.fitness.ui.components.StateCrossfade
 import com.sheuberger.fitness.ui.components.TimeRange
 import com.sheuberger.fitness.ui.components.WeightEntrySheet
+import com.sheuberger.fitness.ui.components.appClickable
+import com.sheuberger.fitness.ui.components.entrance
+import com.sheuberger.fitness.ui.components.rememberAppDialogState
+import com.sheuberger.fitness.ui.components.rememberEntrance
+import com.sheuberger.fitness.ui.components.rememberFabScrollState
 import com.sheuberger.fitness.ui.components.trendColor
 import com.sheuberger.fitness.ui.components.withContent
+import com.sheuberger.fitness.ui.theme.LocalAccentFill
 import java.time.LocalDate
 
-private val CardShape = RoundedCornerShape(16.dp)
+/** Ecken der gedrückten Fläche einer Satz-Zeile innerhalb einer Karte. */
+private val RowShape = RoundedCornerShape(14.dp)
 
 /**
  * Fortschritt einer Übung: großer Wert oben, Graph mit Zeitraum-Auswahl, Kennzahlen und der Verlauf.
@@ -113,71 +125,37 @@ fun ExerciseDetailScreen(
     var editing by remember { mutableStateOf<ExerciseLog?>(null) }
     val entrance = rememberEntrance()
 
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    // Großer Titel, der beim Scrollen zur schmalen Leiste einklappt – genau wie bei den Workout-Details.
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val fab = rememberFabScrollState()
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier
+            // Klappt "Eintragen" beim Runterscrollen zum Kreis ein, beim Hochscrollen wieder aus.
+            .nestedScroll(fab)
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = exercise?.name.orEmpty(),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+            DetailTopBar(
+                title = exercise?.name.orEmpty(),
+                menuEnabled = exercise != null,
+                showMenu = showMenu,
+                onShowMenu = { showMenu = it },
+                onBack = leave,
+                onEdit = {
+                    rejectedName = null
+                    showEdit = true
                 },
-                navigationIcon = {
-                    IconButton(onClick = leave) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Zurück")
-                    }
-                },
-                actions = {
-                    Box {
-                        IconButton(onClick = { showMenu = true }, enabled = exercise != null) {
-                            Icon(Icons.Filled.MoreVert, contentDescription = "Mehr")
-                        }
-                        DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                            DropdownMenuItem(
-                                text = { Text("Bearbeiten") },
-                                leadingIcon = { Icon(Icons.Outlined.Edit, contentDescription = null) },
-                                onClick = {
-                                    showMenu = false
-                                    rejectedName = null
-                                    showEdit = true
-                                },
-                            )
-                            DropdownMenuItem(
-                                text = { Text("Übung löschen", color = MaterialTheme.colorScheme.error) },
-                                leadingIcon = {
-                                    Icon(
-                                        Icons.Outlined.Delete,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.error,
-                                    )
-                                },
-                                onClick = {
-                                    showMenu = false
-                                    showDelete = true
-                                },
-                            )
-                        }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-                ),
+                onDelete = { showDelete = true },
                 scrollBehavior = scrollBehavior,
             )
         },
         floatingActionButton = {
             AnimatedFab(visible = !state.loading && exercise != null) {
-                ExtendedFloatingActionButton(
+                AppFab(
+                    text = "Eintragen",
+                    icon = Icons.Filled.Add,
                     onClick = { adding = true },
-                    icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-                    text = { Text("Eintragen") },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    expanded = fab.expanded,
                 )
             }
         },
@@ -204,7 +182,7 @@ fun ExerciseDetailScreen(
                             Modifier
                                 .animateItem()
                                 .entrance(entrance, 1)
-                                .padding(top = 12.dp),
+                                .padding(top = 16.dp),
                         )
                     }
                     item(key = "history-label") {
@@ -213,7 +191,7 @@ fun ExerciseDetailScreen(
                             Modifier
                                 .animateItem()
                                 .entrance(entrance, 2)
-                                .padding(start = 4.dp, top = 28.dp, bottom = 8.dp),
+                                .padding(start = 4.dp, top = 32.dp, bottom = 10.dp),
                         )
                     }
                     itemsIndexed(state.history, key = { _, day -> day.date.toEpochDay() }) { index, day ->
@@ -250,26 +228,31 @@ fun ExerciseDetailScreen(
     }
 
     editing?.let { log ->
-        WeightEntrySheet(
-            title = "Eintrag bearbeiten",
-            initialDate = log.date,
-            initialWeight = log.weightKg,
-            initialReps = log.reps,
-            showReps = true,
-            step = 2.5,
-            onDismiss = { editing = null },
-            onSave = { date, weight, reps ->
-                viewModel.saveLog(log, date, weight, reps)
-                editing = null
-            },
-            onDelete = {
-                viewModel.deleteLog(log)
-                editing = null
-            },
-        )
+        // key: Für einen anderen Eintrag entsteht ein frisches Sheet mit dessen Werten.
+        key(log.id) {
+            WeightEntrySheet(
+                title = "Eintrag bearbeiten",
+                initialDate = log.date,
+                initialWeight = log.weightKg,
+                initialReps = log.reps,
+                showReps = true,
+                step = 2.5,
+                onDismiss = { editing = null },
+                onSave = { date, weight, reps ->
+                    viewModel.saveLog(log, date, weight, reps)
+                    editing = null
+                },
+                onDelete = {
+                    viewModel.deleteLog(log)
+                    editing = null
+                },
+            )
+        }
     }
 
     if (showEdit && exercise != null) {
+        // Eigener Dialog-Zustand pro Öffnen, damit "Speichern" den Dialog nach Erfolg animiert schließen kann.
+        val editDialog = rememberAppDialogState()
         ExerciseDialog(
             title = "Übung bearbeiten",
             confirmLabel = "Speichern",
@@ -277,10 +260,12 @@ fun ExerciseDetailScreen(
             initialName = exercise.name,
             initialGroup = exercise.muscleGroup?.takeIf { it in MuscleGroups },
             rejectedName = rejectedName,
+            state = editDialog,
             onDismiss = { showEdit = false },
             onConfirm = { name, group ->
                 viewModel.updateExercise(name, group) { saved ->
-                    if (saved) showEdit = false else rejectedName = name
+                    // Erst wenn der Name angenommen wurde, gleitet der Dialog weg; sonst bleibt er mit Hinweis offen.
+                    if (saved) editDialog.dismiss() else rejectedName = name
                 }
             },
         )
@@ -307,6 +292,104 @@ fun ExerciseDetailScreen(
     }
 }
 
+/**
+ * Titelleiste wie bei den Workout-Details: großer Serif-Titel, der beim Scrollen zur schmalen Leiste
+ * einklappt. Sie bleibt in der Hintergrundfarbe; erst beim Einklappen blendet eine feine Linie ein
+ * (statt einer grauen Fläche).
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DetailTopBar(
+    title: String,
+    menuEnabled: Boolean,
+    showMenu: Boolean,
+    onShowMenu: (Boolean) -> Unit,
+    onBack: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    scrollBehavior: TopAppBarScrollBehavior,
+) {
+    val colors = MaterialTheme.colorScheme
+    LargeTopAppBar(
+        title = {
+            // Die Serifenschrift kommt aus dem Theme (groß: headlineMedium, eingeklappt: titleLarge).
+            Text(
+                text = title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        navigationIcon = {
+            CircleIconButton(
+                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Zurück",
+                onClick = onBack,
+                style = CircleIconButtonStyle.Plain,
+                modifier = Modifier.padding(start = 2.dp),
+            )
+        },
+        actions = {
+            // Box, damit sich das Menü am Button ausrichtet.
+            Box(Modifier.padding(end = 6.dp)) {
+                CircleIconButton(
+                    icon = Icons.Filled.MoreHoriz,
+                    contentDescription = "Optionen",
+                    onClick = { onShowMenu(true) },
+                    style = CircleIconButtonStyle.Plain,
+                    enabled = menuEnabled,
+                )
+                ExerciseMenu(
+                    expanded = showMenu,
+                    onDismiss = { onShowMenu(false) },
+                    onEdit = {
+                        onShowMenu(false)
+                        onEdit()
+                    },
+                    onDelete = {
+                        onShowMenu(false)
+                        onDelete()
+                    },
+                )
+            }
+        },
+        colors = TopAppBarDefaults.largeTopAppBarColors(
+            containerColor = colors.background,
+            scrolledContainerColor = colors.background,
+        ),
+        scrollBehavior = scrollBehavior,
+        // collapsedFraction erst beim Zeichnen lesen: Beim Scrollen wird nur neu gezeichnet, nicht neu aufgebaut.
+        modifier = Modifier.drawWithContent {
+            drawContent()
+            val fraction = scrollBehavior.state.collapsedFraction
+            if (fraction > 0f) {
+                val stroke = 1.dp.toPx()
+                val y = size.height - stroke / 2
+                drawLine(
+                    color = colors.outlineVariant.copy(alpha = fraction.coerceIn(0f, 1f)),
+                    start = Offset(0f, y),
+                    end = Offset(size.width, y),
+                    strokeWidth = stroke,
+                )
+            }
+        },
+    )
+}
+
+/** Überlaufmenü der Übung, mit denselben Bausteinen wie alle anderen Menüs der App. */
+@Composable
+private fun ExerciseMenu(
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    AppMenu(expanded = expanded, onDismissRequest = onDismiss) {
+        AppMenuItem(text = "Bearbeiten", icon = Icons.Outlined.Edit, onClick = onEdit)
+        AppMenuDivider()
+        AppMenuItem(text = "Übung löschen", icon = Icons.Outlined.Delete, onClick = onDelete, destructive = true)
+    }
+}
+
 /** Kopfbereich mit großem Wert, Veränderung, Zeitraum-Auswahl und Graph. */
 @Composable
 private fun ProgressCard(
@@ -318,28 +401,26 @@ private fun ProgressCard(
     var selected by remember(state.rangePoints) { mutableStateOf<ChartPoint?>(null) }
     val last = state.points.lastOrNull()
 
-    Column(
+    AppCard(
         modifier = modifier
             .fillMaxWidth()
             // Wenn der erste Eintrag oder der Graph dazukommt, wächst die Karte weich mit.
-            .animateContentSize(tween(250, easing = FastOutSlowInEasing))
-            .clip(CardShape)
-            .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .padding(16.dp),
+            .animateContentSize(tween(250, easing = FastOutSlowInEasing)),
+        contentPadding = PaddingValues(20.dp),
     ) {
         SectionLabel("Bestes Gewicht pro Tag")
-        Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height(8.dp))
 
         if (last == null) {
             Text("Noch keine Einträge", style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(6.dp))
             Text(
                 "Tippe auf „Eintragen“, um dein erstes Gewicht festzuhalten. " +
                     "Ab zwei Trainingstagen siehst du hier deinen Fortschritt.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            return@Column
+            return@AppCard
         }
 
         val shown = selected ?: last
@@ -353,11 +434,13 @@ private fun ProgressCard(
             )
             Text(
                 text = " kg",
-                style = MaterialTheme.typography.titleLarge,
+                // Einheit bleibt serifenlos wie die Zahl, nur Überschriften sind Serif.
+                style = UnitStyle,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.alignByBaseline(),
             )
         }
+        Spacer(Modifier.height(4.dp))
         // Überblendet nur beim Wechsel zwischen Auswahl und Übersicht oder beim Zeitraum,
         // beim Scrubben selbst wird der Text direkt aktualisiert.
         FadeSwap(
@@ -378,10 +461,10 @@ private fun ProgressCard(
         if (state.points.size < 2) {
             Spacer(Modifier.height(16.dp))
             ChartHint("Der Graph erscheint, sobald du an zwei Tagen ein Gewicht eingetragen hast.")
-            return@Column
+            return@AppCard
         }
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(20.dp))
         RangeSelector(selected = state.range, onSelect = onRangeChange)
         Spacer(Modifier.height(16.dp))
         if (state.rangePoints.isEmpty()) {
@@ -391,6 +474,13 @@ private fun ProgressCard(
         }
     }
 }
+
+/** Einheit neben der großen Zahl: serifenlos und normal, damit sie ruhig neben der Zahl steht. */
+private val UnitStyle
+    @Composable get() = MaterialTheme.typography.titleLarge.copy(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+    )
 
 /** Was unter der großen Zahl steht, als ein Zustand für die Überblendung. */
 private data class HeaderLines(
@@ -423,7 +513,7 @@ private fun ChangeLine(selected: ChartPoint?, range: TimeRange, rangePoints: Lis
     Text(
         text = text,
         style = MaterialTheme.typography.bodyMedium,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Medium,
         color = color,
     )
 }
@@ -456,32 +546,31 @@ private fun StatsCard(state: ExerciseDetailUiState, modifier: Modifier = Modifie
     val delta = last.value - first.value
     val days = state.points.size
 
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(CardShape)
-            .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+    AppCard(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 18.dp),
     ) {
-        StatColumn(
-            label = "Bestwert",
-            value = Format.kg(best.weightKg),
-            detail = Format.relative(best.date),
-            modifier = Modifier.weight(1f),
-        )
-        StatColumn(
-            label = "Einträge",
-            value = state.logs.size.toString(),
-            detail = if (days == 1) "an 1 Tag" else "an $days Tagen",
-            modifier = Modifier.weight(1f),
-        )
-        StatColumn(
-            label = "Fortschritt",
-            value = Format.signedKg(delta),
-            valueColor = trendColor(delta),
-            detail = "Start ${Format.kg(first.value)}",
-            modifier = Modifier.weight(1f),
-        )
+        Row(Modifier.fillMaxWidth()) {
+            StatColumn(
+                label = "Bestwert",
+                value = Format.kg(best.weightKg),
+                detail = Format.relative(best.date),
+                modifier = Modifier.weight(1f),
+            )
+            StatColumn(
+                label = "Einträge",
+                value = state.logs.size.toString(),
+                detail = if (days == 1) "an 1 Tag" else "an $days Tagen",
+                modifier = Modifier.weight(1f),
+            )
+            StatColumn(
+                label = "Fortschritt",
+                value = Format.signedKg(delta),
+                valueColor = trendColor(delta),
+                detail = "Start ${Format.kg(first.value)}",
+                modifier = Modifier.weight(1f),
+            )
+        }
     }
 }
 
@@ -505,7 +594,10 @@ private fun StatColumn(
     }
 }
 
-/** Ein Trainingstag im Verlauf: Datum und darunter die Sätze, wie in Strong. */
+/**
+ * Ein Trainingstag im Verlauf: Datum und darunter die Sätze, wie in Strong.
+ * Ohne Trennlinien; jede Satz-Zeile zeigt beim Drücken eine weiche, runde Fläche.
+ */
 @Composable
 private fun DayCard(
     day: LogDay,
@@ -513,63 +605,63 @@ private fun DayCard(
     onClickLog: (ExerciseLog) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(CardShape)
-            .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .padding(vertical = 6.dp),
+    AppCard(
+        modifier = modifier.fillMaxWidth(),
+        // Wenig Rand, damit die Druckfläche der Zeilen fast bis an die Kartenkante reicht.
+        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
     ) {
         Text(
             text = Format.weekdayDate(day.date),
             style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp),
+            modifier = Modifier.padding(start = 14.dp, end = 14.dp, top = 6.dp, bottom = 2.dp),
         )
         day.logs.forEachIndexed { index, log ->
-            if (index > 0) {
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant,
-                    modifier = Modifier.padding(start = 48.dp),
-                )
-            }
-            val interaction = remember { MutableInteractionSource() }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .pressScale(interaction, pressedScale = 0.98f)
-                    .clickable(interactionSource = interaction, indication = ripple()) { onClickLog(log) }
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
-            ) {
-                // Satznummer, gedämpft wie die Spalte "Set" in Strong.
-                Text(
-                    text = "${index + 1}",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.width(32.dp),
-                )
-                Text(
-                    text = Format.setLine(log.weightKg, log.reps),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f),
-                )
-                if (log.id == personalBestId) PrBadge()
+            // key: Jede Zeile behält ihren Druck-Zustand, auch wenn sich die Reihenfolge ändert.
+            key(log.id) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .appClickable(
+                            onClick = { onClickLog(log) },
+                            shape = RowShape,
+                            pressedScale = 0.98f,
+                            haptic = false,
+                            onClickLabel = "Eintrag bearbeiten",
+                        )
+                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                ) {
+                    // Satznummer, gedämpft wie die Spalte "Set" in Strong.
+                    Text(
+                        text = "${index + 1}",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.width(32.dp),
+                    )
+                    Text(
+                        text = Format.setLine(log.weightKg, log.reps),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.weight(1f),
+                    )
+                    if (log.id == personalBestId) PrBadge()
+                }
             }
         }
     }
 }
 
-/** Kleine Markierung für den persönlichen Rekord. */
+/** Kleine Markierung für den persönlichen Rekord: Pille in der Akzentfarbe. */
 @Composable
 private fun PrBadge() {
     Text(
         text = "PR",
         style = MaterialTheme.typography.labelSmall,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onPrimary,
+        fontWeight = FontWeight.SemiBold,
+        letterSpacing = 0.6.sp,
+        color = LocalAccentFill.current.content,
         modifier = Modifier
-            .clip(RoundedCornerShape(50))
-            .background(MaterialTheme.colorScheme.primary)
-            .padding(horizontal = 7.dp, vertical = 2.dp),
+            .clip(CircleShape)
+            .background(LocalAccentFill.current.container)
+            .padding(horizontal = 8.dp, vertical = 3.dp),
     )
 }

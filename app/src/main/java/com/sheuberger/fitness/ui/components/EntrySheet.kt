@@ -1,54 +1,44 @@
 package com.sheuberger.fitness.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.union
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SelectableDates
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
+import androidx.compose.ui.unit.sp
+import com.sheuberger.fitness.ui.theme.LocalAccentFill
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -57,8 +47,8 @@ import kotlin.math.round
 /**
  * Bottom Sheet zum Eintragen oder Bearbeiten eines Gewichts.
  * Wird für Übungen (mit Wiederholungen) und für das Körpergewicht (ohne) verwendet.
+ * Gleitet weich herein; "Speichern" und "Löschen" lassen das Sheet erst wegfahren und rufen dann den Aufrufer.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeightEntrySheet(
     title: String,
@@ -71,9 +61,6 @@ fun WeightEntrySheet(
     initialReps: Int? = null,
     onDelete: (() -> Unit)? = null,
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-
     var date by rememberSaveable { mutableStateOf(initialDate) }
     var weightText by rememberSaveable { mutableStateOf(initialWeight?.let(Format::number) ?: "") }
     var repsText by rememberSaveable { mutableStateOf(initialReps?.toString() ?: "") }
@@ -82,30 +69,11 @@ fun WeightEntrySheet(
     val weight = Format.parseWeight(weightText)
     val repsValid = repsText.isBlank() || Format.parseReps(repsText) != null
 
-    // Sheet erst animiert schließen, dann den Aufrufer informieren.
-    fun close(after: () -> Unit) {
-        scope.launch { sheetState.hide() }.invokeOnCompletion { after() }
-    }
-
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        contentWindowInsets = { WindowInsets(0) },
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 16.dp),
-        ) {
-            Text(title, style = MaterialTheme.typography.titleLarge)
-            Spacer(Modifier.height(20.dp))
-
+    AppSheet(onDismiss = onDismiss) {
+        AppSheetHeader(title = title)
+        Column(Modifier.padding(horizontal = 24.dp)) {
             SectionLabel("Gewicht")
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(10.dp))
             Stepper(
                 text = weightText,
                 onTextChange = { weightText = it },
@@ -124,9 +92,9 @@ fun WeightEntrySheet(
             )
 
             if (showReps) {
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(20.dp))
                 SectionLabel("Wiederholungen (optional)")
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(10.dp))
                 Stepper(
                     text = repsText,
                     onTextChange = { repsText = it.filter(Char::isDigit).take(3) },
@@ -144,76 +112,85 @@ fun WeightEntrySheet(
                 )
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(20.dp))
             SectionLabel("Datum")
-            Spacer(Modifier.height(8.dp))
-            Surface(
-                onClick = { showDatePicker = true },
-                shape = RoundedCornerShape(12.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-                ) {
-                    Text(
-                        text = when (date) {
-                            LocalDate.now() -> "Heute, ${Format.date(date)}"
-                            LocalDate.now().minusDays(1) -> "Gestern, ${Format.date(date)}"
-                            else -> Format.weekdayDate(date)
-                        },
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.weight(1f),
-                    )
-                    Icon(
-                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = "Datum ändern",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
+            Spacer(Modifier.height(10.dp))
+            DateRow(date = date, onClick = { showDatePicker = true })
 
-            Spacer(Modifier.height(24.dp))
-            Button(
+            Spacer(Modifier.height(28.dp))
+            PrimaryButton(
+                text = "Speichern",
                 onClick = {
-                    val value = weight ?: return@Button
+                    val value = weight ?: return@PrimaryButton
                     val reps = if (showReps) Format.parseReps(repsText) else null
-                    close { onSave(date, value, reps) }
+                    // Erst wegfahren, dann speichern: Die Liste darunter ändert sich erst, wenn das Sheet weg ist.
+                    dismiss { onSave(date, value, reps) }
                 },
                 enabled = weight != null && repsValid,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-            ) {
-                Text("Speichern", style = MaterialTheme.typography.titleMedium)
-            }
+                modifier = Modifier.fillMaxWidth(),
+            )
             if (onDelete != null) {
-                Spacer(Modifier.height(4.dp))
-                TextButton(
-                    onClick = { close(onDelete) },
+                Spacer(Modifier.height(6.dp))
+                QuietButton(
+                    text = "Eintrag löschen",
+                    onClick = { dismiss(onDelete) },
+                    tone = ButtonTone.Destructive,
                     modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Eintrag löschen", color = MaterialTheme.colorScheme.error)
-                }
+                )
             }
         }
-    }
 
-    if (showDatePicker) {
-        DatePickerSheet(
-            initial = date,
-            onDismiss = { showDatePicker = false },
-            onPick = {
-                date = it
-                showDatePicker = false
+        if (showDatePicker) {
+            DatePickerSheet(
+                initial = date,
+                onDismiss = { showDatePicker = false },
+                onPick = {
+                    date = it
+                    showDatePicker = false
+                },
+            )
+        }
+    }
+}
+
+/** Datumszeile: tippen öffnet den Kalender. */
+@Composable
+private fun DateRow(date: LocalDate, onClick: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .appClickable(onClick = onClick, shape = AppFieldShape, pressedScale = 0.98f, onClickLabel = "Datum ändern")
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+    ) {
+        Icon(
+            Icons.Outlined.CalendarToday,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(end = 12.dp),
+        )
+        Text(
+            text = when (date) {
+                LocalDate.now() -> "Heute, ${Format.date(date)}"
+                LocalDate.now().minusDays(1) -> "Gestern, ${Format.date(date)}"
+                else -> Format.weekdayDate(date)
             },
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.weight(1f),
+        )
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
 
-/** Großes Zahlenfeld mit − und + daneben, wie in gängigen Trainings-Apps. */
+/**
+ * Großes Zahlenfeld mit − und + daneben, wie in gängigen Trainings-Apps.
+ * Feld, Buttons und die Datumszeile sind alle 56 dp hoch, damit die Zeilen ruhig untereinander stehen.
+ */
 @Composable
 private fun Stepper(
     text: String,
@@ -228,26 +205,38 @@ private fun Stepper(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        FilledTonalIconButton(onClick = onDecrement, modifier = Modifier.size(52.dp)) {
-            Icon(Icons.Filled.Remove, contentDescription = "Weniger")
-        }
-        OutlinedTextField(
+        CircleIconButton(
+            icon = Icons.Filled.Remove,
+            contentDescription = "Weniger",
+            onClick = onDecrement,
+            size = 56.dp,
+        )
+        TextField(
             value = text,
             onValueChange = { new -> onTextChange(new.filter { it.isDigit() || it == ',' || it == '.' }) },
             singleLine = true,
             isError = isError,
-            textStyle = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center),
-            suffix = { Text(suffix, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+            // Zeilenhöhe 24 sp: 16 dp + 24 + 16 dp = 56 dp Feldhöhe (mit der Standard-Zeilenhöhe wären es 64 dp).
+            textStyle = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center, lineHeight = 24.sp),
+            // Unsichtbares Gegenstück zur Einheit: links und rechts gleich viel Rand, damit die Zahl
+            // in der Feldmitte steht und Gewicht und Wiederholungen genau untereinander liegen.
+            prefix = { Text(suffix, color = Color.Transparent, modifier = Modifier.clearAndSetSemantics {}) },
+            suffix = { Text(suffix) },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done),
-            shape = RoundedCornerShape(12.dp),
+            shape = AppFieldShape,
+            colors = appTextFieldColors(),
             modifier = Modifier.weight(1f),
         )
-        FilledTonalIconButton(onClick = onIncrement, modifier = Modifier.size(52.dp)) {
-            Icon(Icons.Filled.Add, contentDescription = "Mehr")
-        }
+        CircleIconButton(
+            icon = Icons.Filled.Add,
+            contentDescription = "Mehr",
+            onClick = onIncrement,
+            size = 56.dp,
+        )
     }
 }
 
+/** Kalender zum Wählen des Datums, in den Farben der App, als animierter [AppDialog] mit Pillen-Buttons. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DatePickerSheet(
@@ -263,20 +252,44 @@ private fun DatePickerSheet(
             override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis <= todayMillis
         },
     )
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    state.selectedDateMillis?.let { millis ->
-                        onPick(Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate())
-                    }
-                },
-            ) { Text("OK") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Abbrechen") } },
+    val colorScheme = MaterialTheme.colorScheme
+    // Ausgewählter Tag in der tieferen Akzentfüllung, damit die weiße Zahl gut lesbar ist.
+    val fill = LocalAccentFill.current
+    val colors = DatePickerDefaults.colors(
+        containerColor = colorScheme.surfaceContainerLow,
+        titleContentColor = colorScheme.onSurfaceVariant,
+        headlineContentColor = colorScheme.onSurface,
+        weekdayContentColor = colorScheme.onSurfaceVariant,
+        selectedDayContainerColor = fill.container,
+        selectedDayContentColor = fill.content,
+        todayContentColor = colorScheme.primary,
+        todayDateBorderColor = colorScheme.primary,
+        selectedYearContainerColor = fill.container,
+        selectedYearContentColor = fill.content,
+        dividerColor = colorScheme.outlineVariant,
+    )
+    // Unser AppDialog statt Materials DatePickerDialog: Der wäre ein eigenes System-Fenster und würde den
+    // Hintergrund ein zweites Mal (fast schwarz) abdunkeln, mit anderer Animation und anderen Buttons.
+    AppDialog(
+        onDismiss = onDismiss,
+        // Der Kalender bringt seine eigenen Abstände mit und braucht ~360 dp Breite, daher weniger Rand.
+        contentPadding = PaddingValues(0.dp),
+        screenMargin = 12.dp,
     ) {
-        DatePicker(state = state, showModeToggle = false)
+        DatePicker(state = state, showModeToggle = false, colors = colors, modifier = Modifier.fillMaxWidth())
+        AppDialogButtons(
+            confirmLabel = "OK",
+            confirmEnabled = state.selectedDateMillis != null,
+            onConfirm = {
+                state.selectedDateMillis?.let { millis ->
+                    val picked = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
+                    // Erst zufahren, dann das Datum übernehmen.
+                    dismiss { onPick(picked) }
+                }
+            },
+            onCancel = { dismiss() },
+            modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 24.dp),
+        )
     }
 }
 
