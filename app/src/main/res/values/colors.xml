@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Gleiche Werte wie in ui/theme/Color.kt. Werden nur gebraucht, bevor Compose zeichnet (Startbildschirm). -->
+    <color name="window_background">#FFF3F4F6</color>
+    <color name="icon_background">#FF0C0D0F</color>
+    <color name="icon_foreground">#FF4C86FF</color>
+</resources>

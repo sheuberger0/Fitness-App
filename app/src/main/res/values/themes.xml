@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Das eigentliche Aussehen kommt aus Compose (ui/theme). Dieses XML-Theme bestimmt nur,
+        was beim Start zu sehen ist, bevor die erste Compose-Oberfläche gezeichnet wird.
+        Die passende Hintergrundfarbe verhindert ein weißes Aufblitzen im Dark Mode.
+    -->
+    <style name="Theme.Fitness" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+</resources>
