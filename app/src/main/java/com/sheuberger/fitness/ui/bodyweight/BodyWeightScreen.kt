@@ -378,8 +378,8 @@ private data class HeaderLines(
 private fun ChartCard(state: BodyWeightUiState, onSelect: (ChartPoint?) -> Unit, modifier: Modifier = Modifier) {
     AppCard(
         modifier = modifier.fillMaxWidth(),
-        // Links weniger Rand, weil der Graph dort selbst Platz für die Achsenbeschriftung lässt.
-        contentPadding = PaddingValues(start = 8.dp, end = 12.dp, top = 16.dp, bottom = 12.dp),
+        // Gleicher Seitenrand wie die anderen Karten (und der Graph bei den Übungen), damit alles bündig steht.
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 12.dp),
     ) {
         if (state.points.size >= 2) {
             LineChart(points = state.points, onSelect = onSelect)
@@ -415,9 +415,10 @@ private fun StatsCard(state: BodyWeightUiState) {
         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 18.dp),
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            StatTile("Start", stats?.start?.value.kgOrDash(), Modifier.weight(1f))
-            StatTile("Tiefstwert", stats?.min.kgOrDash(), Modifier.weight(1f))
-            StatTile("Höchstwert", stats?.max.kgOrDash(), Modifier.weight(1f))
+            // Echte Einträge ungerundet, wie im Verlauf: Dann passt die Veränderung oben genau zu "Start".
+            StatTile("Start", stats?.start?.value?.let(Format::kg) ?: "–", Modifier.weight(1f))
+            StatTile("Tiefstwert", stats?.min?.let(Format::kg) ?: "–", Modifier.weight(1f))
+            StatTile("Höchstwert", stats?.max?.let(Format::kg) ?: "–", Modifier.weight(1f))
         }
         Spacer(Modifier.height(18.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {

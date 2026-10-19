@@ -104,7 +104,7 @@ fun WorkoutsScreen(
             when (shown) {
                 ScreenContent.Loading -> Unit
                 ScreenContent.Empty -> Column(Modifier.padding(innerPadding)) {
-                    ScreenTitle(Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                    ScreenTitle(Modifier.padding(start = 20.dp, top = 8.dp))
                     EmptyState(
                         title = "Noch keine Workouts",
                         message = "Lege ein Workout an, z. B. „Push“ oder „Oberkörper A“, und füge deine Übungen hinzu.",
@@ -126,7 +126,9 @@ fun WorkoutsScreen(
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     item(key = "title") {
-                        Column(Modifier.entrance(entrance, 0)) {
+                        // 4 dp Einzug zusätzlich zum Listenrand: Titel und Untertitel stehen wie bei den
+                        // anderen Tabs 20 dp vom Rand, damit beim Tab-Wechsel nichts springt.
+                        Column(Modifier.entrance(entrance, 0).padding(start = 4.dp)) {
                             ScreenTitle()
                             Spacer(Modifier.height(2.dp))
                             Text(
@@ -204,7 +206,7 @@ private fun ScreenTitle(modifier: Modifier = Modifier) {
         text = "Workouts",
         style = MaterialTheme.typography.headlineLarge,
         color = MaterialTheme.colorScheme.onSurface,
-        modifier = modifier.padding(top = 8.dp),
+        modifier = modifier.padding(top = 12.dp),
     )
 }
 

@@ -31,6 +31,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -216,6 +218,9 @@ private fun Stepper(
             isError = isError,
             // Zeilenhöhe 24 sp: 16 dp + 24 + 16 dp = 56 dp Feldhöhe (mit der Standard-Zeilenhöhe wären es 64 dp).
             textStyle = MaterialTheme.typography.headlineSmall.copy(textAlign = TextAlign.Center, lineHeight = 24.sp),
+            // Unsichtbares Gegenstück zur Einheit: links und rechts gleich viel Rand, damit die Zahl
+            // in der Feldmitte steht und Gewicht und Wiederholungen genau untereinander liegen.
+            prefix = { Text(suffix, color = Color.Transparent, modifier = Modifier.clearAndSetSemantics {}) },
             suffix = { Text(suffix) },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done),
             shape = AppFieldShape,
