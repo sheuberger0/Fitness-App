@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 
 /**
@@ -67,7 +68,8 @@ fun RangeSelector(
         )
         Box(
             modifier = Modifier
-                .offset(x = pillOffset)
+                // Lambda-Variante: Der Wert wird erst beim Layout gelesen, die Animation baut nichts neu auf.
+                .offset { IntOffset(pillOffset.roundToPx(), 0) }
                 .width(segmentWidth)
                 .fillMaxHeight()
                 .clip(CircleShape)
