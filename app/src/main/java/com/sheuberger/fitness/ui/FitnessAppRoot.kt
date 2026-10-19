@@ -14,6 +14,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.automirrored.outlined.ListAlt
 import androidx.compose.material.icons.outlined.MonitorWeight
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -33,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -43,6 +46,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.sheuberger.fitness.ui.bodyweight.BodyWeightScreen
+import com.sheuberger.fitness.ui.components.AppOverlayHost
 import com.sheuberger.fitness.ui.exercises.ExerciseDetailScreen
 import com.sheuberger.fitness.ui.exercises.ExercisesScreen
 import com.sheuberger.fitness.ui.workouts.WorkoutDetailScreen
@@ -69,75 +73,88 @@ fun FitnessAppRoot() {
     val currentDestination = backStackEntry?.destination
     val showBottomBar = currentDestination == null || Tab.entries.any { it.route == currentDestination.route }
 
-    Scaffold(
-        // Die einzelnen Screens kümmern sich selbst um Status- und Navigationsleiste.
-        contentWindowInsets = WindowInsets(0),
-        bottomBar = {
-            // Die Leiste fährt beim Öffnen einer Detailseite nach unten weg, statt zu verschwinden.
-            AnimatedVisibility(
-                visible = showBottomBar,
-                enter = expandVertically(tween(SlideMillis, easing = NavEasing), expandFrom = Alignment.Top),
-                exit = shrinkVertically(tween(SlideMillis, easing = NavEasing), shrinkTowards = Alignment.Top),
-            ) {
-                NavigationBar(containerColor = MaterialTheme.colorScheme.surfaceContainerLow) {
-                    Tab.entries.forEach { tab ->
-                        NavigationBarItem(
-                            selected = currentDestination?.hierarchy?.any { it.route == tab.route } == true,
-                            onClick = {
-                                navController.navigate(tab.route) {
-                                    // Verhindert, dass sich beim Tab-Wechsel ein riesiger Back-Stack aufbaut.
-                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = { Icon(tab.icon, contentDescription = null) },
-                            label = { Text(tab.label) },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                selectedTextColor = MaterialTheme.colorScheme.onSurface,
-                                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
-                            ),
-                        )
+    // Ebene für Sheets und Dialoge (AppSheet/AppDialog): liegt über allem, auch über der Navigationsleiste.
+    AppOverlayHost {
+        Scaffold(
+            // Die einzelnen Screens kümmern sich selbst um Status- und Navigationsleiste.
+            contentWindowInsets = WindowInsets(0),
+            bottomBar = {
+                // Die Leiste fährt beim Öffnen einer Detailseite nach unten weg, statt zu verschwinden.
+                AnimatedVisibility(
+                    visible = showBottomBar,
+                    enter = expandVertically(tween(SlideMillis, easing = NavEasing), expandFrom = Alignment.Top),
+                    exit = shrinkVertically(tween(SlideMillis, easing = NavEasing), shrinkTowards = Alignment.Top),
+                ) {
+                    // Ruhige Leiste im warmen Hintergrundton, nur durch eine feine Linie abgesetzt (wie in der Claude-App).
+                    // Der aktive Tab bekommt eine zart eingefärbte Akzent-Pille.
+                    Column {
+                        HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outlineVariant)
+                        NavigationBar(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            tonalElevation = 0.dp,
+                        ) {
+                            Tab.entries.forEach { tab ->
+                                NavigationBarItem(
+                                    selected = currentDestination?.hierarchy?.any { it.route == tab.route } == true,
+                                    onClick = {
+                                        navController.navigate(tab.route) {
+                                            // Verhindert, dass sich beim Tab-Wechsel ein riesiger Back-Stack aufbaut.
+                                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                            launchSingleTop = true
+                                            restoreState = true
+                                        }
+                                    },
+                                    icon = { Icon(tab.icon, contentDescription = null) },
+                                    label = { Text(tab.label, style = MaterialTheme.typography.labelMedium) },
+                                    colors = NavigationBarItemDefaults.colors(
+                                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                                        selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                                        indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                                        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    ),
+                                )
+                            }
+                        }
                     }
                 }
-            }
-        },
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = Tab.Workouts.route,
-            modifier = Modifier
-                .padding(innerPadding)
-                .consumeWindowInsets(innerPadding),
-            enterTransition = { enter() },
-            exitTransition = { exit() },
-            popEnterTransition = { popEnter() },
-            popExitTransition = { popExit() },
-        ) {
-            composable(Tab.Workouts.route) {
-                WorkoutsScreen(onOpenWorkout = { navController.navigate(Routes.workout(it)) })
-            }
-            composable(Tab.Exercises.route) {
-                ExercisesScreen(onOpenExercise = { navController.navigate(Routes.exercise(it)) })
-            }
-            composable(Tab.BodyWeight.route) {
-                BodyWeightScreen()
-            }
-            composable(
-                route = Routes.WORKOUT,
-                arguments = listOf(navArgument("workoutId") { type = NavType.LongType }),
+            },
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = Tab.Workouts.route,
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .consumeWindowInsets(innerPadding),
+                enterTransition = { enter() },
+                exitTransition = { exit() },
+                popEnterTransition = { popEnter() },
+                popExitTransition = { popExit() },
             ) {
-                WorkoutDetailScreen(
-                    onBack = { navController.popBackStack() },
-                    onOpenExercise = { navController.navigate(Routes.exercise(it)) },
-                )
-            }
-            composable(
-                route = Routes.EXERCISE,
-                arguments = listOf(navArgument("exerciseId") { type = NavType.LongType }),
-            ) {
-                ExerciseDetailScreen(onBack = { navController.popBackStack() })
+                composable(Tab.Workouts.route) {
+                    WorkoutsScreen(onOpenWorkout = { navController.navigate(Routes.workout(it)) })
+                }
+                composable(Tab.Exercises.route) {
+                    ExercisesScreen(onOpenExercise = { navController.navigate(Routes.exercise(it)) })
+                }
+                composable(Tab.BodyWeight.route) {
+                    BodyWeightScreen()
+                }
+                composable(
+                    route = Routes.WORKOUT,
+                    arguments = listOf(navArgument("workoutId") { type = NavType.LongType }),
+                ) {
+                    WorkoutDetailScreen(
+                        onBack = { navController.popBackStack() },
+                        onOpenExercise = { navController.navigate(Routes.exercise(it)) },
+                    )
+                }
+                composable(
+                    route = Routes.EXERCISE,
+                    arguments = listOf(navArgument("exerciseId") { type = NavType.LongType }),
+                ) {
+                    ExerciseDetailScreen(onBack = { navController.popBackStack() })
+                }
             }
         }
     }
