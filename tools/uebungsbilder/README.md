@@ -39,6 +39,17 @@ Die Namen folgen der Leserichtung, Zeile für Zeile. Ein `-` überspringt ein mi
 lieber einzeln neu erzeugen. Geschnitten wird nahe jeder Rasterlinie an der Stelle mit dem wenigsten Motiv,
 was trotzdem vom Nachbarfeld hereinragt, fällt weg.
 
+## Alle Bilder neu erzeugen
+
+`quellen.txt` hält fest, welche Quelldatei zu welchem Bild wird. Nach einer Änderung am Skript (z. B. an der
+Freistellung) entstehen so alle Bilder in einem Rutsch neu:
+
+```bash
+python3 tools/uebungsbilder/verarbeiten.py --liste tools/uebungsbilder/quellen.txt "<Ordner mit den Quellen>"
+```
+
+Kommt ein neues Bild dazu, auch dort eine Zeile ergänzen.
+
 ## Prompt-Vorlage
 
 `{ÜBUNG}`, `{POSE}` und `{MUSKELN}` auf Englisch ersetzen, z. B. „a barbell back squat“, „standing with the
@@ -115,6 +126,9 @@ Bottom row, left to right:
 
 - **Weißer Hintergrund statt transparent:** Gemini kann keine echte Transparenz und malt sonst oft ein
   Schachbrettmuster ins Bild. Weiß entfernt das Skript zuverlässig, auch in Lücken zwischen Geräteteilen.
+- **Weiche Kanten:** Ein Randpixel ist eine Mischung aus Motiv und Weiß. Das Skript rechnet aus, wie viel Motiv
+  darin steckt, und nimmt als Farbe die des Motivs dahinter. Sonst bliebe im dunklen Design ein heller Saum um die
+  Figur, und dünne Kabel wären gepunktet.
 - **Kein Schatten, keine Linien:** Sie würden nach dem Freistellen als helle Flecken übrig bleiben.
 - **Geräte nie weiß:** Weiße Teile würden mit dem Hintergrund verschwinden.
 - **Nichts berührt den Rand:** Sonst wird die Figur abgeschnitten.
