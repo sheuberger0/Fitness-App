@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Android-Backup (bis Android 11): Die Datenbank mit allen Einträgen wird mitgesichert. -->
+<!-- Android-Backup (bis Android 11): Die Datenbank mit allen Einträgen wird mitgesichert,
+     dazu die Einstellungen (u. a. welche Standardübungen schon angelegt wurden). -->
 <full-backup-content>
     <include domain="database" path="." />
+    <include domain="sharedpref" path="." />
 </full-backup-content>
