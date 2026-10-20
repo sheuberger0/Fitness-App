@@ -1,14 +1,18 @@
 package com.sheuberger.fitness.ui.exercises
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -48,6 +52,8 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -62,6 +68,7 @@ import com.sheuberger.fitness.ui.AppViewModelProvider
 import com.sheuberger.fitness.ui.components.AnimatedFab
 import com.sheuberger.fitness.ui.components.AnimatedNumber
 import com.sheuberger.fitness.ui.components.AppCard
+import com.sheuberger.fitness.ui.components.AppCardShape
 import com.sheuberger.fitness.ui.components.AppFab
 import com.sheuberger.fitness.ui.components.AppMenu
 import com.sheuberger.fitness.ui.components.AppMenuDivider
@@ -87,6 +94,7 @@ import com.sheuberger.fitness.ui.components.rememberFabScrollState
 import com.sheuberger.fitness.ui.components.trendColor
 import com.sheuberger.fitness.ui.components.withContent
 import com.sheuberger.fitness.ui.theme.LocalAccentFill
+import com.sheuberger.fitness.ui.theme.LocalDarkTheme
 import java.time.LocalDate
 
 /** Ecken der gedrückten Fläche einer Satz-Zeile innerhalb einer Karte. */
@@ -163,16 +171,31 @@ fun ExerciseDetailScreen(
         // Weich vom Laden zum Inhalt überblenden statt hart aufzuploppen.
         StateCrossfade(targetState = !state.loading && exercise != null) { ready ->
             if (!ready) return@StateCrossfade
+            val name = exercise?.name.orEmpty()
+            val image = exerciseImageFor(name)
+            // Mit Bild gleitet es zuerst herein, alles darunter folgt einen Schritt später.
+            val first = if (image != null) 1 else 0
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = innerPadding.withContent(),
             ) {
+                if (image != null) {
+                    item(key = "image") {
+                        ExerciseImage(
+                            image = image,
+                            exerciseName = name,
+                            modifier = Modifier
+                                .entrance(entrance, 0)
+                                .padding(bottom = 16.dp),
+                        )
+                    }
+                }
                 item(key = "progress") {
                     ProgressCard(
                         state = state,
                         onRangeChange = viewModel::setRange,
-                        modifier = Modifier.entrance(entrance, 0),
+                        modifier = Modifier.entrance(entrance, first),
                     )
                 }
                 if (state.logs.isNotEmpty()) {
@@ -181,7 +204,7 @@ fun ExerciseDetailScreen(
                             state,
                             Modifier
                                 .animateItem()
-                                .entrance(entrance, 1)
+                                .entrance(entrance, first + 1)
                                 .padding(top = 16.dp),
                         )
                     }
@@ -190,7 +213,7 @@ fun ExerciseDetailScreen(
                             "Verlauf",
                             Modifier
                                 .animateItem()
-                                .entrance(entrance, 2)
+                                .entrance(entrance, first + 2)
                                 .padding(start = 4.dp, top = 32.dp, bottom = 10.dp),
                         )
                     }
@@ -201,7 +224,7 @@ fun ExerciseDetailScreen(
                             onClickLog = { editing = it },
                             modifier = Modifier
                                 .animateItem()
-                                .entrance(entrance, 3 + index)
+                                .entrance(entrance, first + 3 + index)
                                 .padding(bottom = 12.dp),
                         )
                     }
@@ -388,6 +411,30 @@ private fun ExerciseMenu(
         AppMenuDivider()
         AppMenuItem(text = "Übung löschen", icon = Icons.Outlined.Delete, onClick = onDelete, destructive = true)
     }
+}
+
+/**
+ * Bild der Übung als Kachel im Kartenstil. Den Hintergrund bringt das Bild selbst mit: hell reines Weiß wie die
+ * Karten (dazu dieselbe feine Kante), dunkel die Kartenfarbe mit einem weichen Lichtschein hinter der Figur.
+ */
+@Composable
+private fun ExerciseImage(
+    @DrawableRes image: Int,
+    exerciseName: String,
+    modifier: Modifier = Modifier,
+) {
+    val hairline = !LocalDarkTheme.current
+    Image(
+        painter = painterResource(image),
+        contentDescription = "$exerciseName, trainierte Muskeln rot markiert",
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+            .fillMaxWidth()
+            // Gleiches Seitenverhältnis wie die Bilddateien, damit nichts abgeschnitten wird.
+            .aspectRatio(4f / 3f)
+            .clip(AppCardShape)
+            .then(if (hairline) Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, AppCardShape) else Modifier),
+    )
 }
 
 /** Kopfbereich mit großem Wert, Veränderung, Zeitraum-Auswahl und Graph. */
