@@ -19,8 +19,8 @@ android {
         applicationId = "com.sheuberger.fitnesstracker"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.4"
+        versionCode = 7
+        versionName = "1.6"
     }
 
     // Signatur für die Release-APK. Android installiert nur signierte Apps, und Updates
