@@ -54,8 +54,31 @@ einfach aktualisiert, deine Einträge bleiben erhalten.
 
 Die Release-APK baust du mit `./gradlew assembleRelease` (liegt danach in `app/build/outputs/apk/release/`).
 Signiert wird sie mit dem Schlüssel aus `keystore.properties` (gehört nicht ins Git). Updates lassen sich nur
-über eine App mit demselben Schlüssel installieren, deshalb den Schlüssel gut aufheben. Fehlt die Datei, wird
-mit dem Debug-Schlüssel signiert.
+über eine App mit demselben Schlüssel installieren, deshalb den Schlüssel gut aufheben. Fehlt die Datei oder
+zeigt sie auf einen anderen Schlüssel, bricht der Release-Build ab.
+
+## Deine Daten bei Updates
+
+Alle Einträge liegen in der Datenbankdatei `fitness.db` im privaten Ordner der App. Ein Update tauscht nur den
+Code aus, die Datei bleibt liegen. Verloren gehen können die Daten nur auf zwei Wegen, und gegen beide ist
+das Projekt abgesichert:
+
+- **Anderer Signaturschlüssel**: Android installiert ein Update nur, wenn es mit demselben Schlüssel signiert ist.
+  Sonst bleibt nur Deinstallieren, und das löscht die Daten. Der Release-Build prüft deshalb den Fingerabdruck
+  des Schlüssels und bricht bei einem falschen oder fehlenden Schlüssel ab.
+- **Geändertes Datenmodell ohne Migration**: Bekommt eine Tabelle z. B. eine neue Spalte, muss die alte Datei auf
+  dem Handy umgebaut werden. Wie das geht, steht oben in `AppDatabase.kt`. Die Tests in `app/src/test` spielen ein
+  Update mit einer alten Datenbank voller Einträge durch und schlagen fehl, wenn eine Version oder Migration fehlt:
+
+  ```bash
+  ./gradlew testDebugUnitTest
+  ```
+
+Neue Standardübungen in `MuscleGroups.kt` kommen bei einem Update automatisch dazu. Übungen, die du gelöscht hast,
+kommen nicht zurück, und deine eigenen Einträge bleiben unberührt. Dafür muss die Datenbankversion nicht erhöht
+werden.
+
+Zusätzlich sichert Android die Datenbank im Google-Backup und überträgt sie beim Umzug auf ein neues Handy.
 
 ## Wie der Code aufgebaut ist
 
@@ -69,7 +92,7 @@ app/src/main/java/com/sheuberger/fitness/
 ├── data/                      Datenschicht (Room = SQLite-Datenbank)
 │   ├── Entities.kt            Tabellen: Übung, Workout, Workout↔Übung, Gewichtseintrag, Körpergewicht
 │   ├── Daos.kt                SQL-Abfragen; liefern Flows, die sich bei Änderungen selbst aktualisieren
-│   ├── AppDatabase.kt         Die Datenbank, füllt beim ersten Start die Übungsbibliothek
+│   ├── AppDatabase.kt         Die Datenbank mit Versionsnummer und Migrationen, legt Standardübungen an
 │   ├── Converters.kt          Speichert Datumswerte als Zahl
 │   ├── MuscleGroups.kt        Muskelgruppen und Standardübungen
 │   └── FitnessRepository.kt   Einzige Schnittstelle der Oberfläche zu den Daten
