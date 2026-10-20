@@ -31,6 +31,7 @@ private val ExerciseImages: Map<String, Int> = mapOf(
     "rudern (maschine)" to R.drawable.exercise_rudern_maschine,
     "t-bar-rudern" to R.drawable.exercise_t_bar_rudern,
     "überzüge (kabel)" to R.drawable.exercise_ueberzuege_kabel,
+    "rückenstrecker" to R.drawable.exercise_rueckenstrecker,
     // Schultern
     "schulterdrücken" to R.drawable.exercise_schulterdruecken,
     "schulterpresse" to R.drawable.exercise_schulterpresse,
@@ -51,6 +52,17 @@ private val ExerciseImages: Map<String, Int> = mapOf(
     "kickbacks (kabel)" to R.drawable.exercise_kickbacks_kabel,
     "wadenheben" to R.drawable.exercise_wadenheben,
     "wadenheben sitzend" to R.drawable.exercise_wadenheben_sitzend,
+    // Bizeps
+    "bizepscurls" to R.drawable.exercise_bizepscurls,
+    "hammercurls" to R.drawable.exercise_hammercurls,
+    "scottcurls (maschine)" to R.drawable.exercise_scottcurls_maschine,
+    "bizepscurls (kabel)" to R.drawable.exercise_bizepscurls_kabel,
+    // Trizeps
+    "trizepsdrücken (kabel)" to R.drawable.exercise_trizepsdruecken_kabel,
+    "trizeps über kopf (kabel)" to R.drawable.exercise_trizeps_ueber_kopf_kabel,
+    "french press" to R.drawable.exercise_french_press,
+    "dips" to R.drawable.exercise_dips,
+    "dips (maschine)" to R.drawable.exercise_dips_maschine,
     // Bauch
     "kabel-crunches" to R.drawable.exercise_kabel_crunches,
     "bauchmaschine" to R.drawable.exercise_bauchmaschine,
