@@ -3,6 +3,10 @@ Bereitet Übungsbilder (z. B. aus Gemini/Nano Banana) für die App auf.
 
 Aufruf (aus dem Projektordner):
     python3 tools/uebungsbilder/verarbeiten.py <bild.jpg> <name> [<bild.jpg> <name> ...]
+    python3 tools/uebungsbilder/verarbeiten.py --raster 3x3 <sammelbild.jpg> <name1> ... <name9>
+
+Mit --raster wird ein Sammelbild mit mehreren Übungen (Spalten x Zeilen) zuerst in Einzelbilder zerlegt.
+Die Namen folgen der Leserichtung (Zeile für Zeile, links nach rechts); "-" überspringt ein Feld.
 
 Für jedes Bild entstehen zwei Dateien mit gleichem Namen:
     app/src/main/res/drawable-nodpi/exercise_<name>.webp        hell: Original auf reinem Weiß
@@ -130,8 +134,52 @@ def contact_shadow(box: tuple[int, int, int, int]) -> Image.Image:
     return shadow
 
 
-def process(source: Path, name: str) -> None:
-    figure, box = place(cut_out(Image.open(source)))
+def split_sheet(sheet: Image.Image, columns: int, rows: int) -> list[Image.Image]:
+    """Zerlegt ein Sammelbild in Einzelbilder. Geschnitten wird nahe den Rasterlinien dort, wo am wenigsten Motiv ist."""
+    rgb = np.asarray(sheet.convert("RGB")).astype(np.int16)
+    content = (255 - rgb.min(axis=2)) > TOLERANCE
+
+    def cut_positions(profile: np.ndarray, parts: int) -> list[int]:
+        length = len(profile)
+        positions = [0]
+        for k in range(1, parts):
+            center = round(length * k / parts)
+            radius = round(length / parts * 0.25)
+            window = profile[center - radius:center + radius]
+            # Unter den leersten Stellen die nächste zur eigentlichen Rasterlinie nehmen.
+            candidates = np.flatnonzero(window == window.min()) + center - radius
+            positions.append(int(candidates[np.argmin(np.abs(candidates - center))]))
+        positions.append(length)
+        return positions
+
+    cells = []
+    ys = cut_positions(content.sum(axis=1), rows)
+    for top, bottom in zip(ys, ys[1:]):
+        xs = cut_positions(content[top:bottom].sum(axis=0), columns)
+        for left, right in zip(xs, xs[1:]):
+            cells.append(sheet.crop((left, top, right, bottom)))
+    return cells
+
+
+def drop_border_pieces(figure: Image.Image) -> Image.Image:
+    """Entfernt Teile, die den Rand berühren (z. B. eine Hantel aus dem Nachbarfeld). Das größte Teil bleibt immer."""
+    alpha = np.asarray(figure.getchannel("A"))
+    pieces, count = ndimage.label(alpha > 0)
+    if count <= 1:
+        return figure
+    sizes = ndimage.sum(np.ones_like(pieces), pieces, range(1, count + 1))
+    largest = int(np.argmax(sizes)) + 1
+    border = set(np.unique(np.concatenate([pieces[0], pieces[-1], pieces[:, 0], pieces[:, -1]]))) - {0, largest}
+    if not border:
+        return figure
+    cleaned = np.where(np.isin(pieces, list(border)), 0, alpha).astype(np.uint8)
+    figure = figure.copy()
+    figure.putalpha(Image.fromarray(cleaned))
+    return figure
+
+
+def process(image: Image.Image, name: str) -> None:
+    figure, box = place(drop_border_pieces(cut_out(image)))
 
     light = Image.new("RGBA", (WIDTH, HEIGHT), (255, 255, 255, 255))
     light.alpha_composite(figure)
@@ -140,16 +188,25 @@ def process(source: Path, name: str) -> None:
     dark.alpha_composite(contact_shadow(box))
     dark.alpha_composite(night_tones(figure))
 
-    for folder, image in (("drawable-nodpi", light), ("drawable-night-nodpi", dark)):
+    for folder, result in (("drawable-nodpi", light), ("drawable-night-nodpi", dark)):
         target = RES / folder / f"exercise_{name}.webp"
         target.parent.mkdir(parents=True, exist_ok=True)
-        image.convert("RGB").save(target, "WEBP", quality=82, method=6)
+        result.convert("RGB").save(target, "WEBP", quality=82, method=6)
         print(f"{target.relative_to(ROOT)}  ({target.stat().st_size // 1024} KB)")
 
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    if not args or len(args) % 2:
+    if len(args) >= 3 and args[0] == "--raster":
+        columns, rows = (int(n) for n in args[1].lower().split("x"))
+        names = args[3:]
+        if len(names) != columns * rows:
+            sys.exit(f"Für ein {columns}x{rows}-Raster braucht es {columns * rows} Namen ('-' überspringt ein Feld).")
+        for cell, name in zip(split_sheet(Image.open(args[2]), columns, rows), names):
+            if name != "-":
+                process(cell, name)
+    elif args and len(args) % 2 == 0:
+        for source, name in zip(args[::2], args[1::2]):
+            process(Image.open(source), name)
+    else:
         sys.exit(__doc__)
-    for source, name in zip(args[::2], args[1::2]):
-        process(Path(source), name)

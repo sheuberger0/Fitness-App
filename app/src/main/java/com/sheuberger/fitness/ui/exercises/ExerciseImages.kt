@@ -13,9 +13,9 @@ import com.sheuberger.fitness.R
  * Neue Bilder kommen über `tools/uebungsbilder/verarbeiten.py` dazu (siehe README dort).
  */
 private val ExerciseImages: Map<String, Int> = mapOf(
-    "bankdrücken" to R.drawable.exercise_bankdruecken,
-    // Das Bild zeigt eine Schrägbank und passt deshalb auch hier.
-    "schrägbankdrücken" to R.drawable.exercise_bankdruecken,
+    // Bis es ein Bild mit flacher Bank gibt (exercise_bankdruecken), zeigt Bankdrücken das Schrägbank-Bild.
+    "bankdrücken" to R.drawable.exercise_schraegbankdruecken,
+    "schrägbankdrücken" to R.drawable.exercise_schraegbankdruecken,
     "kurzhantel-bankdrücken" to R.drawable.exercise_kurzhantel_bankdruecken,
     "kreuzheben" to R.drawable.exercise_kreuzheben,
     "latzug" to R.drawable.exercise_latzug,

@@ -7,7 +7,8 @@ es gibt kein Konto, keine Werbung und keine Internetverbindung.
 
 - **Workouts**: Trainingspläne wie „Push“ oder „Oberkörper A“ anlegen und Übungen hinzufügen, entfernen
   und sortieren. Mit dem „+“ neben einer Übung trägst du direkt nach dem Satz das Gewicht ein.
-- **Übungen**: Eine Bibliothek mit 26 gängigen Übungen, nach Muskelgruppe sortiert und durchsuchbar.
+- **Übungen**: Eine Bibliothek mit 51 gängigen Übungen, viele davon an Maschinen und am Kabelzug,
+  nach Muskelgruppe sortiert und durchsuchbar.
   Eigene Übungen kannst du jederzeit anlegen.
 - **Fortschritt pro Übung**: Jeder Eintrag speichert Datum, Gewicht und optional die Wiederholungen.
   Der Graph zeigt pro Tag dein schwerstes Gewicht über 1 Monat, 3 Monate, 6 Monate, 1 Jahr oder alles.
@@ -43,7 +44,7 @@ Alternativ auf der Kommandozeile (Android SDK muss installiert sein):
 ### Fertige APK direkt installieren
 
 Ohne Android Studio geht es auch mit einer fertigen APK-Datei. Die aktuelle Version liegt in
-[`apk/Fitness-1.3.apk`](apk/Fitness-1.3.apk). Ist eine ältere Version (ab 1.1) schon installiert, wird sie
+[`apk/Fitness-1.4.apk`](apk/Fitness-1.4.apk). Ist eine ältere Version (ab 1.1) schon installiert, wird sie
 einfach aktualisiert, deine Einträge bleiben erhalten.
 
 1. Die APK aufs Handy laden, z. B. per Download oder per Kabel kopieren.
