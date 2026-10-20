@@ -3,6 +3,7 @@ package com.sheuberger.fitness.ui.exercises
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -51,9 +52,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -96,6 +103,8 @@ import com.sheuberger.fitness.ui.components.withContent
 import com.sheuberger.fitness.ui.theme.LocalAccentFill
 import com.sheuberger.fitness.ui.theme.LocalDarkTheme
 import java.time.LocalDate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /** Ecken der gedrückten Fläche einer Satz-Zeile innerhalb einer Karte. */
 private val RowShape = RoundedCornerShape(14.dp)
@@ -416,6 +425,9 @@ private fun ExerciseMenu(
 /**
  * Bild der Übung als Kachel im Kartenstil. Den Hintergrund bringt das Bild selbst mit: hell reines Weiß wie die
  * Karten (dazu dieselbe feine Kante), dunkel die Kartenfarbe mit einem weichen Lichtschein hinter der Figur.
+ *
+ * Die Bilddatei wird im Hintergrund dekodiert, damit das Öffnen der Übung nicht ruckelt. Bis dahin steht eine leere
+ * Fläche in Kartenfarbe da (der Rand des Bildes hat genau diese Farbe), danach blendet die Figur weich ein.
  */
 @Composable
 private fun ExerciseImage(
@@ -423,18 +435,37 @@ private fun ExerciseImage(
     exerciseName: String,
     modifier: Modifier = Modifier,
 ) {
-    val hairline = !LocalDarkTheme.current
-    Image(
-        painter = painterResource(image),
-        contentDescription = "$exerciseName, trainierte Muskeln rot markiert",
-        contentScale = ContentScale.Crop,
+    val dark = LocalDarkTheme.current
+    val resources = LocalContext.current.resources
+    var bitmap by remember(image, dark) { mutableStateOf<ImageBitmap?>(null) }
+    LaunchedEffect(image, dark) {
+        bitmap = withContext(Dispatchers.IO) { ImageBitmap.imageResource(resources, image) }
+    }
+    val visible by animateFloatAsState(
+        targetValue = if (bitmap != null) 1f else 0f,
+        animationSpec = tween(durationMillis = 260, easing = FastOutSlowInEasing),
+        label = "Bild einblenden",
+    )
+    Box(
         modifier = modifier
             .fillMaxWidth()
             // Gleiches Seitenverhältnis wie die Bilddateien, damit nichts abgeschnitten wird.
             .aspectRatio(4f / 3f)
             .clip(AppCardShape)
-            .then(if (hairline) Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, AppCardShape) else Modifier),
-    )
+            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            .then(if (dark) Modifier else Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, AppCardShape))
+            .semantics { contentDescription = "$exerciseName, trainierte Muskeln rot markiert" },
+    ) {
+        bitmap?.let {
+            Image(
+                bitmap = it,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                filterQuality = FilterQuality.High,
+                modifier = Modifier.fillMaxSize().graphicsLayer { alpha = visible },
+            )
+        }
+    }
 }
 
 /** Kopfbereich mit großem Wert, Veränderung, Zeitraum-Auswahl und Graph. */

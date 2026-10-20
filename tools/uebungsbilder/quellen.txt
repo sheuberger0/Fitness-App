@@ -1,0 +1,17 @@
+# Welche Quelldatei zu welchem Übungsbild wird. Damit lassen sich alle Bilder in einem Rutsch neu erzeugen,
+# z. B. nach einer Änderung an verarbeiten.py:
+#     python3 tools/uebungsbilder/verarbeiten.py --liste tools/uebungsbilder/quellen.txt <Ordner mit den Quellen>
+# Eine Zeile pro Quelldatei: "<datei> <name>" oder "<datei> <Spalten>x<Zeilen> <name1> ... ('-' überspringt ein Feld)".
+Gemini_Generated_Image_bt4uepbt4uepbt4u.jpg schraegbankdruecken
+Gemini_Generated_Image_hvfa7ihvfa7ihvfa.jpg kurzhantel_bankdruecken
+Gemini_Generated_Image_hvfa7ihvfa7ihvfa(1).jpg kreuzheben
+Gemini_Generated_Image_hvfa7ihvfa7ihvfa(2).jpg latzug
+Gemini_Generated_Image_hvfa7ihvfa7ihvfa(3).jpg kabelrudern
+Gemini_Generated_Image_hvfa7ihvfa7ihvfa(4).jpg seitheben
+sammelbild_1.jpg 3x3 bankdruecken butterfly brustpresse kabel_crossover bankdruecken_multipresse schulterdruecken schulterpresse reverse_butterfly seitheben_maschine
+sammelbild_2.jpg 3x3 klimmzuege klimmzuege_assistiert langhantelrudern rudern_maschine t_bar_rudern ueberzuege_kabel face_pulls - shrugs
+sammelbild_3.jpg 3x3 kniebeugen kniebeugen_multipresse hackenschmidt - ausfallschritte rumaenisches_kreuzheben beinstrecker beinbeuger -
+sammelbild_4.jpg 3x3 - adduktoren_maschine - kickbacks_kabel wadenheben wadenheben_sitzend kabel_crunches bauchmaschine beinheben_haengend
+sammelbild_5.jpg 3x3 bizepscurls hammercurls scottcurls_maschine bizepscurls_kabel trizepsdruecken_kabel trizeps_ueber_kopf_kabel french_press dips dips_maschine
+rueckenstrecker.jpg rueckenstrecker
+reparatur.jpg 2x2 - beinbeuger_sitzend hip_thrust abduktoren_maschine

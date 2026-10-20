@@ -8,6 +8,9 @@ Aufruf (aus dem Projektordner):
 Mit --raster wird ein Sammelbild mit mehreren Übungen (Spalten x Zeilen) zuerst in Einzelbilder zerlegt.
 Die Namen folgen der Leserichtung (Zeile für Zeile, links nach rechts); "-" überspringt ein Feld.
 
+Alle Bilder auf einmal neu erzeugen (Zuordnung in quellen.txt, Quelldateien im angegebenen Ordner):
+    python3 tools/uebungsbilder/verarbeiten.py --liste tools/uebungsbilder/quellen.txt <ordner>
+
 Für jedes Bild entstehen zwei Dateien mit gleichem Namen:
     app/src/main/res/drawable-nodpi/exercise_<name>.webp        hell: Original auf reinem Weiß
     app/src/main/res/drawable-night-nodpi/exercise_<name>.webp  dunkel: freigestellt, gedämpft, warm getönt
@@ -16,6 +19,7 @@ Android wählt im dunklen Modus automatisch die Datei aus dem "night"-Ordner.
 Erwartet wird ein Motiv auf weißem Hintergrund, das den Bildrand nicht berührt (siehe README.md).
 Benötigt Pillow, numpy und scipy (pip install pillow numpy scipy).
 """
+import re
 import sys
 from pathlib import Path
 
@@ -32,11 +36,14 @@ CENTER_Y = 0.47
 TOLERANCE = 50
 # Eingeschlossene Lücken: so weiß (Weißabstand), so groß (Anteil am Bild) und mit so dunklem Rand (Mittelwert).
 HOLE_WHITE, HOLE_MIN_AREA, HOLE_EDGE = 10, 0.00001, 80
+# Weiche Kante: so viele Pixel in den Hintergrund und ins Motiv hinein, so weit darf die Bezugsfarbe entfernt
+# sein, und so viel Weißabstand (Summe der drei Kanäle) gilt noch als JPEG-Rauschen.
+EDGE_IN, EDGE_OUT, EDGE_NEAR, EDGE_NOISE = 2, 3, 5, 12
 
-# Dunkle Kachel. Der Rand hat genau die Kartenfarbe aus Color.kt (DarkCard), damit die Kachel wie eine Karte wirkt.
+# Dunkle Kachel. Der Rand hat genau die Kartenfarbe aus Color.kt (DarkCard), damit die Kachel nahtlos in die Karte
+# übergeht. Nur zur Mitte hin wird sie heller, als läge die Figur in einem weichen Lichtkegel.
 DARK_EDGE = (0x26, 0x26, 0x24)
-DARK_TOP = (0x2D, 0x2B, 0x28)
-DARK_GLOW = (0x3D, 0x3B, 0x36)
+DARK_GLOW = (0x3A, 0x38, 0x33)
 # Tonwerte der Figur im dunklen Modus: Schwarz bleibt fast schwarz, Weiß wird gedämpft, damit nichts blendet.
 NIGHT_LO, NIGHT_HI = 10, 210
 # Warme Tönung für Grautöne, passend zur warmen Farbpalette der App. Rot (die Muskeln) bleibt unverändert.
@@ -71,14 +78,36 @@ def cut_out(image: Image.Image) -> Image.Image:
     holes.discard(0)
     if holes:
         background |= np.isin(light, list(holes))
-    # Kante: halbtransparent je nach Weißabstand, damit kein harter, gezackter Rand entsteht.
-    edge = ndimage.binary_dilation(background) & ~background
-    alpha = np.where(background, 0.0, 255.0)
-    alpha[edge] = np.clip(distance[edge] / 60 * 255, 0, 255)
-    # Den weißen Anteil aus den Kantenpixeln herausrechnen, sonst bleibt ein heller Saum.
-    a = np.maximum(alpha / 255, 1e-3)[..., None]
-    rgb = np.clip((rgb - 255 * (1 - a)) / a, 0, 255)
-    return Image.fromarray(np.dstack([rgb, alpha]).astype(np.uint8), "RGBA")
+    return Image.fromarray(soft_edge(rgb, background), "RGBA")
+
+
+def soft_edge(rgb: np.ndarray, background: np.ndarray) -> np.ndarray:
+    """Weiche Kante: Wie viel Motiv steckt in jedem Randpixel?
+
+    Ein Randpixel ist eine Mischung aus Motivfarbe F und Weiß. Aus seiner Helligkeit im Vergleich zu F folgt die
+    Deckkraft, die Farbe selbst wird durch F ersetzt. So bleibt auf dunklem Grund kein heller Saum und keine
+    gepunktete Linie zurück, auch nicht von den hellen JPEG-Schlieren, die an dunklen Kanten entstehen.
+    F ist die Farbe des nächsten Pixels im Inneren des Motivs, also mit etwas Abstand zum Hintergrund.
+    """
+    whiteness = (255 - rgb).sum(axis=2)  # Abstand zu Weiß über alle drei Kanäle
+    foreground = ~background
+    zone = (ndimage.binary_dilation(background, iterations=EDGE_IN)
+            & ndimage.binary_dilation(foreground, iterations=EDGE_OUT))
+    core = foreground & ~zone
+    gap, (iy, ix) = ndimage.distance_transform_edt(~core, return_indices=True)
+    fill = rgb[iy, ix]
+    near = gap <= EDGE_NEAR
+    # Dünne Linien (Kabel, Stangen) haben kein Inneres in der Nähe: Bezug ist ihr dunkelstes Pixel.
+    reference = np.where(near, (255 - fill).sum(axis=2), ndimage.maximum_filter(whiteness, size=7))
+    coverage = np.clip((whiteness - EDGE_NOISE) / np.maximum(reference - EDGE_NOISE, 30), 0, 1)
+    alpha = np.where(core, 1.0, np.where(zone, coverage, np.where(background, 0.0, 1.0)))
+    # Nahe am Inneren dessen Farbe nehmen (dunkler als F darf ein Pixel bleiben, z. B. eine Umrisslinie),
+    # fern davon den weißen Anteil herausrechnen.
+    a = np.maximum(alpha, 1e-3)[..., None]
+    unmixed = np.clip((rgb - 255 * (1 - a)) / a, 0, 255)
+    color = np.where((near & zone & (coverage < 1))[..., None], fill, np.where(near[..., None], rgb, unmixed))
+    color = np.where(core[..., None], rgb, color)
+    return np.dstack([color, alpha * 255]).astype(np.uint8)
 
 
 def subject_box(figure: Image.Image) -> tuple[int, int, int, int]:
@@ -112,14 +141,17 @@ def night_tones(figure: Image.Image) -> Image.Image:
 
 
 def dark_tile() -> Image.Image:
-    """Hintergrund der dunklen Kachel: Kartenfarbe, oben minimal heller, dazu ein weicher Lichtschein in der Mitte."""
+    """Hintergrund der dunklen Kachel: Kartenfarbe, zur Mitte hin ein weicher Lichtschein, am Rand exakt Kartenfarbe."""
     size = (WIDTH, HEIGHT)
-    tile = Image.new("RGB", size, DARK_EDGE)
-    top = Image.linear_gradient("L").resize(size).point(lambda v: 255 - v)
-    tile.paste(Image.new("RGB", size, DARK_TOP), (0, 0), top)
     glow = Image.new("L", size, 0)
-    ImageDraw.Draw(glow).ellipse([WIDTH * 0.18, HEIGHT * 0.02, WIDTH * 0.82, HEIGHT * 0.98], fill=255)
-    tile.paste(Image.new("RGB", size, DARK_GLOW), (0, 0), glow.filter(ImageFilter.GaussianBlur(WIDTH * 0.07)))
+    ImageDraw.Draw(glow).ellipse([WIDTH * 0.2, HEIGHT * 0.1, WIDTH * 0.8, HEIGHT * 0.9], fill=255)
+    glow = np.asarray(glow.filter(ImageFilter.GaussianBlur(WIDTH * 0.07))).astype(np.float32)
+    # Zum Rand hin auf null ausblenden, sonst ist die Kachel dort heller als die Karte und hat eine sichtbare Kante.
+    ys, xs = np.mgrid[0:HEIGHT, 0:WIDTH]
+    border = np.minimum(np.minimum(xs, WIDTH - 1 - xs), np.minimum(ys, HEIGHT - 1 - ys))
+    glow *= np.clip(border / (HEIGHT * 0.12), 0, 1) ** 2
+    tile = Image.new("RGB", size, DARK_EDGE)
+    tile.paste(Image.new("RGB", size, DARK_GLOW), (0, 0), Image.fromarray(glow.astype(np.uint8)))
     return tile.convert("RGBA")
 
 
@@ -195,18 +227,29 @@ def process(image: Image.Image, name: str) -> None:
         print(f"{target.relative_to(ROOT)}  ({target.stat().st_size // 1024} KB)")
 
 
-if __name__ == "__main__":
-    args = sys.argv[1:]
+def run(args: list[str], folder: Path = Path(".")) -> None:
     if len(args) >= 3 and args[0] == "--raster":
         columns, rows = (int(n) for n in args[1].lower().split("x"))
         names = args[3:]
         if len(names) != columns * rows:
             sys.exit(f"Für ein {columns}x{rows}-Raster braucht es {columns * rows} Namen ('-' überspringt ein Feld).")
-        for cell, name in zip(split_sheet(Image.open(args[2]), columns, rows), names):
+        for cell, name in zip(split_sheet(Image.open(folder / args[2]), columns, rows), names):
             if name != "-":
                 process(cell, name)
     elif args and len(args) % 2 == 0:
         for source, name in zip(args[::2], args[1::2]):
-            process(Image.open(source), name)
+            process(Image.open(folder / source), name)
     else:
         sys.exit(__doc__)
+
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    if len(args) == 3 and args[0] == "--liste":
+        for line in Path(args[1]).read_text(encoding="utf-8").splitlines():
+            if line.strip() and not line.startswith("#"):
+                source, *rest = line.split()
+                run(["--raster", rest[0], source, *rest[1:]] if re.fullmatch(r"\d+x\d+", rest[0]) else [source, *rest],
+                    Path(args[2]))
+    else:
+        run(args)
