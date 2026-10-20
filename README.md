@@ -44,7 +44,7 @@ Alternativ auf der Kommandozeile (Android SDK muss installiert sein):
 ### Fertige APK direkt installieren
 
 Ohne Android Studio geht es auch mit einer fertigen APK-Datei. Die aktuelle Version liegt in
-[`apk/Fitness-1.5.apk`](apk/Fitness-1.5.apk). Ist eine ältere Version (ab 1.1) schon installiert, wird sie
+[`apk/Fitness-1.6.apk`](apk/Fitness-1.6.apk). Ist eine ältere Version (ab 1.1) schon installiert, wird sie
 einfach aktualisiert, deine Einträge bleiben erhalten.
 
 1. Die APK aufs Handy laden, z. B. per Download oder per Kabel kopieren.
