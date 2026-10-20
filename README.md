@@ -13,6 +13,9 @@ es gibt kein Konto, keine Werbung und keine Internetverbindung.
   Der Graph zeigt pro Tag dein schwerstes Gewicht über 1 Monat, 3 Monate, 6 Monate, 1 Jahr oder alles.
   Fährst du mit dem Finger über den Graphen, siehst du den Wert an jedem Tag. Bestwerte werden als „PR“
   markiert.
+- **Übungsbilder**: Für Übungen mit Bild zeigt die Übungsansicht oben eine Abbildung mit den trainierten Muskeln in Rot,
+  passend zum hellen und dunklen Design. Wie neue Bilder dazukommen, steht in
+  [`tools/uebungsbilder/README.md`](tools/uebungsbilder/README.md).
 - **Körpergewicht**: Ein Wert pro Tag, mit Graph, Tiefst- und Höchstwert sowie Durchschnitt.
 - Helles und dunkles Design, je nach Systemeinstellung.
 
@@ -40,8 +43,8 @@ Alternativ auf der Kommandozeile (Android SDK muss installiert sein):
 ### Fertige APK direkt installieren
 
 Ohne Android Studio geht es auch mit einer fertigen APK-Datei. Die aktuelle Version liegt in
-[`apk/Fitness-1.2.apk`](apk/Fitness-1.2.apk). Ist Version 1.1 schon installiert, wird sie einfach aktualisiert,
-deine Einträge bleiben erhalten.
+[`apk/Fitness-1.3.apk`](apk/Fitness-1.3.apk). Ist eine ältere Version (ab 1.1) schon installiert, wird sie
+einfach aktualisiert, deine Einträge bleiben erhalten.
 
 1. Die APK aufs Handy laden, z. B. per Download oder per Kabel kopieren.
 2. Die Datei antippen. Android fragt beim ersten Mal, ob die App (z. B. Chrome oder „Dateien“)
