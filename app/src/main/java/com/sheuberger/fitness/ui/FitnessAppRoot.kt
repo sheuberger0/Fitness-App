@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.automirrored.outlined.ListAlt
 import androidx.compose.material.icons.outlined.MonitorWeight
+import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,14 +50,17 @@ import com.sheuberger.fitness.ui.bodyweight.BodyWeightScreen
 import com.sheuberger.fitness.ui.components.AppOverlayHost
 import com.sheuberger.fitness.ui.exercises.ExerciseDetailScreen
 import com.sheuberger.fitness.ui.exercises.ExercisesScreen
+import com.sheuberger.fitness.ui.mensa.MensaScreen
 import com.sheuberger.fitness.ui.workouts.WorkoutDetailScreen
 import com.sheuberger.fitness.ui.workouts.WorkoutsScreen
 
-/** Die drei Tabs der unteren Navigationsleiste. */
+/** Die Tabs der unteren Navigationsleiste. */
 private enum class Tab(val route: String, val label: String, val icon: ImageVector) {
     Workouts("workouts", "Workouts", Icons.Outlined.FitnessCenter),
     Exercises("exercises", "Übungen", Icons.AutoMirrored.Outlined.ListAlt),
-    BodyWeight("bodyweight", "Körpergewicht", Icons.Outlined.MonitorWeight),
+    // Kurz "Gewicht", damit bei vier Tabs jede Beschriftung auf eine Zeile passt. Der Screen heißt weiter "Körpergewicht".
+    BodyWeight("bodyweight", "Gewicht", Icons.Outlined.MonitorWeight),
+    Mensa("mensa", "Mensa", Icons.Outlined.Restaurant),
 }
 
 private object Routes {
@@ -139,6 +143,9 @@ fun FitnessAppRoot() {
                 }
                 composable(Tab.BodyWeight.route) {
                     BodyWeightScreen()
+                }
+                composable(Tab.Mensa.route) {
+                    MensaScreen()
                 }
                 composable(
                     route = Routes.WORKOUT,
