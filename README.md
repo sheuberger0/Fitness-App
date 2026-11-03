@@ -1,7 +1,7 @@
 # Fitness
 
 Eine Android-App zum Tracken von Trainingsgewichten und Körpergewicht. Alles bleibt lokal auf dem Handy,
-es gibt kein Konto, keine Werbung und keine Internetverbindung.
+es gibt kein Konto und keine Werbung. Ins Internet geht die App nur, um die Mensa-Menüs zu laden.
 
 ## Was die App kann
 
@@ -18,6 +18,11 @@ es gibt kein Konto, keine Werbung und keine Internetverbindung.
   passend zum hellen und dunklen Design. Wie neue Bilder dazukommen, steht in
   [`tools/uebungsbilder/README.md`](tools/uebungsbilder/README.md).
 - **Körpergewicht**: Ein Wert pro Tag, mit Graph, Tiefst- und Höchstwert sowie Durchschnitt.
+- **Mensa**: Rangliste der Gerichte in der Polymensa (ETH) und den UZH-Mensen (Obere und Untere Mensa, Irchel)
+  für heute oder einen anderen Tag der Woche, mittags oder abends. Sortiert nach Protein, Kalorien oder
+  Protein pro Franken, nur Gerichte bis zum eigenen Budget (Standard 9.50 CHF, Preise für Studierende).
+  Budget, Preiskategorie und Mensen lassen sich einstellen. Die Daten kommen live von der ETH-Gastronomie
+  (JSON-Schnittstelle) und von app.food2050.ch (ZFV); Code in `app/src/main/java/.../mensa/`.
 - Helles und dunkles Design, je nach Systemeinstellung.
 
 ## App aufs Handy bringen
@@ -44,7 +49,7 @@ Alternativ auf der Kommandozeile (Android SDK muss installiert sein):
 ### Fertige APK direkt installieren
 
 Ohne Android Studio geht es auch mit einer fertigen APK-Datei. Die aktuelle Version liegt in
-[`apk/Fitness-1.7.apk`](apk/Fitness-1.7.apk). Ist eine ältere Version (ab 1.1) schon installiert, wird sie
+[`apk/Fitness-1.8.apk`](apk/Fitness-1.8.apk). Ist eine ältere Version (ab 1.1) schon installiert, wird sie
 einfach aktualisiert, deine Einträge bleiben erhalten.
 
 1. Die APK aufs Handy laden, z. B. per Download oder per Kabel kopieren.

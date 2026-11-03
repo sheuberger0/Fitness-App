@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Die App braucht keine Berechtigungen: Alle Daten bleiben lokal auf dem Gerät. -->
+    <!-- Internet nur für die Mensa-Menüs (ETH und UZH). Deine Trainings- und Gewichtsdaten bleiben lokal
+         auf dem Gerät und werden nirgends hingeschickt. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".FitnessApplication"
         android:allowBackup="true"

@@ -10,6 +10,7 @@ import com.sheuberger.fitness.data.FitnessRepository
 import com.sheuberger.fitness.ui.bodyweight.BodyWeightViewModel
 import com.sheuberger.fitness.ui.exercises.ExerciseDetailViewModel
 import com.sheuberger.fitness.ui.exercises.ExercisesViewModel
+import com.sheuberger.fitness.ui.mensa.MensaViewModel
 import com.sheuberger.fitness.ui.workouts.WorkoutDetailViewModel
 import com.sheuberger.fitness.ui.workouts.WorkoutsViewModel
 
@@ -24,6 +25,10 @@ object AppViewModelProvider {
         initializer { ExercisesViewModel(repository()) }
         initializer { ExerciseDetailViewModel(createSavedStateHandle(), repository()) }
         initializer { BodyWeightViewModel(repository()) }
+        initializer {
+            val app = this[APPLICATION_KEY] as FitnessApplication
+            MensaViewModel(app.mensaClient, app.mensaSettings)
+        }
     }
 }
 

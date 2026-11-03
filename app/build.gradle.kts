@@ -19,8 +19,8 @@ android {
         applicationId = "com.sheuberger.fitnesstracker"
         minSdk = 26
         targetSdk = 35
-        versionCode = 8
-        versionName = "1.7"
+        versionCode = 9
+        versionName = "1.8"
     }
 
     // Signatur für die Release-APK. Android installiert nur signierte Apps, und Updates
@@ -143,6 +143,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    // Liest die Menüpläne der Mensen (JSON). Nur der JSON-Parser, ohne Compiler-Plugin.
+    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
