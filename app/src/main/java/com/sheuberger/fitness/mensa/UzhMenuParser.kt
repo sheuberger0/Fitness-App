@@ -20,10 +20,21 @@ object UzhMenuParser {
 
     private val json = Json { ignoreUnknownKeys = true }
 
-    /** Alle Gerichts-Links der Wochenseite für [date], ohne Doppelte. */
+    /**
+     * Höchstens so viele Gerichts-Links pro Wochenseite und Tag. Heute sind es 4 bis 7. Eine kaputte oder
+     * manipulierte Seite soll nicht Hunderte Downloads auslösen.
+     */
+    internal const val MAX_DISH_LINKS = 40
+
+    /**
+     * Alle Gerichts-Links der Wochenseite für [date], ohne Doppelte, höchstens [MAX_DISH_LINKS].
+     * Nur Links, die direkt nach einem Anführungszeichen mit https://app.food2050.ch/ beginnen: So wird weder
+     * ein fremder Server (app.food2050.ch.evil.com) noch eine fremde Adresse, in der unsere nur als Teil
+     * steckt (evil.com/https://app.food2050.ch/…), je geladen.
+     */
     fun dishLinks(weeklyHtml: String, date: LocalDate): List<String> {
-        val pattern = Regex("""https://app\.food2050\.ch/[^"'\s<>?]+/$date(?=["'])""")
-        return pattern.findAll(weeklyHtml).map { it.value }.distinct().toList()
+        val pattern = Regex("""(?<=["'])https://app\.food2050\.ch/[^"'\s<>?]+/$date(?=["'])""")
+        return pattern.findAll(weeklyHtml).map { it.value }.distinct().take(MAX_DISH_LINKS).toList()
     }
 
     /** Liest ein Gericht aus der HTML-Seite. null, wenn die Seite kein Gericht enthält. */
@@ -32,7 +43,7 @@ object UzhMenuParser {
         val start = payload.indexOf("{\"menuItem\":")
         if (start < 0) return null
         val objectText = balancedObject(payload, start) ?: return null
-        val item = json.parseToJsonElement(objectText).obj?.get("menuItem")?.obj ?: return null
+        val item = json.parseToJsonElement(requireShallowJson(objectText)).obj?.get("menuItem")?.obj ?: return null
         val dish = item["dish"]?.obj ?: return null
         val name = dish.str("name")?.trim().orEmpty()
         if (name.isEmpty()) return null
@@ -40,7 +51,8 @@ object UzhMenuParser {
         val prices = buildMap {
             for (p in item.arr("prices").mapNotNull { it.obj }) {
                 // 0.00 steht da, wenn der Preis noch fehlt (z. B. "Pasta, jeden Tag eine neue Kreation").
-                val amount = p.double("amount")?.takeIf { it > 0 } ?: continue
+                // Unplausible Preise (z. B. über 50 CHF) überspringen wir genauso.
+                val amount = Plausible.price(p.double("amount")) ?: continue
                 val category = p["priceCategory"]?.obj?.str("name")?.lowercase().orEmpty()
                 val group = when {
                     category.startsWith("stud") -> PriceGroup.Students
@@ -78,14 +90,15 @@ object UzhMenuParser {
     private fun nutrition(stats: JsonObject?): Nutrition? {
         stats ?: return null
         fun amount(key: String) = stats[key]?.obj?.double("amount")
-        val kcal = amount("energy")?.takeIf { it > 0 } ?: return null
-        val protein = amount("protein") ?: return null
+        // Unplausible Werte (siehe Plausible) zählen wie fehlende.
+        val kcal = Plausible.kcal(amount("energy")) ?: return null
+        val protein = Plausible.proteinG(amount("protein")) ?: return null
         return Nutrition(
             kcal = kcal,
             proteinG = protein,
-            carbsG = amount("carbohydrates"),
-            fatG = amount("fat"),
-            weightG = stats["servingWeight"]?.obj?.double("amount"),
+            carbsG = Plausible.carbsG(amount("carbohydrates")),
+            fatG = Plausible.fatG(amount("fat")),
+            weightG = Plausible.weightG(stats["servingWeight"]?.obj?.double("amount")),
             estimated = false,
         )
     }

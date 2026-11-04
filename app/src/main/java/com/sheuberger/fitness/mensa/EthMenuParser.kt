@@ -25,7 +25,7 @@ object EthMenuParser {
     private val json = Json { ignoreUnknownKeys = true }
 
     fun parse(body: String, date: LocalDate, mensa: Mensa = Mensa.Polymensa): List<Meal> {
-        val root = json.parseToJsonElement(body).obj ?: return emptyList()
+        val root = json.parseToJsonElement(requireShallowJson(body)).obj ?: return emptyList()
         val facility = mensa.lunch?.toIntOrNull()
         val rota = root.arr("weekly-rota-array").mapNotNull { it.obj }.firstOrNull { rota ->
             val from = rota.str("valid-from")?.let(LocalDate::parse)
@@ -61,7 +61,8 @@ object EthMenuParser {
 
         val prices = buildMap {
             for (p in meal.arr("meal-price-array").mapNotNull { it.obj }) {
-                val price = p.double("price")?.takeIf { it > 0 } ?: continue
+                // Unplausible Preise (0, negativ, über 50 CHF) überspringen wir wie fehlende.
+                val price = Plausible.price(p.double("price")) ?: continue
                 val group = when (p.int("customer-group-code")) {
                     10 -> PriceGroup.Students
                     11 -> PriceGroup.Staff
@@ -96,20 +97,25 @@ object EthMenuParser {
     }
 
     private fun nutrition(meal: JsonObject): Nutrition? {
-        val kcalPortion = meal.double("energy")?.takeIf { it > 0 } ?: return null
-        val protein100 = meal.double("protein") ?: return null
-        val carbs100 = meal.double("carbohydrates")
-        val fat100 = meal.double("fat")
-        val kcal100 = meal.double("energy-outdated")?.takeIf { it > 0 }
-            ?: (4 * protein100 + 4 * (carbs100 ?: 0.0) + 9 * (fat100 ?: 0.0)).takeIf { it > 0 }
+        // Jeder Wert muss plausibel sein (siehe Plausible), sonst zählt er als fehlend.
+        val kcalPortion = Plausible.kcal(meal.double("energy")) ?: return null
+        val protein100 = Plausible.gramsPer100g(meal.double("protein")) ?: return null
+        val carbs100 = Plausible.gramsPer100g(meal.double("carbohydrates"))
+        val fat100 = Plausible.gramsPer100g(meal.double("fat"))
+        val kcal100 = Plausible.kcalPer100g(meal.double("energy-outdated"))
+            ?: Plausible.kcalPer100g(4 * protein100 + 4 * (carbs100 ?: 0.0) + 9 * (fat100 ?: 0.0))
             ?: return null
         val factor = kcalPortion / kcal100 // = Portionsgewicht / 100 g
+        // Auch die umgerechneten Werte pro Portion prüfen: Ein unpassendes Paar aus energy und
+        // energy-outdated ergäbe sonst z. B. eine 5-kg-Portion.
+        val weight = Plausible.weightG(factor * 100) ?: return null
+        val protein = Plausible.proteinG(protein100 * factor) ?: return null
         return Nutrition(
             kcal = kcalPortion,
-            proteinG = protein100 * factor,
-            carbsG = carbs100?.times(factor),
-            fatG = fat100?.times(factor),
-            weightG = factor * 100,
+            proteinG = protein,
+            carbsG = Plausible.carbsG(carbs100?.times(factor)),
+            fatG = Plausible.fatG(fat100?.times(factor)),
+            weightG = weight,
             estimated = true,
         )
     }
@@ -119,6 +125,37 @@ object EthMenuParser {
 }
 
 // --- kleine Helfer, damit das Lesen des JSON kurz bleibt ---
+
+/** Tiefer verschachtelt ist kein echter Menüplan (gemessen: ETH 16 Ebenen, food2050 8). */
+internal const val MAX_JSON_DEPTH = 64
+
+/**
+ * Gibt [text] zurück, wenn seine Klammern ([ und {, außerhalb von Strings) höchstens [MAX_JSON_DEPTH] tief
+ * verschachtelt sind, sonst IllegalArgumentException. kotlinx.serialization liest JSON rekursiv; Tausende
+ * verschachtelte Klammern (kaputte oder manipulierte Antwort) führen dort zu einem StackOverflowError,
+ * den MensaClient nicht abfangen würde. Diese Prüfung kostet nur einen Durchlauf über den Text.
+ */
+internal fun requireShallowJson(text: String): String {
+    var depth = 0
+    var inString = false
+    var escaped = false
+    for (c in text) {
+        if (inString) {
+            when {
+                escaped -> escaped = false
+                c == '\\' -> escaped = true
+                c == '"' -> inString = false
+            }
+            continue
+        }
+        when (c) {
+            '"' -> inString = true
+            '[', '{' -> require(++depth <= MAX_JSON_DEPTH) { "JSON zu tief verschachtelt" }
+            ']', '}' -> depth--
+        }
+    }
+    return text
+}
 
 internal val JsonElement.obj: JsonObject? get() = this as? JsonObject
 internal fun JsonObject.arr(key: String): List<JsonElement> = (this[key] as? JsonArray).orEmpty()
