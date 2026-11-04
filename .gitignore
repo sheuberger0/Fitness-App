@@ -8,5 +8,8 @@ build/
 .externalNativeBuild/
 .cxx/
 .kotlin/
+# Signaturschlüssel und Zertifikate nie einchecken
 /keystore.properties
 *.jks
+*.keystore
+*.p12

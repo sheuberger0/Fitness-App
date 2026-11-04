@@ -10,7 +10,9 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDate
@@ -84,20 +86,56 @@ class MensaClient(
     private suspend fun <T> limited(block: suspend () -> T): T = parallel.withPermit { block() }
 
     companion object {
+        /** Größte erlaubte Antwort. Gemessen sind heute höchstens rund 190 KB pro Seite, 2 MB lassen viel Luft. */
+        internal const val MAX_RESPONSE_BYTES = 2L * 1024 * 1024
+
+        /** Gesamtzeit pro Download, zusätzlich zu Verbindungs- und Lese-Timeout (die gelten je Schritt). */
+        internal const val TOTAL_TIMEOUT_MS = 30_000L
+
         /** Einfacher GET-Aufruf. HttpURLConnection ist in Android eingebaut, dafür braucht es keine Bibliothek. */
         suspend fun download(url: String): String = withContext(Dispatchers.IO) {
+            val deadline = System.nanoTime() + TOTAL_TIMEOUT_MS * 1_000_000
             val connection = URL(url).openConnection() as HttpURLConnection
             try {
                 connection.connectTimeout = 10_000
                 connection.readTimeout = 15_000
                 connection.setRequestProperty("Accept-Language", "de")
-                connection.setRequestProperty("User-Agent", "FitnessApp/1.8 (Android)")
+                connection.setRequestProperty("User-Agent", "FitnessApp/1.9 (Android)")
                 val code = connection.responseCode
                 if (code !in 200..299) throw IOException("HTTP $code für $url")
-                connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+                // Früh abbrechen, wenn der Server selbst schon eine zu große Antwort ankündigt.
+                if (connection.contentLengthLong > MAX_RESPONSE_BYTES) {
+                    throw IOException("Antwort zu groß (${connection.contentLengthLong} Bytes) für $url")
+                }
+                connection.inputStream.use { readLimited(it, MAX_RESPONSE_BYTES, deadline) }
             } finally {
                 connection.disconnect()
             }
+        }
+
+        /**
+         * Liest [input] vollständig als UTF-8, aber höchstens [maxBytes] Bytes und nur bis [deadlineNanos]
+         * (gemessen mit [now]). Die Länge im Header kann fehlen oder falsch sein, deshalb zählen wir selbst mit.
+         * Zu groß oder zu langsam → IOException, die MensaClient wie jeden anderen Ladefehler behandelt.
+         */
+        internal fun readLimited(
+            input: InputStream,
+            maxBytes: Long,
+            deadlineNanos: Long,
+            now: () -> Long = System::nanoTime,
+        ): String {
+            val out = ByteArrayOutputStream()
+            val buffer = ByteArray(8 * 1024)
+            var total = 0L
+            while (true) {
+                if (now() - deadlineNanos > 0) throw IOException("Download dauert zu lange, abgebrochen")
+                val n = input.read(buffer)
+                if (n < 0) break
+                total += n
+                if (total > maxBytes) throw IOException("Antwort größer als $maxBytes Bytes, abgebrochen")
+                out.write(buffer, 0, n)
+            }
+            return out.toString(Charsets.UTF_8.name())
         }
     }
 }

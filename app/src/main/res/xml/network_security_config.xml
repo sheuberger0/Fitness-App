@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Netzwerk-Sicherheit der App (lädt nur die Mensa-Menüs von ETH und UZH).
+
+    base-config: gilt immer, auch in der Release-App. Kein unverschlüsseltes HTTP, und nur die
+    eingebauten Zertifizierungsstellen des Systems gelten. Vom Nutzer installierte Zertifikate
+    (z. B. ein Firmen- oder Angreifer-Proxy) werden nicht akzeptiert.
+
+    debug-overrides: wirkt nur in debugfähigen Builds (der .debug-App), nie in der Release-App.
+    Dort gelten zusätzlich vom Nutzer installierte Zertifikate, damit sich der Datenverkehr beim
+    Entwickeln mit mitmproxy mitlesen lässt.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>
