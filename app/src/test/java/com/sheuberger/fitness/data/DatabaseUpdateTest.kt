@@ -76,6 +76,13 @@ class DatabaseUpdateTest {
         assertEquals(listOf(80.0, 82.5), db.exerciseLogDao().observeForExercise(1).first().map { it.weightKg })
         assertEquals(8, db.exerciseLogDao().observeForExercise(1).first().first().reps)
         assertEquals(listOf(78.4), db.bodyWeightDao().observeAll().first().map { it.weightKg })
+
+        // Ab Version 2 gibt es die Tabellen des Kalorien-Trackers. Sie sind nach dem Update leer und nutzbar.
+        val food = db.foodDao().insert(Food(name = "Haferflocken", kcal = 370.0))
+        db.foodEntryDao().insert(
+            FoodEntry(date = LocalDate.of(2026, 11, 4), meal = MealSlot.BREAKFAST, name = "Haferflocken", kcal = 296.0, foodId = food),
+        )
+        assertEquals(listOf("Haferflocken"), db.foodEntryDao().getDay(LocalDate.of(2026, 11, 4)).map { it.name })
     }
 
     @Test

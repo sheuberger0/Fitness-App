@@ -19,8 +19,8 @@ android {
         applicationId = "com.sheuberger.fitnesstracker"
         minSdk = 26
         targetSdk = 35
-        versionCode = 9
-        versionName = "1.8"
+        versionCode = 11
+        versionName = "2.0"
     }
 
     // Signatur für die Release-APK. Android installiert nur signierte Apps, und Updates
@@ -146,6 +146,10 @@ dependencies {
 
     // Liest die Menüpläne der Mensen (JSON). Nur der JSON-Parser, ohne Compiler-Plugin.
     implementation(libs.kotlinx.serialization.json)
+
+    // Barcode-Scanner von Google Play-Diensten: Die Kamera läuft dort, die App bekommt nur die Ziffern.
+    // Deshalb braucht die App keine Kamera-Berechtigung.
+    implementation(libs.play.services.code.scanner)
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)
