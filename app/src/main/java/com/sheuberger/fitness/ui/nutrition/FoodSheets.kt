@@ -105,14 +105,19 @@ fun FoodLogSheet(
     remainingKcal: Double? = null,
 ) {
     val units = remember(food) { food.units() }
-    // Ein anderes Lebensmittel bekommt frische Eingaben. Am liebsten nach dem Barcode: Ein neues von Open Food Facts
-    // hat noch die ID 0 und bekommt seine echte erst beim Speichern (z. B. beim Favorisieren), der Barcode bleibt.
-    val identity = food.barcode ?: "${food.id}|${food.name}"
+    // Die Eingaben gehören zu diesem Lebensmittel, nicht zu seinem genauen Stand. Der Aufrufer reicht nach dem
+    // Favorisieren den neuen Stand aus der Datenbank herein; Barcode und ID bleiben dabei gleich, also bleibt auch
+    // die getippte Menge stehen. Erst ein anderes Lebensmittel fängt frisch an. Zuerst nach dem Barcode: Ein neues
+    // von Open Food Facts hat noch die ID 0 und bekommt seine echte erst beim Speichern, der Barcode bleibt.
+    val identity = food.barcode ?: food.id.toString()
     var savedUnit by rememberSaveable(identity) { mutableStateOf(units.first()) }
     var amountText by rememberSaveable(identity) { mutableStateOf(amountText(defaultAmount(food, units.first()), units.first())) }
     var slot by rememberSaveable(identity) { mutableStateOf(initialSlot) }
-    // Eigener Zustand, damit der Stern sofort umspringt, auch bevor das gespeicherte Lebensmittel zurückkommt.
-    var favorite by rememberSaveable(identity) { mutableStateOf(food.favorite) }
+    // Der Stern springt beim Tippen sofort um. Kommt der gespeicherte Stand zurück, gilt wieder er: So zeigt der
+    // Stern nie etwas anderes als die Datenbank, auch nicht nach zweimal schnellem Tippen.
+    var tappedFavorite by remember(identity) { mutableStateOf<Boolean?>(null) }
+    LaunchedEffect(food.favorite) { tappedFavorite = null }
+    val favorite = tappedFavorite ?: food.favorite
 
     // Wird das Lebensmittel inzwischen anders gespeichert (z. B. ohne Portionsgröße), passt die Einheit evtl. nicht mehr.
     val unit = savedUnit.takeIf { it in units } ?: units.first()
@@ -128,8 +133,9 @@ fun FoodLogSheet(
                 FavoriteToggle(
                     favorite = favorite,
                     onToggle = {
-                        favorite = !favorite
-                        onToggleFavorite(food.copy(favorite = favorite))
+                        val next = !favorite
+                        tappedFavorite = next
+                        onToggleFavorite(food.copy(favorite = next))
                     },
                 )
             },

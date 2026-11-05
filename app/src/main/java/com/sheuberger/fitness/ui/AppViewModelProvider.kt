@@ -29,7 +29,7 @@ object AppViewModelProvider {
         initializer { BodyWeightViewModel(repository()) }
         initializer {
             val app = this[APPLICATION_KEY] as FitnessApplication
-            MensaViewModel(app.mensaClient, app.mensaSettings)
+            MensaViewModel(app.mensaClient, app.mensaSettings, app.nutrition, app.nutritionSettings)
         }
         initializer {
             val app = this[APPLICATION_KEY] as FitnessApplication
