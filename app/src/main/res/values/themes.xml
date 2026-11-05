@@ -8,4 +8,13 @@
     <style name="Theme.Fitness" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/window_background</item>
     </style>
+
+    <!--
+        Startbildschirm für die Farbschemata, die immer dunkel sind (alle außer Terrakotta).
+        MainActivity meldet ihn ab Android 13 beim System an, damit die App auch auf einem hell
+        eingestellten Handy dunkel startet.
+    -->
+    <style name="Theme.Fitness.Dunkel" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/window_background_dunkel</item>
+    </style>
 </resources>

@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -70,6 +71,7 @@ import com.sheuberger.fitness.ui.theme.LocalDarkTheme
 @Composable
 fun WorkoutsScreen(
     onOpenWorkout: (Long) -> Unit,
+    onOpenSettings: () -> Unit,
     viewModel: WorkoutsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -104,7 +106,10 @@ fun WorkoutsScreen(
             when (shown) {
                 ScreenContent.Loading -> Unit
                 ScreenContent.Empty -> Column(Modifier.padding(innerPadding)) {
-                    ScreenTitle(Modifier.padding(start = 20.dp, top = 8.dp))
+                    TitleRow(
+                        onOpenSettings = onOpenSettings,
+                        modifier = Modifier.padding(start = 20.dp, end = 16.dp, top = 8.dp),
+                    )
                     EmptyState(
                         title = "Noch keine Workouts",
                         message = "Lege ein Workout an, z. B. „Push“ oder „Oberkörper A“, und füge deine Übungen hinzu.",
@@ -128,16 +133,13 @@ fun WorkoutsScreen(
                     item(key = "title") {
                         // 4 dp Einzug zusätzlich zum Listenrand: Titel und Untertitel stehen wie bei den
                         // anderen Tabs 20 dp vom Rand, damit beim Tab-Wechsel nichts springt.
-                        Column(Modifier.entrance(entrance, 0).padding(start = 4.dp)) {
-                            ScreenTitle()
-                            Spacer(Modifier.height(2.dp))
-                            Text(
-                                text = if (state.workouts.size == 1) "1 Workout" else "${state.workouts.size} Workouts",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                            Spacer(Modifier.height(8.dp))
-                        }
+                        TitleRow(
+                            onOpenSettings = onOpenSettings,
+                            subtitle = if (state.workouts.size == 1) "1 Workout" else "${state.workouts.size} Workouts",
+                            modifier = Modifier
+                                .entrance(entrance, 0)
+                                .padding(start = 4.dp, bottom = 8.dp),
+                        )
                     }
                     itemsIndexed(state.workouts, key = { _, it -> it.workout.id }) { index, summary ->
                         WorkoutCard(
@@ -199,15 +201,40 @@ fun WorkoutsScreen(
 
 private enum class ScreenContent { Loading, Empty, List }
 
-/** Großer Bildschirm-Titel in der Serifenschrift (kommt aus headlineLarge im Theme). */
+/**
+ * Großer Bildschirm-Titel in der Serifenschrift (kommt aus headlineLarge im Theme), darunter die Anzahl.
+ * Rechts das Zahnrad für die Einstellungen, wie das Einstellungs-Symbol im Mensa-Tab.
+ */
 @Composable
-private fun ScreenTitle(modifier: Modifier = Modifier) {
-    Text(
-        text = "Workouts",
-        style = MaterialTheme.typography.headlineLarge,
-        color = MaterialTheme.colorScheme.onSurface,
-        modifier = modifier.padding(top = 12.dp),
-    )
+private fun TitleRow(
+    onOpenSettings: () -> Unit,
+    modifier: Modifier = Modifier,
+    subtitle: String? = null,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
+        Column(Modifier.weight(1f)) {
+            Text(
+                text = "Workouts",
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(top = 12.dp),
+            )
+            if (subtitle != null) {
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        CircleIconButton(
+            icon = Icons.Outlined.Settings,
+            contentDescription = "Einstellungen",
+            onClick = onOpenSettings,
+            style = CircleIconButtonStyle.Tonal,
+        )
+    }
 }
 
 /** Karte im Stil der Routinen-Liste von Hevy: Name, Anzahl, Vorschau der Übungen, zuletzt trainiert. */

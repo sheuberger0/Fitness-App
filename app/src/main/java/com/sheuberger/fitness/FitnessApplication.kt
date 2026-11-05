@@ -9,6 +9,7 @@ import com.sheuberger.fitness.mensa.MensaSettings
 import com.sheuberger.fitness.nutrition.FoodCatalog
 import com.sheuberger.fitness.nutrition.NutritionSettings
 import com.sheuberger.fitness.nutrition.OpenFoodFactsClient
+import com.sheuberger.fitness.ui.theme.ThemeSettings
 
 /**
  * Lebt so lange wie die App. Hier werden Datenbank und Repository einmalig erzeugt
@@ -31,4 +32,7 @@ class FitnessApplication : Application() {
     // Mensa: Lädt die Menüs aus dem Internet. Lebt hier, damit der Zwischenspeicher Tab-Wechsel übersteht.
     val mensaClient: MensaClient by lazy { MensaClient() }
     val mensaSettings: MensaSettings by lazy { MensaSettings(this) }
+
+    // Gewähltes Farbschema (Zahnrad im Workouts-Screen).
+    val themeSettings: ThemeSettings by lazy { ThemeSettings(this) }
 }

@@ -34,6 +34,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -53,6 +56,8 @@ import com.sheuberger.fitness.ui.exercises.ExerciseDetailScreen
 import com.sheuberger.fitness.ui.exercises.ExercisesScreen
 import com.sheuberger.fitness.ui.mensa.MensaScreen
 import com.sheuberger.fitness.ui.nutrition.NutritionScreen
+import com.sheuberger.fitness.ui.settings.SettingsSheet
+import com.sheuberger.fitness.ui.theme.AppColorScheme
 import com.sheuberger.fitness.ui.workouts.WorkoutDetailScreen
 import com.sheuberger.fitness.ui.workouts.WorkoutsScreen
 
@@ -74,9 +79,20 @@ private object Routes {
     fun exercise(id: Long) = "exercise/$id"
 }
 
+/**
+ * Die ganze App: Navigation, Tabs und die Ebene für Sheets.
+ *
+ * [colorScheme] und [onColorSchemeChange] kommen aus MainActivity: Das Farbschema wirkt auf das Theme, das um diese
+ * Funktion herum liegt, deshalb wird es dort gespeichert und hier nur angezeigt und geändert.
+ */
 @Composable
-fun FitnessAppRoot() {
+fun FitnessAppRoot(
+    colorScheme: AppColorScheme = AppColorScheme.Default,
+    onColorSchemeChange: (AppColorScheme) -> Unit = {},
+) {
     val navController = rememberNavController()
+    // Einstellungen (Zahnrad im Workouts-Screen). rememberSaveable: bleibt beim Drehen des Handys offen.
+    var showSettings by rememberSaveable { mutableStateOf(false) }
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
     val showBottomBar = currentDestination == null || Tab.entries.any { it.route == currentDestination.route }
@@ -140,7 +156,10 @@ fun FitnessAppRoot() {
                 popExitTransition = { popExit() },
             ) {
                 composable(Tab.Workouts.route) {
-                    WorkoutsScreen(onOpenWorkout = { navController.navigate(Routes.workout(it)) })
+                    WorkoutsScreen(
+                        onOpenWorkout = { navController.navigate(Routes.workout(it)) },
+                        onOpenSettings = { showSettings = true },
+                    )
                 }
                 composable(Tab.Exercises.route) {
                     ExercisesScreen(onOpenExercise = { navController.navigate(Routes.exercise(it)) })
@@ -170,6 +189,14 @@ fun FitnessAppRoot() {
                     ExerciseDetailScreen(onBack = { navController.popBackStack() })
                 }
             }
+        }
+
+        if (showSettings) {
+            SettingsSheet(
+                current = colorScheme,
+                onSelect = onColorSchemeChange,
+                onDismiss = { showSettings = false },
+            )
         }
     }
 }
