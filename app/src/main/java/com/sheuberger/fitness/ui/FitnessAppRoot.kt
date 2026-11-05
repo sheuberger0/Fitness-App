@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.automirrored.outlined.ListAlt
+import androidx.compose.material.icons.outlined.EggAlt
 import androidx.compose.material.icons.outlined.MonitorWeight
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material3.HorizontalDivider
@@ -51,6 +52,7 @@ import com.sheuberger.fitness.ui.components.AppOverlayHost
 import com.sheuberger.fitness.ui.exercises.ExerciseDetailScreen
 import com.sheuberger.fitness.ui.exercises.ExercisesScreen
 import com.sheuberger.fitness.ui.mensa.MensaScreen
+import com.sheuberger.fitness.ui.nutrition.NutritionScreen
 import com.sheuberger.fitness.ui.workouts.WorkoutDetailScreen
 import com.sheuberger.fitness.ui.workouts.WorkoutsScreen
 
@@ -58,8 +60,10 @@ import com.sheuberger.fitness.ui.workouts.WorkoutsScreen
 private enum class Tab(val route: String, val label: String, val icon: ImageVector) {
     Workouts("workouts", "Workouts", Icons.Outlined.FitnessCenter),
     Exercises("exercises", "Übungen", Icons.AutoMirrored.Outlined.ListAlt),
-    // Kurz "Gewicht", damit bei vier Tabs jede Beschriftung auf eine Zeile passt. Der Screen heißt weiter "Körpergewicht".
+    // Kurz "Gewicht", damit bei fünf Tabs jede Beschriftung auf eine Zeile passt. Der Screen heißt weiter "Körpergewicht".
     BodyWeight("bodyweight", "Gewicht", Icons.Outlined.MonitorWeight),
+    // Das Ei statt Messer und Gabel: Die hat schon die Mensa, zwei fast gleiche Symbole nebeneinander verwirren.
+    Nutrition("nutrition", "Essen", Icons.Outlined.EggAlt),
     Mensa("mensa", "Mensa", Icons.Outlined.Restaurant),
 }
 
@@ -143,6 +147,9 @@ fun FitnessAppRoot() {
                 }
                 composable(Tab.BodyWeight.route) {
                     BodyWeightScreen()
+                }
+                composable(Tab.Nutrition.route) {
+                    NutritionScreen()
                 }
                 composable(Tab.Mensa.route) {
                     MensaScreen()

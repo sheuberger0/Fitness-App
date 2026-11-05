@@ -29,11 +29,16 @@ import androidx.compose.material.icons.outlined.CloudOff
 import androidx.compose.material.icons.outlined.FitnessCenter
 import androidx.compose.material.icons.outlined.LocalFireDepartment
 import androidx.compose.material.icons.outlined.Savings
+import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
@@ -42,6 +47,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -58,6 +64,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sheuberger.fitness.data.FoodEntry
 import com.sheuberger.fitness.mensa.Meal
 import com.sheuberger.fitness.mensa.MealTime
 import com.sheuberger.fitness.mensa.Mensa
@@ -65,6 +72,7 @@ import com.sheuberger.fitness.mensa.RankBy
 import com.sheuberger.fitness.mensa.RankedMeal
 import com.sheuberger.fitness.mensa.Ranking
 import com.sheuberger.fitness.mensa.University
+import com.sheuberger.fitness.nutrition.toSlot
 import com.sheuberger.fitness.ui.AppViewModelProvider
 import com.sheuberger.fitness.ui.components.AppCard
 import com.sheuberger.fitness.ui.components.AppCardShape
@@ -75,6 +83,7 @@ import com.sheuberger.fitness.ui.components.ButtonTone
 import com.sheuberger.fitness.ui.components.CircleIconButton
 import com.sheuberger.fitness.ui.components.CircleIconButtonStyle
 import com.sheuberger.fitness.ui.components.Entrance
+import com.sheuberger.fitness.ui.components.FadeSwap
 import com.sheuberger.fitness.ui.components.PillSegments
 import com.sheuberger.fitness.ui.components.PrimaryButton
 import com.sheuberger.fitness.ui.components.QuietButton
@@ -82,6 +91,13 @@ import com.sheuberger.fitness.ui.components.SectionLabel
 import com.sheuberger.fitness.ui.components.entrance
 import com.sheuberger.fitness.ui.components.rememberEntrance
 import com.sheuberger.fitness.ui.components.withContent
+import com.sheuberger.fitness.ui.nutrition.FitsBadge
+import com.sheuberger.fitness.ui.nutrition.MensaLogSheet
+import com.sheuberger.fitness.ui.nutrition.NutritionFormat
+import com.sheuberger.fitness.ui.nutrition.NutritionSnackbar
+import kotlinx.coroutines.launch
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 /**
  * Mensa-Rangliste: Welche Gerichte in Polymensa und UZH-Mensen bringen heute am meisten Protein
@@ -96,10 +112,31 @@ fun MensaScreen(
     val listState = rememberLazyListState()
     val entrance = rememberEntrance()
     var detail by remember { mutableStateOf<RankedMeal?>(null) }
+    // Das Gericht, das gerade ins Ernährungstagebuch eingetragen wird.
+    var logging by remember { mutableStateOf<Meal?>(null) }
     var settingsOpen by rememberSaveable { mutableStateOf(false) }
     val pullState = rememberPullToRefreshState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-    Scaffold { innerPadding ->
+    // Bestätigung unten am Rand, z. B. "Eingetragen: Mittag · 850 kcal", mit "Rückgängig" für einen Fehlgriff.
+    fun confirmLogged(entry: FoodEntry) {
+        scope.launch {
+            // Für einen anderen Tag als heute steht der Tag dabei, damit klar ist, wo der Eintrag gelandet ist.
+            val day = if (entry.date == state.today) "" else "${NutritionFormat.day(entry.date, state.today)} · "
+            val result = snackbarHostState.showSnackbar(
+                message = "Eingetragen: $day${entry.meal.label} · ${NutritionFormat.kcal(entry.kcal, entry.estimated)}",
+                actionLabel = "Rückgängig",
+                duration = SnackbarDuration.Short,
+            )
+            if (result == SnackbarResult.ActionPerformed) viewModel.undoLog(entry)
+        }
+    }
+
+    Scaffold(
+        // Eigene Snackbar im App-Stil, dieselbe wie im Essen-Tab.
+        snackbarHost = { SnackbarHost(snackbarHostState) { data -> NutritionSnackbar(data) } },
+    ) { innerPadding ->
         PullToRefreshBox(
             isRefreshing = state.refreshing,
             onRefresh = viewModel::refresh,
@@ -146,7 +183,26 @@ fun MensaScreen(
     }
 
     detail?.let { meal ->
-        MealDetailSheet(meal = meal, group = state.prefs.group, onDismiss = { detail = null })
+        MealDetailSheet(
+            meal = meal,
+            group = state.prefs.group,
+            onDismiss = { detail = null },
+            // Läuft, wenn das Detail-Sheet ganz zu ist: Dann öffnet sich gleich das Sheet zum Eintragen.
+            onLog = { logging = meal.meal },
+        )
+    }
+    logging?.let { meal ->
+        MensaLogSheet(
+            meal = meal,
+            // Der gewählte Tag: So lässt sich ein Gericht auch für einen anderen Tag der Woche eintragen.
+            date = state.date,
+            initialSlot = meal.time.toSlot(),
+            loadPortion = viewModel::mensaPortion,
+            onLog = { entry -> viewModel.log(entry, onLogged = ::confirmLogged) },
+            onDismiss = { logging = null },
+            // Nur für heute (sonst null): Was heute noch fehlt, sagt über einen anderen Tag nichts.
+            remainingKcal = state.remainingKcal,
+        )
     }
     if (settingsOpen) {
         MensaSettingsSheet(
@@ -184,6 +240,7 @@ private fun LazyListScope.header(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                RemainingTodayHint(state.remainingKcal)
             }
             CircleIconButton(
                 icon = Icons.Outlined.Tune,
@@ -221,6 +278,43 @@ private fun LazyListScope.header(
             }
             Spacer(Modifier.weight(1f))
             SortButton(selected = state.prefs.rankBy, onSelect = { by -> viewModel.updatePrefs { it.copy(rankBy = by) } })
+        }
+    }
+}
+
+/**
+ * "Heute noch 1450 kcal", "Ziel erreicht" oder "320 kcal über dem Ziel", nur wenn heute gewählt ist.
+ * Blendet weich ein, aus und über (z. B. nach dem Eintragen oder beim Wechsel auf einen anderen Tag).
+ */
+@Composable
+private fun RemainingTodayHint(remainingKcal: Double?) {
+    // Gerundet: Ein Eintrag mit Nachkommastellen soll nicht für jede Zehntel-Kalorie neu überblenden.
+    FadeSwap(targetState = remainingKcal?.roundToInt()) { remaining ->
+        if (remaining != null) {
+            val colors = MaterialTheme.colorScheme
+            val reached = abs(remaining) <= MensaFormat.GOAL_TOLERANCE_KCAL
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .clip(CircleShape)
+                    .background(colors.surfaceContainerHigh)
+                    .padding(start = 10.dp, end = 12.dp, top = 5.dp, bottom = 5.dp),
+            ) {
+                Icon(
+                    imageVector = if (reached) Icons.Outlined.TaskAlt else Icons.Outlined.LocalFireDepartment,
+                    contentDescription = null,
+                    tint = colors.primary,
+                    modifier = Modifier.size(16.dp),
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    text = MensaFormat.remainingToday(remaining.toDouble()),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = colors.onSurface,
+                    maxLines = 1,
+                )
+            }
         }
     }
 }
@@ -293,7 +387,13 @@ private fun LazyListScope.results(
     val best = ranking.ranked.firstOrNull()
     if (best != null) {
         item(key = "best:${best.meal.id}") {
-            BestMealCard(best, state.prefs.rankBy, onClick = { onOpen(best) }, modifier = Modifier.animateItem())
+            BestMealCard(
+                meal = best,
+                by = state.prefs.rankBy,
+                fits = best.meal.id in state.fitting,
+                onClick = { onOpen(best) },
+                modifier = Modifier.animateItem(),
+            )
         }
     }
     if (ranking.ranked.size > 1) {
@@ -306,6 +406,7 @@ private fun LazyListScope.results(
                 rank = index + 2,
                 meal = meal,
                 by = state.prefs.rankBy,
+                fits = meal.meal.id in state.fitting,
                 share = if (top > 0) (meal.metric(state.prefs.rankBy) / top).toFloat() else 0f,
                 onClick = { onOpen(meal) },
                 modifier = Modifier
@@ -332,9 +433,18 @@ private fun LazyListScope.results(
     item(key = "footer") { Footer(ranking, state) }
 }
 
-/** Platz 1 groß wie eine Kennzahl-Karte in Health-Apps. */
+/**
+ * Platz 1 groß wie eine Kennzahl-Karte in Health-Apps.
+ * [fits]: Eine Portion passt noch ins heutige Kalorienziel (Pille "passt" hinter dem Namen).
+ */
 @Composable
-private fun BestMealCard(meal: RankedMeal, by: RankBy, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun BestMealCard(
+    meal: RankedMeal,
+    by: RankBy,
+    fits: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val colors = MaterialTheme.colorScheme
     AppCard(
         onClick = onClick,
@@ -368,13 +478,21 @@ private fun BestMealCard(meal: RankedMeal, by: RankBy, onClick: () -> Unit, modi
             )
         }
         Spacer(Modifier.height(14.dp))
-        Text(
-            text = meal.meal.name,
-            style = MaterialTheme.typography.titleLarge,
-            color = colors.onSurface,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = meal.meal.name,
+                style = MaterialTheme.typography.titleLarge,
+                color = colors.onSurface,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                // fill = false: Die Pille steht direkt hinter einem kurzen Namen, nicht am rechten Rand.
+                modifier = Modifier.weight(1f, fill = false),
+            )
+            if (fits) {
+                Spacer(Modifier.width(8.dp))
+                FitsBadge()
+            }
+        }
         if (meal.meal.description.isNotEmpty()) {
             Spacer(Modifier.height(4.dp))
             Text(
@@ -423,12 +541,13 @@ private fun Metric(value: String, unit: String, label: String, highlighted: Bool
     }
 }
 
-/** Platz 2 und folgende: kompakte Zeile mit Balken, der den Abstand zu Platz 1 zeigt. */
+/** Platz 2 und folgende: kompakte Zeile mit Balken, der den Abstand zu Platz 1 zeigt. [fits] wie bei Platz 1. */
 @Composable
 private fun RankRow(
     rank: Int,
     meal: RankedMeal,
     by: RankBy,
+    fits: Boolean,
     share: Float,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -450,13 +569,20 @@ private fun RankRow(
                 modifier = Modifier.width(RankColumn),
             )
             Column(Modifier.weight(1f).padding(end = 12.dp)) {
-                Text(
-                    text = meal.meal.name,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                    color = colors.onSurface,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = meal.meal.name,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+                        color = colors.onSurface,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false),
+                    )
+                    if (fits) {
+                        Spacer(Modifier.width(6.dp))
+                        FitsBadge()
+                    }
+                }
                 Text(
                     text = "${meal.where()} · ${MensaFormat.metricValue(meal, secondary)} ${secondary.unit}" +
                         meal.meal.dietTag(),

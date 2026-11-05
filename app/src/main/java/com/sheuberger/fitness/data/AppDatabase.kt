@@ -1,6 +1,7 @@
 package com.sheuberger.fitness.data
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -30,10 +31,17 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         WorkoutExercise::class,
         ExerciseLog::class,
         BodyWeightEntry::class,
+        Food::class,
+        FoodEntry::class,
+        MealTemplate::class,
+        MealTemplateItem::class,
     ],
     version = AppDatabase.VERSION,
     exportSchema = true,
-    autoMigrations = [],
+    autoMigrations = [
+        // Version 2 fügt nur neue Tabellen hinzu (Kalorien-Tracker). Das kann Room selbst erzeugen.
+        AutoMigration(from = 1, to = 2),
+    ],
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -41,10 +49,16 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun workoutDao(): WorkoutDao
     abstract fun exerciseLogDao(): ExerciseLogDao
     abstract fun bodyWeightDao(): BodyWeightDao
+    abstract fun foodDao(): FoodDao
+    abstract fun foodEntryDao(): FoodEntryDao
+    abstract fun mealTemplateDao(): MealTemplateDao
 
     companion object {
-        /** Aktuelle Schema-Version. Version 1 ist mit den App-Versionen 1.0 bis 1.3 ausgeliefert. */
-        const val VERSION = 1
+        /**
+         * Aktuelle Schema-Version. Version 1: App 1.0 bis 1.9. Version 2 (App 2.0): Tabellen für den
+         * Kalorien-Tracker (foods, food_entries, meal_templates, meal_template_items).
+         */
+        const val VERSION = 2
 
         const val FILE_NAME = "fitness.db"
 

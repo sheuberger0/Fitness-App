@@ -33,13 +33,19 @@ import com.sheuberger.fitness.ui.components.AppSheet
 import com.sheuberger.fitness.ui.components.AppSheetHeader
 import com.sheuberger.fitness.ui.components.CircleIconButton
 import com.sheuberger.fitness.ui.components.PillSegments
+import com.sheuberger.fitness.ui.components.PrimaryButton
 import com.sheuberger.fitness.ui.components.QuietButton
 import com.sheuberger.fitness.ui.components.SectionLabel
 import kotlin.math.roundToInt
 
-/** Details zu einem Gericht: Zutaten, alle Nährwerte und alle Preise. */
+/**
+ * Details zu einem Gericht: Zutaten, alle Nährwerte und alle Preise.
+ *
+ * @param onLog null: kein Knopf "Eintragen". Sonst schließt sich das Sheet und ruft danach [onLog], z. B. um das
+ *   Sheet zum Eintragen ins Ernährungstagebuch zu öffnen.
+ */
 @Composable
-fun MealDetailSheet(meal: RankedMeal, group: PriceGroup, onDismiss: () -> Unit) {
+fun MealDetailSheet(meal: RankedMeal, group: PriceGroup, onDismiss: () -> Unit, onLog: (() -> Unit)? = null) {
     val m = meal.meal
     AppSheet(onDismiss = onDismiss) {
         AppSheetHeader(
@@ -99,6 +105,13 @@ fun MealDetailSheet(meal: RankedMeal, group: PriceGroup, onDismiss: () -> Unit) 
                 PriceGroup.entries.mapNotNull { g -> m.price(g)?.let { g.label to MensaFormat.chf(it) } },
                 highlight = m.price(group)?.let { group.label },
             )
+
+            if (onLog != null) {
+                Spacer(Modifier.height(24.dp))
+                // Unten, nach den Nährwerten und Preisen: erst lesen, dann entscheiden. Erst schließt sich dieses
+                // Sheet, dann öffnet sich das zum Eintragen (zwei Sheets übereinander wären unruhig).
+                PrimaryButton(text = "Eintragen", onClick = { dismiss { onLog() } }, modifier = Modifier.fillMaxWidth())
+            }
         }
     }
 }
