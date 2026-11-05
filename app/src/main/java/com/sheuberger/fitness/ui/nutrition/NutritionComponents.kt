@@ -65,6 +65,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -83,6 +84,7 @@ import com.sheuberger.fitness.ui.components.appClickable
 import com.sheuberger.fitness.ui.components.appTextFieldColors
 import com.sheuberger.fitness.ui.components.pressScale
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 // Kleine Bausteine für den Kalorien-Tracker. Sie sehen aus wie die gemeinsamen Bausteine in ui/components
 // und sind nur dort neu, wo es für den Tracker etwas Eigenes braucht.
@@ -299,6 +301,23 @@ internal fun GoalBar(
     )
 }
 
+/**
+ * Ganze Zahl, die beim Wechsel weich hoch- oder runterzählt, wie [com.sheuberger.fitness.ui.components.AnimatedNumber].
+ * Eine eigene Variante, weil Kalorien im Tracker ohne Tausenderpunkt stehen ("3800 kcal", siehe [NutritionFormat]).
+ * AnimatedNumber würde "3.800" schreiben, und dann stünden in derselben Karte zwei Schreibweisen.
+ */
+@Composable
+internal fun AnimatedCount(
+    value: Int,
+    style: TextStyle,
+    modifier: Modifier = Modifier,
+    color: Color = Color.Unspecified,
+) {
+    val animated = remember { Animatable(value.toFloat()) }
+    LaunchedEffect(value) { animated.animateTo(value.toFloat(), tween(420, easing = FastOutSlowInEasing)) }
+    Text(text = animated.value.roundToInt().toString(), style = style, color = color, modifier = modifier, maxLines = 1)
+}
+
 /** Kleine Pille "passt": Eine Portion liegt unter dem, was heute noch bis zum Ziel fehlt. */
 @Composable
 internal fun FitsBadge(modifier: Modifier = Modifier) {
@@ -428,9 +447,18 @@ internal fun SheetRow(
     }
 }
 
-/** Zeile "Neues Lebensmittel" mit gefülltem Akzent-Kreis, wie "Neue Übung anlegen" in der Übungsauswahl. */
+/**
+ * Zeile "Neues Lebensmittel" mit gefülltem Akzent-Kreis, wie "Neue Übung anlegen" in der Übungsauswahl.
+ * [icon] steht im Kreis, z. B. ein Scanner-Symbol für "Barcode scannen".
+ */
 @Composable
-internal fun CreateRow(title: String, subtitle: String?, onClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun CreateRow(
+    title: String,
+    subtitle: String?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: ImageVector = Icons.Filled.Add,
+) {
     val fill = com.sheuberger.fitness.ui.theme.LocalAccentFill.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -446,7 +474,7 @@ internal fun CreateRow(title: String, subtitle: String?, onClick: () -> Unit, mo
                 .size(36.dp)
                 .background(fill.container, CircleShape),
         ) {
-            Icon(Icons.Filled.Add, contentDescription = null, tint = fill.content, modifier = Modifier.size(20.dp))
+            Icon(icon, contentDescription = null, tint = fill.content, modifier = Modifier.size(20.dp))
         }
         Spacer(Modifier.width(16.dp))
         Column(Modifier.weight(1f)) {

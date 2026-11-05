@@ -22,9 +22,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -36,6 +38,9 @@ import java.time.LocalTime
  * den Haupt-Thread wartet (der ist im Test mit dem Test selbst beschäftigt).
  */
 internal fun defaultViewModelScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+/** Das Datum von heute und der gewählte Tag. */
+private data class DaySelection(val today: LocalDate, val date: LocalDate)
 
 /** Eine Mahlzeit der Tagesansicht mit ihren Einträgen. */
 data class MealSection(val slot: MealSlot, val entries: List<FoodEntry>) {
@@ -51,6 +56,13 @@ data class NutritionUiState(
     /** Gibt es gestern Einträge? Dann bietet ein leerer heutiger Tag "Gestern übernehmen" an. */
     val yesterdayLogged: Boolean = false,
     val trend: TrendSummary? = null,
+    /** Kalorien von gestern, für die Karte "Gestern übernehmen". null: gestern nichts eingetragen. */
+    val yesterdayKcal: Double? = null,
+    /**
+     * Gibt es überhaupt schon Einträge? Wenn nicht, begrüßt der Tab mit einer kurzen Einführung.
+     * Standard true, damit die Einführung beim Laden nicht kurz aufblitzt.
+     */
+    val hasHistory: Boolean = true,
 ) {
     // Einmal beim Erzeugen berechnet (nicht bei jedem Zugriff), die Oberfläche liest sie mehrmals.
     val totals: Totals = entries.totals()
@@ -86,40 +98,65 @@ class NutritionViewModel(
     scope: CoroutineScope = defaultViewModelScope(),
 ) : ViewModel(scope) {
 
-    private val today: LocalDate = now().toLocalDate()
-    private val selectedDate = MutableStateFlow(today)
+    // Heute und der gewählte Tag in einem Zustand, damit beide immer zueinander passen (siehe [refreshToday]).
+    private val selection = MutableStateFlow(now().toLocalDate().let { DaySelection(today = it, date = it) })
 
-    // Datum und Einträge reisen zusammen: Sonst stünde beim Tageswechsel kurz der neue Tag über den alten Einträgen.
-    private val day = selectedDate.flatMapLatest { date -> nutrition.day(date).map { date to it } }
+    // Auswahl und Einträge reisen zusammen: Sonst stünde beim Tageswechsel kurz der neue Tag über den alten Einträgen.
+    private val day = selection.flatMapLatest { sel -> nutrition.day(sel.date).map { sel to it } }
 
     // Die letzten 14 Tage: für den Trend und um zu sehen, ob gestern etwas eingetragen ist.
-    private val recentTotals = nutrition.dailyTotals(today.minusDays(13), today)
+    private val recentTotals = selection.map { it.today }.distinctUntilChanged()
+        .flatMapLatest { today -> nutrition.dailyTotals(today.minusDays(13), today) }
+
+    // "Zuletzt" ist leer, solange es noch gar keinen Eintrag gibt. Die Abfrage gibt es schon, sie kostet nichts extra.
+    private val hasHistory = nutrition.recentEntries.map { it.isNotEmpty() }.distinctUntilChanged()
 
     val uiState: StateFlow<NutritionUiState> =
-        combine(day, settings.goals, recentTotals, fitness.bodyWeights) { (date, entries), goals, totals, weights ->
+        combine(day, settings.goals, recentTotals, fitness.bodyWeights, hasHistory) {
+                (sel, entries), goals, totals, weights, history ->
+            val yesterday = totals.firstOrNull { it.date == sel.today.minusDays(1) }
             NutritionUiState(
-                today = today,
+                today = sel.today,
                 loading = false,
-                date = date,
+                date = sel.date,
                 entries = entries,
                 goals = goals,
-                yesterdayLogged = totals.any { it.date == today.minusDays(1) },
-                trend = Trend.summarize(weights, totals, goals, today),
+                yesterdayLogged = yesterday != null,
+                trend = Trend.summarize(weights, totals, goals, sel.today),
+                yesterdayKcal = yesterday?.kcal,
+                hasHistory = history,
             )
-        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), NutritionUiState(today = today))
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), NutritionUiState(today = selection.value.today))
 
     // --- Tag wählen ---
 
     /** Zukünftige Tage gibt es nicht: Eingetragen wird, was schon gegessen ist. */
     fun selectDate(date: LocalDate) {
-        selectedDate.value = minOf(date, today)
+        selection.update { it.copy(date = minOf(date, it.today)) }
     }
 
-    fun previousDay() = selectDate(selectedDate.value.minusDays(1))
+    fun previousDay() = selection.update { it.copy(date = it.date.minusDays(1)) }
 
-    fun nextDay() = selectDate(selectedDate.value.plusDays(1))
+    fun nextDay() = selectDate(selection.value.date.plusDays(1))
 
-    fun showToday() = selectDate(today)
+    fun showToday() = selection.update { it.copy(date = it.today) }
+
+    /**
+     * Prüft, ob inzwischen ein neuer Tag ist. Der Screen ruft das bei jedem Öffnen auf: Android lässt die App oft
+     * über Nacht im Hintergrund weiterlaufen, und am Morgen soll "Heute" wirklich heute sein und nicht gestern.
+     */
+    fun refreshToday() {
+        val newToday = now().toLocalDate()
+        selection.update { sel ->
+            when {
+                sel.today == newToday -> sel
+                // Wer "Heute" offen hatte, sieht nach Mitternacht wieder "Heute" (den neuen, leeren Tag).
+                sel.date == sel.today -> DaySelection(today = newToday, date = newToday)
+                // Ein anderer Tag bleibt gewählt. minOf, falls die Uhr zurückgestellt wurde (andere Zeitzone).
+                else -> DaySelection(today = newToday, date = minOf(sel.date, newToday))
+            }
+        }
+    }
 
     // --- Einträge ---
 
