@@ -188,7 +188,15 @@ class NutritionViewModel(
 
     // --- Ziele ---
 
-    fun updateGoals(transform: (NutritionGoals) -> NutritionGoals) = settings.update(transform)
+    /**
+     * Ziele aus dem Sheet "Ziele". Wer das Kalorienziel von Hand ändert, bekommt wie nach "Übernehmen" 14 Tage
+     * Ruhe: Die Daten der letzten Wochen gehören noch zum alten Ziel. Ein Vorschlag gleich danach würde die
+     * eigene Änderung noch einmal draufrechnen (von Hand 3800 auf 4000, dann "Vorschlag: Ziel auf 4220 kcal").
+     */
+    fun updateGoals(transform: (NutritionGoals) -> NutritionGoals) = settings.update { old ->
+        val next = transform(old)
+        if (next.kcalTarget != old.kcalTarget) next.copy(lastReview = now().toLocalDate()) else next
+    }
 
     /** "Übernehmen": neues Kalorienziel. Danach ist 14 Tage Ruhe, bis der nächste Vorschlag kommt. */
     fun acceptSuggestion(suggestion: TargetSuggestion) =

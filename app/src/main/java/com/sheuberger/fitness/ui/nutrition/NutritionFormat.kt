@@ -164,23 +164,25 @@ object NutritionFormat {
     }
 
     /**
-     * Ein Satz zum Zielvorschlag: geplante und tatsächliche Änderung pro Woche.
-     * "In den letzten zwei Wochen", weil [Trend] den Durchschnitt dieser Woche mit dem der Woche davor vergleicht.
+     * Ein Satz zum Zielvorschlag: geplante und tatsächliche Änderung pro Woche. "Zuletzt" heißt: Durchschnitt
+     * dieser Woche gegenüber dem der Woche davor (so rechnet [Trend]). Beide Male "pro Woche", damit die
+     * tatsächliche Zahl nicht wie die Summe über zwei Wochen klingt.
      */
     fun suggestionReason(suggestion: TargetSuggestion): String =
-        "Geplant sind ${signedKg(suggestion.goalWeeklyChangeKg)} pro Woche, " +
-            "in den letzten zwei Wochen waren es ${signedKg(suggestion.actualWeeklyChangeKg)}."
+        "Geplant sind ${weeklyGoal(suggestion.goalWeeklyChangeKg)}, " +
+            "zuletzt waren es ${weeklyGoal(suggestion.actualWeeklyChangeKg)}."
 
     /**
-     * Was das Wochenziel pro Tag bedeutet: +0,25 kg pro Woche sind 0,25 · 7700 kcal ÷ 7 Tage ≈ 275 kcal
-     * Überschuss pro Tag. Auf 5 gerundet, mehr Genauigkeit gibt es bei solchen Schätzungen nicht.
+     * Was das Wochenziel pro Tag bedeutet, als Merksatz: +0,25 kg pro Woche sind 0,25 · 7700 kcal ÷ 7 Tage
+     * ≈ 275 kcal Überschuss pro Tag. Auf 5 gerundet, mehr Genauigkeit gibt es bei solchen Schätzungen nicht.
      */
     fun dailyBalance(weeklyGoalKg: Double): String {
         val perDay = Math.round(abs(weeklyGoalKg) * Trend.KCAL_PER_KG / 7 / 5).toInt() * 5
+        val why = "weil 1 kg Körpergewicht etwa ${Trend.KCAL_PER_KG.roundToInt()} kcal entspricht"
         return when {
-            perDay == 0 -> "Gewicht halten: so viel essen, wie du verbrauchst"
-            weeklyGoalKg > 0 -> "≈ $perDay kcal Überschuss pro Tag"
-            else -> "≈ $perDay kcal Defizit pro Tag"
+            perDay == 0 -> "Gewicht halten: so viel essen, wie du verbrauchst."
+            weeklyGoalKg > 0 -> "${weeklyGoal(weeklyGoalKg)} ≈ $perDay kcal Überschuss pro Tag, $why."
+            else -> "${weeklyGoal(weeklyGoalKg)} ≈ $perDay kcal Defizit pro Tag, $why."
         }
     }
 

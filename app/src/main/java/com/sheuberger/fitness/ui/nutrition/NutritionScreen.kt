@@ -329,6 +329,7 @@ fun NutritionScreen(
             goals = state.goals,
             onChange = viewModel::updateGoals,
             onDismiss = { goalsOpen = false },
+            bodyWeightKg = state.trend?.avgWeightKg,
         )
     }
 
