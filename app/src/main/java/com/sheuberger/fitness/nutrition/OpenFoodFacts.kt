@@ -3,10 +3,10 @@ package com.sheuberger.fitness.nutrition
 import com.sheuberger.fitness.data.Food
 import com.sheuberger.fitness.data.FoodBasis
 import com.sheuberger.fitness.data.FoodSource
+import com.sheuberger.fitness.mensa.requireShallowJson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -169,9 +169,12 @@ class OpenFoodFactsClient(
         /** Liest die Antwort der Produkt-Abfrage. [code] ist der geprüfte Barcode, [fetchedAt] die Uhrzeit. */
         internal fun parse(body: String, code: String, fetchedAt: Long): OffLookup {
             val element = try {
-                json.parseToJsonElement(body)
-            } catch (e: SerializationException) {
+                // Erst die Verschachtelung prüfen, wie bei den Mensa-Menüs: Eine kaputte Antwort mit Tausenden
+                // Klammern ("[[[[…") würde den Parser sonst viel Speicher kosten. Eine echte ist 3 Ebenen tief.
+                json.parseToJsonElement(requireShallowJson(body))
+            } catch (e: IllegalArgumentException) {
                 // Kein JSON: z. B. eine HTML-Fehlerseite, ein WLAN-Anmeldeportal oder eine abgebrochene Antwort.
+                // SerializationException (Lesefehler) ist eine IllegalArgumentException, die Tiefenprüfung auch.
                 return OffLookup.Failed(UNEXPECTED)
             }
             // Gültiges JSON, aber kein Objekt (z. B. [] oder "Fehler"): ebenfalls nicht die erwartete Antwort.
