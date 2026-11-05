@@ -319,6 +319,7 @@ fun NutritionScreen(
                     deleteWithUndo(it)
                 },
                 onDismiss = { editing = null },
+                remainingKcal = state.remainingKcal,
             )
         }
     }

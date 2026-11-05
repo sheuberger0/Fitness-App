@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.sheuberger.fitness.data.EntrySource
 import com.sheuberger.fitness.data.EntryUnit
 import com.sheuberger.fitness.data.FoodEntry
 import com.sheuberger.fitness.data.MealSlot
@@ -27,7 +28,9 @@ import com.sheuberger.fitness.nutrition.withAmount
 import com.sheuberger.fitness.ui.components.AppFieldShape
 import com.sheuberger.fitness.ui.components.AppSheet
 import com.sheuberger.fitness.ui.components.AppSheetHeader
+import com.sheuberger.fitness.ui.components.ButtonTone
 import com.sheuberger.fitness.ui.components.PrimaryButton
+import com.sheuberger.fitness.ui.components.QuietButton
 import com.sheuberger.fitness.ui.components.SectionLabel
 import java.time.LocalDate
 import kotlin.math.ceil
@@ -96,18 +99,147 @@ fun RelogSheet(
     }
 }
 
-/** Eintrag bearbeiten (wird im nächsten Schritt gefüllt). */
+/**
+ * Eintrag im Tagebuch bearbeiten: Menge und Mahlzeit, bei "Schnell"-Einträgen auch Name, Kalorien und Protein.
+ * Kalorien und Makros wachsen mit der Menge mit ([withAmount]). Wie im Gewichts-Sheet fährt das Sheet bei
+ * "Speichern" und "Eintrag löschen" erst weg und ruft dann den Aufrufer. Gelöscht wird ohne Rückfrage:
+ * Der Bildschirm darunter bietet "Rückgängig" an, das ist schneller als ein Dialog und genauso sicher.
+ *
+ * @param remainingKcal was an diesem Tag noch bis zum Ziel fehlt, mit dem Eintrag, wie er jetzt ist.
+ *   Daraus wird "Danach noch … kcal". null: kein Hinweis.
+ */
 @Composable
 fun EntryEditSheet(
     entry: FoodEntry,
     onSave: (FoodEntry) -> Unit,
     onDelete: (FoodEntry) -> Unit,
     onDismiss: () -> Unit,
+    remainingKcal: Double? = null,
 ) {
+    val quick = entry.source == EntrySource.QUICK
+    var amountText by rememberSaveable { mutableStateOf(NutritionFormat.number(entry.amount, 2)) }
+    var slot by rememberSaveable { mutableStateOf(entry.meal) }
+    // Nur für "Schnell": Die Felder zeigen die Werte für die ganze Menge. Der Standardname bleibt Platzhalter,
+    // damit man nicht erst "Schnell eingetragen" löschen muss, um einen eigenen Namen zu tippen.
+    var name by rememberSaveable { mutableStateOf(if (entry.name == NutritionFormat.QUICK_NAME) "" else entry.name) }
+    var kcalText by rememberSaveable { mutableStateOf(NutritionFormat.number(entry.kcal, 0)) }
+    var proteinText by rememberSaveable { mutableStateOf(entry.proteinG?.let { NutritionFormat.number(it, 1) } ?: "") }
+    // Für welche Menge die Zahlen in den Feldern gelten: Aus 1 Portion mit 350 kcal werden mit "+" 1,5 Portionen
+    // mit 525 kcal. Wer die Kalorien danach selbst ändert, meint die neue Menge.
+    var fieldsAmount by rememberSaveable { mutableStateOf(entry.amount) }
+
+    val amount = parseAmount(amountText, entry.unit)
+    val updated = amount?.let { editedEntry(entry, it, slot, name, kcalText, proteinText) }
+
+    fun changeAmount(text: String) {
+        amountText = text
+        val newAmount = parseAmount(text, entry.unit) ?: return
+        if (quick && fieldsAmount > 0 && newAmount != fieldsAmount) {
+            val factor = newAmount / fieldsAmount
+            NutritionFormat.parse(kcalText)?.let { kcalText = NutritionFormat.number(it * factor, 0) }
+            NutritionFormat.parse(proteinText)?.let { proteinText = NutritionFormat.number(it * factor, 1) }
+        }
+        fieldsAmount = newAmount
+    }
+
+    // "Danach noch …": den Eintrag, wie er war, wieder herausrechnen und den geänderten dazunehmen.
+    val afterChange = remainingKcal?.let { NutritionFormat.afterLogging(it + entry.kcal - (updated ?: entry).kcal) }
+
     AppSheet(onDismiss = onDismiss) {
-        AppSheetHeader(title = entry.name)
+        AppSheetHeader(
+            // Bei "Schnell" ist der Name selbst ein Feld; oben stünde sonst, was man gerade ändert.
+            title = if (quick) "Eintrag bearbeiten" else entry.name,
+            subtitle = if (quick) null else origin(entry),
+        )
+        Column(Modifier.padding(horizontal = 24.dp)) {
+            if (quick) {
+                QuickFields(
+                    kcalText = kcalText,
+                    onKcalChange = { kcalText = it },
+                    proteinText = proteinText,
+                    onProteinChange = { proteinText = it },
+                    name = name,
+                    onNameChange = { name = it },
+                )
+                Spacer(Modifier.height(20.dp))
+            }
+            AmountInput(
+                text = amountText,
+                onTextChange = ::changeAmount,
+                unit = entry.unit,
+                isError = amountText.isNotBlank() && amount == null,
+                onStep = { direction ->
+                    changeAmount(NutritionFormat.number(stepAmount(amount ?: entry.amount, entry.unit, direction), 2))
+                },
+            )
+            if (quick) {
+                if (afterChange != null) {
+                    Spacer(Modifier.height(8.dp))
+                    Text(afterChange, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                Spacer(Modifier.height(12.dp))
+                ValuesPreview(
+                    values = updated ?: entry,
+                    caption = listOfNotNull(NutritionFormat.amount(amount ?: entry.amount, entry.unit), afterChange)
+                        .joinToString(" · "),
+                )
+            }
+            Spacer(Modifier.height(20.dp))
+            SectionLabel("Mahlzeit")
+            Spacer(Modifier.height(4.dp))
+            FitSegments(options = MealSlot.entries, selected = slot, onSelect = { slot = it }, label = { it.label })
+            Spacer(Modifier.height(24.dp))
+            PrimaryButton(
+                text = "Speichern",
+                onClick = {
+                    val values = updated ?: return@PrimaryButton
+                    // Erst wegfahren, dann speichern: Das Tagebuch darunter ändert sich erst, wenn das Sheet weg ist.
+                    dismiss { onSave(values) }
+                },
+                enabled = updated != null,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(6.dp))
+            // Dezent statt roter Fläche: Löschen ist hier nur die Nebenaktion, und es lässt sich rückgängig machen.
+            QuietButton(
+                text = "Eintrag löschen",
+                onClick = { dismiss { onDelete(entry) } },
+                tone = ButtonTone.Destructive,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
     }
 }
+
+/**
+ * Der bearbeitete Eintrag, oder null, solange etwas Ungültiges eingetippt ist. ID, Tag und Zeitpunkt bleiben.
+ * Bei "Schnell" gelten Kalorien und Protein aus den Feldern (schon für die neue Menge), Kohlenhydrate und Fett
+ * wachsen mit der Menge mit. Bei allen anderen rechnet [withAmount] alles aus der Menge.
+ */
+internal fun editedEntry(
+    entry: FoodEntry,
+    amount: Double,
+    slot: MealSlot,
+    name: String,
+    kcalText: String,
+    proteinText: String,
+): FoodEntry? {
+    val scaled = entry.withAmount(amount).copy(meal = slot)
+    if (entry.source != EntrySource.QUICK) return scaled
+    val kcal = parseQuickKcal(kcalText) ?: return null
+    val protein = NutritionFormat.parse(proteinText)
+    if (quickProteinError(proteinText, protein, kcal) != null) return null
+    return scaled.copy(name = name.trim().ifEmpty { NutritionFormat.QUICK_NAME }, kcal = kcal, proteinG = protein)
+}
+
+/** Woher ein Eintrag stammt, als Untertitel: "Polymensa · Street". Bei eigenen Lebensmitteln steht der Name allein. */
+private fun origin(entry: FoodEntry): String? =
+    if (entry.source == EntrySource.MENSA) {
+        listOfNotNull(entry.mensa, entry.mensaLine).joinToString(" · ").ifEmpty { "Mensa" }
+    } else {
+        null
+    }
 
 // --- gemeinsame Teile ---
 

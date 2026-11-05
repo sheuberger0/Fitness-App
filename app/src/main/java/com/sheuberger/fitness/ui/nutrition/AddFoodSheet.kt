@@ -682,18 +682,12 @@ private fun QuickForm(onLog: (name: String, kcal: Double, proteinG: Double?) -> 
     var kcalText by rememberSaveable { mutableStateOf("") }
     var proteinText by rememberSaveable { mutableStateOf("") }
     var name by rememberSaveable { mutableStateOf("") }
-    val kcal = NutritionFormat.parse(kcalText)?.takeIf { it > 0 && it <= MAX_QUICK_KCAL }
+    val kcal = parseQuickKcal(kcalText)
     val protein = NutritionFormat.parse(proteinText)
-    val kcalError = if (kcalText.isNotBlank() && kcal == null) "Zwischen 1 und $MAX_QUICK_KCAL kcal" else null
-    val proteinError = quickProteinError(proteinText, protein, kcal)
-    val valid = kcal != null && proteinError == null
+    val valid = kcal != null && quickProteinError(proteinText, protein, kcal) == null
     val focus = remember { FocusRequester() }
     // Wer "Schnell" wählt, will tippen: Die Tastatur kommt gleich mit.
     LaunchedEffect(Unit) { focus.requestFocus() }
-
-    fun submit() {
-        if (valid && kcal != null) onLog(name.trim(), kcal, protein)
-    }
 
     Column(
         Modifier
@@ -701,31 +695,14 @@ private fun QuickForm(onLog: (name: String, kcal: Double, proteinG: Double?) -> 
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp, vertical = 8.dp),
     ) {
-        NumberField(
-            value = kcalText,
-            onValueChange = { kcalText = it },
-            label = "Kalorien",
-            suffix = "kcal",
-            error = kcalError,
-            modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focus),
-        )
-        Spacer(Modifier.height(12.dp))
-        NumberField(
-            value = proteinText,
-            onValueChange = { proteinText = it },
-            label = "Protein (freiwillig)",
-            suffix = "g",
-            error = proteinError,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(Modifier.height(12.dp))
-        LabeledTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = "Name (freiwillig)",
-            placeholder = NutritionFormat.QUICK_NAME,
+        QuickFields(
+            kcalText = kcalText,
+            onKcalChange = { kcalText = it },
+            proteinText = proteinText,
+            onProteinChange = { proteinText = it },
+            name = name,
+            onNameChange = { name = it },
+            kcalModifier = Modifier.focusRequester(focus),
         )
         Spacer(Modifier.height(8.dp))
         Text(
@@ -734,11 +711,69 @@ private fun QuickForm(onLog: (name: String, kcal: Double, proteinG: Double?) -> 
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(20.dp))
-        PrimaryButton(text = "Eintragen", onClick = ::submit, enabled = valid, modifier = Modifier.fillMaxWidth())
+        PrimaryButton(
+            text = "Eintragen",
+            onClick = { if (kcal != null && valid) onLog(name.trim(), kcal, protein) },
+            enabled = valid,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
+/**
+ * Kalorien, Protein und Name eines Schnell-Eintrags, beim Eintragen und beim Bearbeiten. Untereinander in voller
+ * Breite: Nebeneinander wären die Felder auf 360 dp zu schmal für "Protein (freiwillig)".
+ */
+@Composable
+internal fun QuickFields(
+    kcalText: String,
+    onKcalChange: (String) -> Unit,
+    proteinText: String,
+    onProteinChange: (String) -> Unit,
+    name: String,
+    onNameChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    kcalModifier: Modifier = Modifier,
+) {
+    val kcal = parseQuickKcal(kcalText)
+    val protein = NutritionFormat.parse(proteinText)
+    Column(modifier) {
+        NumberField(
+            value = kcalText,
+            onValueChange = onKcalChange,
+            label = "Kalorien",
+            suffix = "kcal",
+            error = quickKcalError(kcalText),
+            modifier = kcalModifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(12.dp))
+        NumberField(
+            value = proteinText,
+            onValueChange = onProteinChange,
+            label = "Protein (freiwillig)",
+            suffix = "g",
+            error = quickProteinError(proteinText, protein, kcal),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        Spacer(Modifier.height(12.dp))
+        LabeledTextField(
+            value = name,
+            onValueChange = onNameChange,
+            label = "Name (freiwillig)",
+            placeholder = NutritionFormat.QUICK_NAME,
+        )
+    }
+}
+
+/** Mehr auf einmal ist sicher ein Tippfehler (eine ganze Pizza hat etwa 1200 kcal). */
 private const val MAX_QUICK_KCAL = 10000
+
+/** Die Kalorien eines Schnell-Eintrags, oder null, wenn das Feld leer, 0 oder unrealistisch groß ist. */
+internal fun parseQuickKcal(text: String): Double? = NutritionFormat.parse(text)?.takeIf { it > 0 && it <= MAX_QUICK_KCAL }
+
+/** Fehler zum Kalorienfeld. Ein leeres Feld ist (noch) kein Fehler, nur "Eintragen" bleibt aus. */
+internal fun quickKcalError(text: String): String? =
+    if (text.isNotBlank() && parseQuickKcal(text) == null) "Zwischen 1 und $MAX_QUICK_KCAL kcal" else null
 
 /**
  * Prüft das Protein. 1 g Protein hat etwa 4 kcal: Mehr Protein, als die Kalorien hergeben, ist ein Tippfehler
