@@ -13,8 +13,11 @@ Alle Bilder auf einmal neu erzeugen (Zuordnung in quellen.txt, Quelldateien im a
 
 Für jedes Bild entstehen zwei Dateien mit gleichem Namen:
     app/src/main/res/drawable-nodpi/exercise_<name>.webp        hell: Original auf reinem Weiß
-    app/src/main/res/drawable-night-nodpi/exercise_<name>.webp  dunkel: freigestellt, gedämpft, warm getönt
-Android wählt im dunklen Modus automatisch die Datei aus dem "night"-Ordner.
+    app/src/main/res/drawable-night-nodpi/exercise_<name>.webp  dunkel: freigestellt, gedämpft, warm getönt,
+                                                                mit durchsichtigem Hintergrund
+Android wählt im dunklen Modus automatisch die Datei aus dem "night"-Ordner. Die dunkle Datei enthält nur Figur und
+Schatten. Kartenfarbe und den weichen Lichtschein dahinter zeichnet die App (ExerciseImage in ExerciseDetailScreen.kt),
+passend zum gewählten Farbschema.
 
 Erwartet wird ein Motiv auf weißem Hintergrund, das den Bildrand nicht berührt (siehe README.md).
 Benötigt Pillow, numpy und scipy (pip install pillow numpy scipy).
@@ -40,10 +43,6 @@ HOLE_WHITE, HOLE_MIN_AREA, HOLE_EDGE = 10, 0.00001, 80
 # sein, und so viel Weißabstand (Summe der drei Kanäle) gilt noch als JPEG-Rauschen.
 EDGE_IN, EDGE_OUT, EDGE_NEAR, EDGE_NOISE = 2, 3, 5, 12
 
-# Dunkle Kachel. Der Rand hat genau die Kartenfarbe aus Color.kt (DarkCard), damit die Kachel nahtlos in die Karte
-# übergeht. Nur zur Mitte hin wird sie heller, als läge die Figur in einem weichen Lichtkegel.
-DARK_EDGE = (0x26, 0x26, 0x24)
-DARK_GLOW = (0x3A, 0x38, 0x33)
 # Tonwerte der Figur im dunklen Modus: Schwarz bleibt fast schwarz, Weiß wird gedämpft, damit nichts blendet.
 NIGHT_LO, NIGHT_HI = 10, 210
 # Warme Tönung für Grautöne, passend zur warmen Farbpalette der App. Rot (die Muskeln) bleibt unverändert.
@@ -140,21 +139,6 @@ def night_tones(figure: Image.Image) -> Image.Image:
     return Image.fromarray(np.dstack([np.clip(rgb, 0, 255), alpha]).astype(np.uint8), "RGBA")
 
 
-def dark_tile() -> Image.Image:
-    """Hintergrund der dunklen Kachel: Kartenfarbe, zur Mitte hin ein weicher Lichtschein, am Rand exakt Kartenfarbe."""
-    size = (WIDTH, HEIGHT)
-    glow = Image.new("L", size, 0)
-    ImageDraw.Draw(glow).ellipse([WIDTH * 0.2, HEIGHT * 0.1, WIDTH * 0.8, HEIGHT * 0.9], fill=255)
-    glow = np.asarray(glow.filter(ImageFilter.GaussianBlur(WIDTH * 0.07))).astype(np.float32)
-    # Zum Rand hin auf null ausblenden, sonst ist die Kachel dort heller als die Karte und hat eine sichtbare Kante.
-    ys, xs = np.mgrid[0:HEIGHT, 0:WIDTH]
-    border = np.minimum(np.minimum(xs, WIDTH - 1 - xs), np.minimum(ys, HEIGHT - 1 - ys))
-    glow *= np.clip(border / (HEIGHT * 0.12), 0, 1) ** 2
-    tile = Image.new("RGB", size, DARK_EDGE)
-    tile.paste(Image.new("RGB", size, DARK_GLOW), (0, 0), Image.fromarray(glow.astype(np.uint8)))
-    return tile.convert("RGBA")
-
-
 def contact_shadow(box: tuple[int, int, int, int]) -> Image.Image:
     """Weicher Schatten unter dem Motiv, damit es steht statt zu schweben."""
     x0, _, x1, y1 = box
@@ -216,14 +200,21 @@ def process(image: Image.Image, name: str) -> None:
     light = Image.new("RGBA", (WIDTH, HEIGHT), (255, 255, 255, 255))
     light.alpha_composite(figure)
 
-    dark = dark_tile()
+    # Dunkel: durchsichtig bis auf Schatten und Figur. Was durchsichtig bleibt, kostet in der WEBP-Datei fast nichts.
+    dark = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     dark.alpha_composite(contact_shadow(box))
     dark.alpha_composite(night_tones(figure))
 
-    for folder, result in (("drawable-nodpi", light), ("drawable-night-nodpi", dark)):
+    # Hell ohne Transparenz (reines Weiß), dunkel mit: dort liefert die App die Kartenfarbe.
+    # alpha_quality=70 speichert die Deckkraft leicht verlustbehaftet: ein Drittel kleiner, sichtbar ist kein Unterschied.
+    outputs = (
+        ("drawable-nodpi", light.convert("RGB"), {}),
+        ("drawable-night-nodpi", dark, {"alpha_quality": 70}),
+    )
+    for folder, result, options in outputs:
         target = RES / folder / f"exercise_{name}.webp"
         target.parent.mkdir(parents=True, exist_ok=True)
-        result.convert("RGB").save(target, "WEBP", quality=82, method=6)
+        result.save(target, "WEBP", quality=82, method=6, **options)
         print(f"{target.relative_to(ROOT)}  ({target.stat().st_size // 1024} KB)")
 
 

@@ -49,15 +49,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -102,6 +104,7 @@ import com.sheuberger.fitness.ui.components.trendColor
 import com.sheuberger.fitness.ui.components.withContent
 import com.sheuberger.fitness.ui.theme.LocalAccentFill
 import com.sheuberger.fitness.ui.theme.LocalDarkTheme
+import com.sheuberger.fitness.ui.theme.themedResources
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -423,8 +426,9 @@ private fun ExerciseMenu(
 }
 
 /**
- * Bild der Übung als Kachel im Kartenstil. Den Hintergrund bringt das Bild selbst mit: hell reines Weiß wie die
- * Karten (dazu dieselbe feine Kante), dunkel die Kartenfarbe mit einem weichen Lichtschein hinter der Figur.
+ * Bild der Übung als Kachel im Kartenstil. Hell bringt das Bild sein reines Weiß selbst mit (wie die Karten, dazu
+ * dieselbe feine Kante). Dunkel ist das Bild bis auf Figur, Schatten und einen weichen Lichtschein durchsichtig:
+ * Dahinter liegt die Kartenfarbe des gewählten Farbschemas, so passt die Kachel zu jedem Schema.
  *
  * Die Bilddatei wird im Hintergrund dekodiert, damit das Öffnen der Übung nicht ruckelt. Bis dahin steht eine leere
  * Fläche in Kartenfarbe da (der Rand des Bildes hat genau diese Farbe), danach blendet die Figur weich ein.
@@ -436,9 +440,10 @@ private fun ExerciseImage(
     modifier: Modifier = Modifier,
 ) {
     val dark = LocalDarkTheme.current
-    val resources = LocalContext.current.resources
-    var bitmap by remember(image, dark) { mutableStateOf<ImageBitmap?>(null) }
-    LaunchedEffect(image, dark) {
+    // Passend zur App statt zum Handy: dunkle Bilder auch dann, wenn nur die App dunkel ist.
+    val resources = themedResources()
+    var bitmap by remember(image, resources) { mutableStateOf<ImageBitmap?>(null) }
+    LaunchedEffect(image, resources) {
         bitmap = withContext(Dispatchers.IO) { ImageBitmap.imageResource(resources, image) }
     }
     val visible by animateFloatAsState(
@@ -446,6 +451,7 @@ private fun ExerciseImage(
         animationSpec = tween(durationMillis = 260, easing = FastOutSlowInEasing),
         label = "Bild einblenden",
     )
+    val glowColor = MaterialTheme.colorScheme.onSurface
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -453,7 +459,14 @@ private fun ExerciseImage(
             .aspectRatio(4f / 3f)
             .clip(AppCardShape)
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .then(if (dark) Modifier else Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, AppCardShape))
+            .then(
+                if (dark) {
+                    // Der Lichtschein kommt zusammen mit der Figur, so wie früher, als er noch im Bild steckte.
+                    Modifier.drawBehind { drawGlow(glowColor, visible) }
+                } else {
+                    Modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, AppCardShape)
+                },
+            )
             .semantics { contentDescription = "$exerciseName, trainierte Muskeln rot markiert" },
     ) {
         bitmap?.let {
@@ -466,6 +479,26 @@ private fun ExerciseImage(
             )
         }
     }
+}
+
+/**
+ * Weicher Lichtschein hinter der Figur im dunklen Theme, als stünde sie in einem Lichtkegel: in der Mitte 8,5 % der
+ * Schriftfarbe über der Kartenfarbe, zum oberen und unteren Rand hin unsichtbar. So hat die Kachel keine Kante und
+ * passt zu jedem Farbschema, weil beide Farben aus dem Schema kommen.
+ */
+private fun DrawScope.drawGlow(color: Color, alpha: Float) {
+    if (alpha <= 0f) return
+    val strength = 0.085f * alpha
+    drawRect(
+        Brush.radialGradient(
+            0f to color.copy(alpha = strength),
+            0.55f to color.copy(alpha = strength * 0.95f),
+            0.8f to color.copy(alpha = strength * 0.45f),
+            1f to color.copy(alpha = 0f),
+            center = Offset(size.width / 2, size.height / 2),
+            radius = size.height / 2,
+        ),
+    )
 }
 
 /** Kopfbereich mit großem Wert, Veränderung, Zeitraum-Auswahl und Graph. */

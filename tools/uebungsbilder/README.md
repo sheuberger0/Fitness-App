@@ -2,7 +2,8 @@
 
 In der Übungsansicht steht über dem Graphen ein Bild der Übung: eine graue Anatomie-Figur, die trainierten
 Muskeln rot. Im hellen Design wird das Original auf Weiß gezeigt, im dunklen eine freigestellte, gedämpfte
-Version auf der Kartenfarbe.
+Version mit durchsichtigem Hintergrund. Dahinter legt die App die Kartenfarbe des gewählten Farbschemas,
+so passt jedes Bild zu jedem Schema.
 
 ## Neues Bild hinzufügen
 
