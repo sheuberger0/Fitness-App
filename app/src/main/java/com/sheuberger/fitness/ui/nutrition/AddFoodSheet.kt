@@ -39,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -151,6 +152,11 @@ fun AddFoodSheet(
     var mensaTime by rememberSaveable { mutableStateOf(initialMensaTime(initialSlot, date == today, LocalTime.now())) }
     var query by rememberSaveable { mutableStateOf("") }
     var child by remember { mutableStateOf<AddChild?>(null) }
+    // Die Listen lesen den Zustand über diese State-Variable statt direkt über den Parameter [state].
+    // Ohne sie kam ein Update nicht immer an: Öffnete das Sheet mittags gleich im Segment "Mensa", zeigte die Liste
+    // weiter Platzhalter, obwohl die Menüs längst geladen waren (gefunden mit einem Screenshot-Test). Wer einen State
+    // liest, wird von Compose bei jeder Änderung neu aufgebaut, auch tief in AnimatedContent und im Overlay.
+    val latest by rememberUpdatedState(state)
     // Eine Scroll-Position pro Segment: Beim Hin- und Herwechseln bleibt jede Liste, wo sie war.
     val recentList = rememberLazyListState()
     val mensaList = rememberLazyListState()
@@ -224,7 +230,7 @@ fun AddFoodSheet(
             ) { shown ->
                 when (shown) {
                     AddSource.Recent -> RecentList(
-                        state = state,
+                        state = latest,
                         listState = recentList,
                         onApplyTemplate = { template ->
                             addFood.applyTemplate(template.template.id, date, slot)
@@ -234,12 +240,12 @@ fun AddFoodSheet(
                         onRelog = { child = AddChild.Relog(it) },
                     )
                     AddSource.Mensa -> MensaList(
-                        load = state.menus[date],
+                        load = latest.menus[date],
                         date = date,
-                        mensas = state.mensas,
+                        mensas = latest.mensas,
                         time = mensaTime,
                         onTime = { mensaTime = it },
-                        recentMensa = state.recentMensa,
+                        recentMensa = latest.recentMensa,
                         remainingKcal = remainingKcal,
                         listState = mensaList,
                         onRetry = { addFood.loadMensa(date, refresh = true) },
@@ -247,7 +253,7 @@ fun AddFoodSheet(
                         onRecent = { child = AddChild.Relog(it) },
                     )
                     AddSource.Foods -> FoodList(
-                        foods = state.foods,
+                        foods = latest.foods,
                         query = query,
                         onQueryChange = { query = it },
                         listState = foodList,
@@ -313,14 +319,14 @@ fun AddFoodSheet(
         is AddChild.LogFood -> key(current.food.id) {
             FoodLogSheet(
                 // Der aktuelle Stand aus der Datenbank, damit z. B. der Favoriten-Stern gleich umspringt.
-                food = state.foods.firstOrNull { it.id == current.food.id } ?: current.food,
+                food = latest.foods.firstOrNull { it.id == current.food.id } ?: current.food,
                 date = date,
                 initialSlot = slot,
                 onLog = ::logAndClose,
                 onEdit = { child = AddChild.EditFood(food = it) },
                 onToggleFavorite = { food ->
                     // Vom gespeicherten Stand ausgehen: Zweimal schnell tippen schaltet dann sicher hin und zurück.
-                    val saved = state.foods.firstOrNull { it.id == food.id } ?: food
+                    val saved = latest.foods.firstOrNull { it.id == food.id } ?: food
                     addFood.saveFood(saved.copy(favorite = !saved.favorite))
                 },
                 onDismiss = { if (child === current) child = null },
