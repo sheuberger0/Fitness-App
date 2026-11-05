@@ -16,8 +16,14 @@ enum class FoodBasis(val label: String) {
     PER_PORTION("pro Portion"),
 }
 
-/** Woher die Nährwerte eines Lebensmittels stammen. */
-enum class FoodSource { MANUAL, OFF }
+/**
+ * Woher die Nährwerte eines Lebensmittels stammen: von dir (MANUAL), von Open Food Facts (OFF, per Barcode oder
+ * aus der eingebauten Produktliste) oder aus der Schweizer Nährwertdatenbank (BLV).
+ *
+ * Neue Werte nur hinten anhängen. Room speichert den Namen als Text ("BLV"), deshalb braucht ein neuer Wert
+ * keine neue Datenbankversion: Die Tabelle bleibt gleich, alte Einträge bleiben gültig.
+ */
+enum class FoodSource { MANUAL, OFF, BLV }
 
 /** Die Mahlzeiten der Tagesansicht. */
 enum class MealSlot(val label: String) {

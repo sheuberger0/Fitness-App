@@ -11,6 +11,7 @@ import com.sheuberger.fitness.data.MealSlot
 import com.sheuberger.fitness.data.NutritionRepository
 import com.sheuberger.fitness.mensa.MensaClient
 import com.sheuberger.fitness.mensa.MensaSettings
+import com.sheuberger.fitness.nutrition.FoodCatalog
 import com.sheuberger.fitness.nutrition.OffLookup
 import com.sheuberger.fitness.ui.mensa.MenuLoad
 import kotlinx.coroutines.CancellationException
@@ -33,9 +34,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.time.LocalDate
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.zip.GZIPOutputStream
 
 /**
  * Prüft das ViewModel des Sheets "Eintragen" mit einer echten Datenbank im Speicher und Attrappen für
@@ -290,5 +295,65 @@ class AddFoodViewModelTest {
         val food = withTimeout(5_000) { saved.await() }
         assertNotEquals(0L, food.id)
         assertEquals("Skyr", nutrition.food(food.id)!!.name)
+    }
+
+    // --- Eingebaute Tabellen ---
+
+    /** Ein ViewModel mit kleinen Nährwert-Tabellen: zwei Lebensmittel (BLV) und ein Produkt (Open Food Facts). */
+    private fun withCatalog(): AddFoodViewModel {
+        val blv = "290\tHühnerei, ganz, roh\tEi|Eier\tEier\t140\t12.6\t0.3\t9.8\t55\n" +
+            "829\tRuchbrot\t\tBrote\t234\t9.5\t44.3\t1.2\t40\n"
+        val products = "7613032779566\tChocapic\tNestlé\tMigros\t384\t8.5\t73.8\t4.4\t30\t375\n"
+        val gz = ByteArrayOutputStream().also { out -> GZIPOutputStream(out).use { it.write(products.toByteArray()) } }
+        val catalog = FoodCatalog({ name ->
+            when (name) {
+                FoodCatalog.BLV_FILE -> ByteArrayInputStream(blv.toByteArray())
+                FoodCatalog.OFF_FILE -> ByteArrayInputStream(gz.toByteArray())
+                else -> throw FileNotFoundException(name)
+            }
+        })
+        return AddFoodViewModel(nutrition, mensaClient, MensaSettings(context), lookup = { lookups += it; answer(it) }, catalog = catalog, scope = scope)
+    }
+
+    @Test
+    fun barcode_inDerProduktliste_ohneInternet() {
+        answer = { throw IOException("Keine Verbindung") }
+        val outcome = runBlocking { withCatalog().resolveBarcode("7613032779566") }
+
+        val food = (outcome as BarcodeOutcome.Found).food
+        assertEquals("Chocapic", food.name)
+        assertEquals(FoodSource.OFF, food.source)
+        assertEquals("7613032779566", food.barcode)
+        assertTrue("Ohne Anfrage ins Internet", lookups.isEmpty())
+    }
+
+    @Test
+    fun suche_zeigtTrefferAusDerTabelle() = runBlocking {
+        val vm = withCatalog()
+        vm.searchCatalog("Ruchbrot")
+        val found = withTimeout(5_000) { vm.uiState.first { it.catalog.generic.isNotEmpty() } }
+        assertEquals("Ruchbrot", found.catalog.generic.single().name)
+        assertEquals("Ruchbrot", found.catalog.query)
+
+        // Ein leeres Feld leert die Treffer sofort, ohne Wartezeit.
+        vm.searchCatalog("")
+        val cleared = withTimeout(5_000) { vm.uiState.first { it.catalog.query.isEmpty() } }
+        assertTrue(cleared.catalog.isEmpty)
+    }
+
+    @Test
+    fun ausDerTabelleEintragen_speichertLebensmittelUndVerweistDarauf() = runBlocking {
+        val vm = withCatalog()
+        val egg = Food(name = "Hühnerei, ganz, roh", source = FoodSource.BLV, kcal = 140.0, proteinG = 12.6, portionG = 55.0)
+        val entry = FoodEntry(date = monday, meal = MealSlot.BREAKFAST, name = egg.name, kcal = 154.0, amount = 2.0)
+
+        vm.logCatalogFood(egg, entry)
+
+        val day = withTimeout(5_000) { nutrition.day(monday).first { it.isNotEmpty() } }
+        val saved = nutrition.foods.first().single()
+        assertEquals(FoodSource.BLV, saved.source)
+        assertEquals(55.0, saved.portionG!!, 1e-9)
+        assertEquals(saved.id, day.single().foodId)
+        assertEquals(154.0, day.single().kcal, 1e-9)
     }
 }

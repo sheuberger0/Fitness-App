@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -111,5 +112,35 @@ class NutritionRepositoryTest {
         repo.deleteTemplate(template.template)
         assertEquals(emptyList<TemplateWithItems>(), repo.templates.first())
         assertEquals(2, repo.day(tuesday).first().size) // Angewendete Einträge bleiben
+    }
+
+    @Test
+    fun tabellenEintragOhneBarcode_wirdNurEinmalGespeichert() = runBlocking {
+        // Zweimal "Hühnerei" aus der Nährwerttabelle eintragen (ID 0, kein Barcode): danach ein Lebensmittel, nicht zwei.
+        val egg = Food(name = "Hühnerei, ganz, roh", source = FoodSource.BLV, kcal = 140.0, proteinG = 12.6, portionG = 55.0)
+        val first = repo.saveFood(egg)
+        val second = repo.saveFood(egg.copy(favorite = true))
+
+        assertEquals(first, second)
+        val saved = repo.foods.first().single()
+        assertTrue(saved.favorite)
+        // Selbst angelegte mit gleichem Namen sind etwas anderes: Die bleiben getrennt.
+        repo.saveFood(egg.copy(source = FoodSource.MANUAL))
+        assertEquals(2, repo.foods.first().size)
+    }
+
+    @Test
+    fun korrigiertesLebensmittel_behaeltDeineWerte() = runBlocking {
+        // Du hast die Kopie angepasst (edited). Kommt dasselbe noch einmal aus der Tabelle, bleiben deine Werte.
+        val bread = Food(name = "Ruchbrot", source = FoodSource.BLV, kcal = 234.0, portionG = 40.0)
+        val id = repo.saveFood(bread)
+        repo.saveFood(repo.food(id)!!.copy(portionG = 60.0, edited = true))
+
+        repo.saveFood(bread.copy(favorite = true))
+
+        val saved = repo.food(id)!!
+        assertEquals(60.0, saved.portionG!!, 1e-9)
+        assertTrue(saved.favorite)
+        assertEquals(1, repo.foods.first().size)
     }
 }

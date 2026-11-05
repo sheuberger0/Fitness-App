@@ -1,0 +1,1249 @@
+# Quelle: Schweizer Nährwertdatenbank V 7.1 (01.07.2026), Bundesamt für Lebensmittelsicherheit und Veterinärwesen BLV, naehrwertdaten.ch
+# Suchwörter und Portionen ergänzt in tools/lebensmittel/naehrwerte.py. Werte pro 100 g.
+# id	name	suchwörter	kategorie	kcal	protein	kohlenhydrate	fett	portion_g
+290	Hühnerei, ganz, roh	Ei|Eier|Frühstücksei	Eier	140	12.6	0.3	9.8	55
+1070	Hühnerei, ganz, festgekocht	Ei|Eier|gekochtes Ei|hartes Ei	Eier	156	14	0.3	10.9	55
+1602	Rührei, zubereitet	Ei|Eier	Gerichte/Sonstige salzige/rezente Gerichte	147	11.1	1.4	10.8	120
+410	Hühnereigelb, roh (Eidotter)	Eigelb|Eidotter	Eier	349	16.4	0.3	31.3	18
+411	Hühnereiweiss, roh (Eiklar)	Eiweiss|Eiklar	Eier	45	10.8	0.4	0	33
+10446	Brot (Durchschnitt)	Brot|Scheibe Brot	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	264	9.2	44.6	4.6	40
+823	Weissbrot	Weissbrot	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	242	8.5	48.9	0.8	40
+833	Halbweissbrot		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	240	9.4	46.4	1.1	40
+829	Ruchbrot		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	234	9.5	44.3	1.2	40
+825	Toastbrot, Vollkorn	Toast	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	271	9.3	43.7	4.9	25
+826	Toastbrot mit Pflanzenölen	Toast	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	267	8.7	49.2	3.3	25
+827	Toastbrot mit Butter	Toast	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	316	8.9	45.7	10.4	25
+14109	Toastbrot,dunkel oder Mehrkorn	Toast	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	272	9.1	45.6	4.7	25
+820	Butterzopf	Zopf	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	325	9	45.7	11.4	40
+10406	Gipfeli (Durchschnitt)	Croissant	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	398	7.8	40.4	22	45
+836	Buttergipfeli, hell	Croissant	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	432	8.7	43.5	24.2	45
+703	Haselnuss-Schokolade-Brotaufstrich	Nutella|Schokoaufstrich|Nussnougatcreme|Nuss-Nougat-Creme	Süssigkeiten/Konfitüren und süsse Brotaufstriche	549	6	55.9	32.8	15
+751	Erdnussbutter	Peanut Butter	Verschiedenes/Aufstriche	636	26.1	12.5	51.8	15
+49	Vorzugsbutter	Butter|Butter	Fette und Öle/Fette	746	0.7	0.7	82.3	10
+14297	Butter, gesalzen		Fette und Öle/Fette	732	0.7	0.7	80.7	10
+696	Konfitüre	Marmelade|Marmelade|Konfi	Süssigkeiten/Konfitüren und süsse Brotaufstriche	246	0.5	58.7	0.5	20
+472	Honig (Blütenhonig)	Honig	Süssigkeiten/Konfitüren und süsse Brotaufstriche	306	0.4	76	0	20
+198	Haferflocken		Brote, Flocken und Frühstückscerealien/Flocken, Kleie und Keime	381	13.5	59.5	7.5	50
+942	Müeslimischung, Getreideflocken mit Früchten und Nüssen, gezuckert	Müsli|Muesli	Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	365	11.4	62.3	5.6	60
+943	Müeslimischung, Getreideflocken mit Früchten und Nüssen, ungesüsst	Müsli|Muesli	Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	372	11.3	57.4	8.3	60
+1198	Birchermüesli, zubereitet (ungezuckert)	Bircher	Gerichte/Müesli und Brei	86	2.6	11.1	3.1	200
+940	Cornflakes		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	376	7.6	81.5	1.2	40
+1194	Milch (Durchschnitt)	Milch	Milch und Milchprodukte/Milch	59	3.2	4.8	2.9	200
+62	Vollmilch, pasteurisiert	Milch	Milch und Milchprodukte/Milch	68	3.2	4.7	4	200
+14126	Vollmilch, standardisiert, 3.5% Fett, UHT	Milch	Milch und Milchprodukte/Milch	65	3.2	5	3.5	200
+64	Magermilch, UHT	Milch	Milch und Milchprodukte/Milch	33	3.3	4.7	0.1	200
+52	Joghurt, nature		Milch und Milchprodukte/Joghurt und Sauermilch	66	3.9	4.5	3.6	180
+587	Joghurt, nature, mager		Milch und Milchprodukte/Joghurt und Sauermilch	42	4.7	5.5	0.1	180
+53	Joghurt, Erdbeer		Milch und Milchprodukte/Joghurt und Sauermilch	101	3.4	15.2	2.7	180
+54	Joghurt, Schokolade		Milch und Milchprodukte/Joghurt und Sauermilch	120	3.9	16.9	3.9	180
+55	Joghurt, Haselnuss		Milch und Milchprodukte/Joghurt und Sauermilch	119	3.8	15	4.6	180
+56	Joghurt, Vanille		Milch und Milchprodukte/Joghurt und Sauermilch	98	3.7	14	3	180
+57	Joghurt, Mokka		Milch und Milchprodukte/Joghurt und Sauermilch	99	3.7	14.1	3.1	180
+1192	Joghurt, gezuckert (Durchschnitt)		Milch und Milchprodukte/Joghurt und Sauermilch	105	3.7	14.7	3.4	180
+71	Quark, nature, mager	Magerquark	Milch und Milchprodukte/Frischkäse und Quark	61	10.6	4.2	0.2	125
+571	Quark, nature, halbfett		Milch und Milchprodukte/Frischkäse und Quark	99	9.4	4.1	5	125
+505	Hüttenkäse, nature	Cottage cheese|Cottage Cheese	Milch und Milchprodukte/Frischkäse und Quark	100	12.4	2.4	4.5	100
+555	Emmentaler, vollfett	Käse	Milch und Milchprodukte/Hartkäse	407	28.4	0	32.6	30
+530	Greyerzer, vollfett	Gruyère|Käse|Gruyère	Milch und Milchprodukte/Hartkäse	394	26.4	0	32	30
+82	Mozzarella		Milch und Milchprodukte/Frischkäse und Quark	256	19.5	0.7	19.5	60
+72	Sojagetränk, nature	Sojamilch|Sojadrink	Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Getränke	40	3.6	1.5	2.1	200
+378	Apfel, roh		Früchte/Früchte frisch	52	0.3	11.6	0.3	150
+381	Banane, roh		Früchte/Früchte frisch	90	1.1	19.7	0.2	120
+405	Orange, roh	Apfelsine	Früchte/Früchte frisch	45	0.8	8	0.2	150
+382	Birne, roh		Früchte/Früchte frisch	54	0.5	10.9	0.3	150
+395	Kiwi, roh		Früchte/Früchte frisch	58	0.9	11	0.6	75
+380	Avocado, roh		Nüsse, Samen und Ölfrüchte	158	1.6	1.2	15.1	150
+22	Poulet, Brust, ohne Haut, roh	Pouletschnitzel|Pouletbrust|Hähnchenbrust|Hühnerbrust|Chicken	Fleisch und Innereien/Geflügel	107	24.6	0	1	150
+13276	Poulet, Brust, Schnitzel oder Geschnetzeltes, gebraten (ohne Zusatz von Fett und	Pouletbrust|Hähnchenbrust|Hühnerbrust|Chicken	Fleisch und Innereien/Geflügel	128	30.1	0	0.8	150
+6	Rind, Gehacktes, mager, roh	Hackfleisch|Hackfleisch|Hack	Fleisch und Innereien/Rind	154	21.6	0	7.5	125
+14237	Rind, Gehacktes, roh	Hackfleisch|Hackfleisch|Hack	Fleisch und Innereien/Rind	208	19.2	0	14.6	125
+13297	Rind, Gehacktes, gebraten (ohne Zusatz von Fett und Salz)	Hackfleisch|Hackfleisch|Hack	Fleisch und Innereien/Rind	211	32.6	0	8.9	125
+193	Lachs, geräuchert	Räucherlachs	Fisch/Meeresfische	173	23.2	0	8.9	50
+194	Lachs, Zucht, roh		Fisch/Meeresfische	223	19.9	0	15.9	125
+756	Thunfisch, roh	Thon	Fisch/Meeresfische	114	25.8	0	1.3	100
+13437	Tofu, fest, nature (Durchschnitt)		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Proteinlieferanten	148	14.7	2.9	8.5	125
+1081	Cervelat	Chlöpfer|Stumpen|Bockwurst|Cervelat	Fleisch- und Wurstwaren/Brühwurstware	249	13.4	0.5	21.5	100
+713	Truthahn, Brust, Schnitzel oder Geschnetzeltes, roh	Trutenbrust	Fleisch und Innereien/Geflügel	109	24	0	1.5	150
+1066	Reis poliert, gekocht in Salzwasser (unjodiert)	Reis	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Reis	117	2.5	25.8	0.3	180
+1065	Reis parboiled, gekocht in Salzwasser (unjodiert)	Reis	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Reis	121	2.5	26.7	0.3	180
+1067	Reis unpoliert, gekocht in Salzwasser (unjodiert)	Vollkornreis|Reis|Vollkornreis	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Reis	133	2.8	27	1.1	180
+1063	Teigwaren ohne Ei, gekocht im Salzwasser (unjodiert)	Pasta|Nudeln|Spaghetti|Penne|Hörnli	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teigwaren	158	5.9	31.2	0.6	250
+1062	Teigwaren mit Ei, gekocht im Salzwasser (unjodiert)	Eierteigwaren|Pasta|Nudeln|Eiernudeln	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teigwaren	132	5	25	1.1	250
+1064	Teigwaren ohne Ei, Vollkorn, gekocht im Salzwasser (unjodiert)	Pasta|Nudeln|Vollkornpasta	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teigwaren	152	5.9	26.8	1.2	250
+800	Teigwaren ohne Ei, trocken	Pasta|Nudeln|Spaghetti|Penne|Hörnli	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teigwaren	353	12.6	70.5	1.2	100
+1057	Kartoffel, geschält, gedämpft (ohne Zugabe von Salz)	Gschwellti|Kartoffeln	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	75	2	15.6	0.1	200
+14259	Kartoffel, früh, ungeschält, im Wasser gekocht (ohne Salz)	Kartoffeln	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	66	1.8	13.6	0.1	200
+13396	Quinoa, gekocht (ohne Zugabe von Salz und Fett)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	117	4.4	19.1	2	180
+1059	Kichererbse, gekocht (ohne Zugabe von Fett und Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	131	7.3	16.8	2	150
+195	Milchschokolade	Schokolade|Schoggi	Süssigkeiten/Schokolade und Kakaoerzeugnisse	537	6.5	56.9	31.1	25
+196	Schokolade, dunkel (bitter)	Schokolade|Schoggi|Zartbitter	Süssigkeiten/Schokolade und Kakaoerzeugnisse	537	5.7	53.4	31.8	25
+273	Mandel		Nüsse, Samen und Ölfrüchte	624	25.6	7.8	52.1	25
+271	Baumnuss	Walnuss|Walnuss	Nüsse, Samen und Ölfrüchte	709	15.7	6.9	67.3	25
+275	Cashewnuss	Cashewkern	Nüsse, Samen und Ölfrüchte	619	21.5	23.2	48.1	25
+282	Erdnuss		Nüsse, Samen und Ölfrüchte	623	26.1	14.8	49.1	25
+12982	Pommes Chips	Chips	Salzige Snacks/Chips	538	4.9	49.3	34.8	30
+994	Kaffee, schwarz, ungezuckert	Kaffee	Alkoholfreie Getränke/Kaffee	2	0.1	0.3	0	200
+1187	Milchkaffee, ungezuckert	Schale|Milchkaffee|Café crème	Milch und Milchprodukte/Milch- und Joghurtgetränke;Alkoholfreie Getränke/Kaffee	20	0.9	1.4	1.1	200
+498	Colagetränk, gezuckert	Cola	Alkoholfreie Getränke/Süssgetränke	40	0	10	0	330
+816	Bier, Lager	Bier	Alkoholhaltige Getränke/Bier	42	0.5	3.1	0	330
+576	Orangensaft		Früchte/Fruchtsäfte;Alkoholfreie Getränke/Frucht- und Gemüsesäfte	42	0.6	9.6	0.1	200
+568	Apfelsaft	Süssmost	Früchte/Fruchtsäfte;Alkoholfreie Getränke/Frucht- und Gemüsesäfte	48	0.2	11.4	0.1	200
+1535	Pizza Margherita, gebacken	Pizza	Gerichte/Italienische Gerichte	238	9.9	30	8.4	350
+1478	Älplermagronen, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	180	6	17.8	9	350
+14055	Hummus		Verschiedenes/Saucen	204	7.3	9.1	14	30
+13464	Senf		Verschiedenes/Saucen	124	7.1	3.8	7.7	
+911	Zimt		Verschiedenes/Salz, Gewürze und Aromen	317	3.9	56	3.2	
+715	Coppa		Fleisch- und Wurstwaren/Rohwurstware	319	28.8	0.3	22.5	
+1693	Essig		Verschiedenes/Salz, Gewürze und Aromen	21	0.1	0.7	0	
+615	Tomme		Milch und Milchprodukte/Weichkäse	284	20.3	0	22.5	
+14091	Hanföl		Fette und Öle/Öle	900	0	0	100	
+644	Kirsch	Kirschbranntwein|Kirschwasser|Kirschschnaps|Kirschenbrand	Alkoholhaltige Getränke/Spirituosen	245	0	0	0	
+1083	Lyoner		Fleisch- und Wurstwaren/Brühwurstware	244	11.5	0.5	21.8	
+779	Pantli		Fleisch- und Wurstwaren/Rohwurstware	538	21.1	0.9	50	
+600	Rapsöl		Fette und Öle/Öle	900	0	0	100	
+1091	Salami		Fleisch- und Wurstwaren/Rohwurstware	367	24.1	0	30.1	
+1089	Salsiz		Fleisch- und Wurstwaren/Rohwurstware	415	25.2	0	34.9	
+552	Sbrinz		Milch und Milchprodukte/Hartkäse	411	28	0	33.2	
+14118	Seitan		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Proteinlieferanten	193	28	3	7.2	
+603	Sojaöl		Fette und Öle/Öle	900	0	0	100	
+770	Surimi		Fisch/Fischerzeugnisse	125	8.3	11.8	4.9	
+635	Ketchup		Verschiedenes/Saucen	117	2	26	0.4	
+424	Popcorn	Puffmais	Salzige Snacks/Sonstige salzige Snacks	367	12	62.9	4.2	
+1463	Semmeli		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	245	9.2	48.5	0.9	
+14107	Sesamöl		Fette und Öle/Öle	900	0	0	100	
+759	Zampone	Gefüllter Schweinsfuss	Fleisch und Innereien/Schwein	361	19.1	0	31.6	
+851	Berliner	Pfannkuchen	Süssigkeiten/Sonstige süsse Backwaren	329	6.2	44	13.7	
+705	Bresaola		Fleisch- und Wurstwaren/Rohwurstware	155	32.4	0.4	2.6	
+589	Distelöl		Fette und Öle/Öle	900	0	0	100	
+14002	Gazpacho		Gerichte/Eintöpfe und Suppen	33	0.7	3.4	1.6	
+14213	Grissini		Salzige Snacks/Sonstige salzige Snacks	424	11.8	69.9	10.1	
+14288	Marzipan		Süssigkeiten/Sonstige Süssigkeiten	472	9.1	65.2	18.5	
+844	Mütschli		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	255	8.7	51.8	0.8	
+591	Olivenöl		Fette und Öle/Öle	900	0	0	100	
+855	Orangeat		Süssigkeiten/Sonstige Süssigkeiten	306	0.4	74.3	0.3	
+279	Paranuss		Nüsse, Samen und Ölfrüchte	698	17	4.2	66.5	
+482	Parmesan	Parmiggiano	Milch und Milchprodukte/Hartkäse	401	30.5	0	31	
+274	Pistazie		Nüsse, Samen und Ölfrüchte	621	25.5	12.3	50.3	
+874	Prussien	Palmiers	Süssigkeiten/Guetzli	438	4.7	53.8	22.4	
+1196	Reibkäse		Milch und Milchprodukte/Hartkäse	400	28.4	0	31.8	
+805	Rollmops	Hering, sauer	Fisch/Fischerzeugnisse	191	13.7	3	13.8	
+14023	Tiramisu		Gerichte/Sonstige süsse Gerichte	240	4.3	30.4	9.8	
+14003	Tzatziki		Verschiedenes/Saucen	138	6.1	3.8	10.9	
+1082	Wienerli		Fleisch- und Wurstwaren/Brühwurstware	242	13.9	0.6	20.4	
+856	Zitronat		Süssigkeiten/Sonstige Süssigkeiten	289	0.4	70	0.4	
+930	Zwieback		Brote, Flocken und Frühstückscerealien/Knäckebrote, Zwieback, Crackers und Waffeln	421	11.6	74.6	7.8	
+10533	Agar Agar		Verschiedenes/Gelier- und Bindemittel	160	2.4	0	0.2	
+789	Bierwurst		Fleisch- und Wurstwaren/Brühwurstware	291	15.6	0	25.4	
+862	Birnwegge	Birewegge|Birnenwegggen	Süssigkeiten/Sonstige süsse Backwaren	363	4.9	57.2	10.4	
+778	Blutwurst		Fleisch- und Wurstwaren/Kochwurstware	149	10.2	2.5	10.9	
+758	Cotechino		Fleisch- und Wurstwaren/Rohwurstware	450	17.2	0	42.3	
+765	Egli, roh	Flussbarsch	Fisch/Süsswasserfische	79	18	0	0.7	
+596	Erdnussöl		Fette und Öle/Öle	900	0	0	100	
+270	Haselnuss		Nüsse, Samen und Ölfrüchte	661	16.4	10.1	59.5	
+393	Kaki, roh		Früchte/Früchte frisch	77	0.9	16	0.3	
+438	Kefe, roh	Kiefelerbse|Zuckerschote	Gemüse/Gemüse frisch	48	3.8	6.4	0.3	
+704	Kochspeck		Fleisch- und Wurstwaren/Rohwurstware	322	17.8	0.6	27.6	
+601	Kokosfett		Fette und Öle/Fette	894	0.8	0	99	
+284	Kokosnuss		Nüsse, Samen und Ölfrüchte	384	4.6	4.8	36.5	
+1090	Landjäger		Fleisch- und Wurstwaren/Rohwurstware	491	26.6	0	42.7	
+14287	Lebkuchen	Honiglebkuchen	Süssigkeiten/Sonstige süsse Backwaren	326	7	68.7	1.3	
+277	Leinsamen		Nüsse, Samen und Ölfrüchte	533	21.3	3.6	42.2	
+786	Luganighe		Fleisch- und Wurstwaren/Rohwurstware	292	21.7	0.5	22.4	
+432	Mais, roh	Zuckermais|Gemüsemais|Maiskörner, roh	Gemüse/Gemüse frisch	85	3.2	12.6	1.8	
+202	Panettone		Süssigkeiten/Sonstige süsse Backwaren	354	6.4	56.5	10.7	
+688	Pilzsuppe		Gerichte/Eintöpfe und Suppen	38	1.1	5.5	1.2	
+533	Reblochon		Milch und Milchprodukte/Weichkäse	307	19.9	0	25.2	
+484	Roquefort		Milch und Milchprodukte/Weichkäse	382	19.2	0	33.9	
+783	Salametti		Fleisch- und Wurstwaren/Rohwurstware	343	14.8	0.3	31.4	
+780	Saucisson		Fleisch- und Wurstwaren/Rohwurstware	403	18.2	0.5	36.4	
+574	Sauerrahm	Crème fraîche	Fette und Öle/Rahm	336	2.4	2.8	35	
+13456	Sojasauce		Verschiedenes/Saucen	56	8.1	4.1	0.6	
+893	Wassereis	Wasserglacé	Süssigkeiten/Glacen auf Wasserbasis	88	0	22	0	
+454	Wirz, roh	Wirsingkohl	Gemüse/Gemüse frisch	27	2	3	0.1	
+14093	Ahornsirup		Süssigkeiten/Zucker und Süssstoffe	271	0	67.2	0.2	
+13880	Ananassaft		Früchte/Fruchtsäfte	51	0.4	12.1	0.1	
+1268	Bauernbrot	Burebrot	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	242	9.2	44.3	2	
+13402	Baumnussöl		Fette und Öle/Öle	900	0	0	100	
+562	Birnensaft		Früchte/Fruchtsäfte;Alkoholfreie Getränke/Frucht- und Gemüsesäfte	50	0.4	11.6	0.2	
+50	Bratbutter		Fette und Öle/Fette	885	0.1	0	98.3	
+616	Brie, Rahm		Milch und Milchprodukte/Weichkäse	342	17.7	0	30	
+13457	Chia-Samen		Nüsse, Samen und Ölfrüchte	482	21.4	1.8	34.1	
+386	Feige, roh		Früchte/Früchte frisch	71	1.2	13.5	0.5	
+483	Gorgonzola		Milch und Milchprodukte/Hartkäse	357	19	0.1	31.2	
+1272	Grittibänz		Süssigkeiten/Sonstige süsse Backwaren	329	9.2	46.9	11.1	
+354	Gurke, roh	Salatgurke	Gemüse/Gemüse frisch	12	0.7	1.8	0	
+769	Haferkleie		Brote, Flocken und Frühstückscerealien/Flocken, Kleie und Keime	371	18.5	50.8	7	
+416	Hecht, roh		Fisch/Süsswasserfische	81	18.4	0	0.8	
+652	Jägersauce		Verschiedenes/Saucen	58	2.2	8	1.8	
+69	Kaffeerahm		Fette und Öle/Rahm	161	2.6	3.8	15	
+51	Kochbutter		Fette und Öle/Fette	745	0.5	0.7	82.2	
+358	Lauch, roh		Gemüse/Gemüse frisch	32	2	4	0.2	
+776	Leberwurst		Fleisch- und Wurstwaren/Kochwurstware	253	19.8	0.5	19.1	
+10534	Lemon Curd	Zitronencrème	Süssigkeiten/Cremen und Pudding	317	6.4	36.8	16	
+412	Maiskeimöl		Fette und Öle/Öle	900	0	0	100	
+426	Maisstärke		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	354	0.3	88	0	
+396	Mango, roh		Früchte/Früchte frisch	68	0.6	14.3	0.6	
+485	Mascarpone		Milch und Milchprodukte/Frischkäse und Quark	435	4.5	4.1	44.5	
+771	Mayonnaise		Fette und Öle/Mayonnaisen	693	1.4	2.6	75.2	
+671	Minestrone		Gerichte/Eintöpfe und Suppen	53	2	7	1.8	
+819	Mortadella		Fleisch- und Wurstwaren/Brühwurstware	306	15.7	0.8	26.6	
+750	Paniermehl	Semmelmehl	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	373	12.7	73.5	2.1	
+451	Rande, roh	Rote Beete	Gemüse/Gemüse frisch	48	1.7	8.4	0.3	
+429	Rollgerste	Gerstengraupen	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	337	9.1	64	2	
+13384	Schafmilch		Milch und Milchprodukte/Milch	105	5.5	4.7	7.1	
+551	Schaumwein	Sekt|Prosecco|Champagner	Alkoholhaltige Getränke/Wein	71	0.2	1.5	0	
+570	St. Paulin		Milch und Milchprodukte/Hartkäse	325	21.8	0	26.4	
+1273	Weisswurst		Fleisch- und Wurstwaren/Brühwurstware	220	11.8	0.6	18.9	
+10536	Agavensirup	Agavendicksaft	Süssigkeiten/Zucker und Süssstoffe	310	0.1	76.2	0.5	
+377	Ananas, roh		Früchte/Früchte frisch	52	0.5	11.7	0.1	
+529	Buttermilch		Milch und Milchprodukte/Milch- und Joghurtgetränke	34	3.4	4	0.5	
+285	Dorsch, roh	Kabeljau	Fisch/Meeresfische	78	18.1	0	0.6	
+211	Felche, roh		Fisch/Süsswasserfische	98	19.2	0	2.3	
+1084	Fleischkäse		Fleisch- und Wurstwaren/Brühwurstware	256	12.5	1.4	22.3	
+14007	Florentiner		Süssigkeiten/Guetzli	514	9.3	50.7	28.7	
+14108	Haselnussöl		Fette und Öle/Öle	900	0	0	100	
+14239	Ingwer, roh		Verschiedenes/Salz, Gewürze und Aromen	33	1.1	3.4	1.1	
+583	Kakaobutter		Fette und Öle/Fette	900	0	0	100	
+764	Kalmar, roh	Seppia|Polpo|Calamare|Tintenfisch	Fisch/Meeresfrüchte, Krusten- und Schalentiere	77	14.4	2.2	1.2	
+1399	Knöpflimehl	Spätzlimehl	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	347	12.9	67.6	1.5	
+13907	Kokoswasser		Alkoholfreie Getränke/Sonstige Getränke	19	0.1	4.5	0	
+480	Kürbis, roh	Riesenkürbis	Gemüse/Gemüse frisch	28	1.1	4.6	0.1	
+276	Kürbiskerne		Nüsse, Samen und Ölfrüchte	615	35.6	4.7	49.1	
+14286	Linzertorte		Süssigkeiten/Kuchen, Torten und Cake	442	7.1	52.3	22.1	
+602	Molke, süss	Süssmolke	Milch und Milchprodukte/Milch- und Joghurtgetränke	24	0.8	4.7	0.2	
+717	Mostbröckli		Fleisch- und Wurstwaren/Rohwurstware	150	32.6	0.5	1.9	
+845	Pariserbrot	Baguette|Parisette	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	255	9	51.2	0.9	
+283	Pinienkerne		Nüsse, Samen und Ölfrüchte	688	16.5	13	61.9	
+13394	Quinoa, roh		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	362	13.3	58.2	6.6	
+476	Quitte, roh		Früchte/Früchte frisch	47	0.4	7.3	0.5	
+707	Rohessspeck	Bauernspeck|Bauernspeck, roh, geräuchert	Fleisch- und Wurstwaren/Rohwurstware	400	22.1	0.6	34.3	
+693	Rohschinken		Fleisch- und Wurstwaren/Rohwurstware	229	31	0.3	11.5	
+468	Rucola, roh	Rauke	Gemüse/Gemüse frisch	22	3.6	0.1	0.4	
+916	Rüeblitorte	Rüeblicake|Rüeblikuchen	Süssigkeiten/Kuchen, Torten und Cake	303	11.1	25.8	16.4	
+461	Salbei, roh		Gemüse/Kräuter	59	1.7	6.9	2.1	
+365	Spinat, roh		Gemüse/Gemüse frisch	25	2.6	1.3	0.6	
+887	Tirolercake		Süssigkeiten/Kuchen, Torten und Cake	514	8.9	40.1	34.6	
+348	Tomate, roh		Gemüse/Gemüse frisch	21	0.9	3.3	0.3	
+564	Tomatensaft		Alkoholfreie Getränke/Frucht- und Gemüsesäfte;Gemüse/Gemüsesäfte	16	0.8	2.9	0.1	
+573	Traubensaft		Früchte/Fruchtsäfte;Alkoholfreie Getränke/Frucht- und Gemüsesäfte	67	0.3	16.3	0.1	
+430	Weizenkeime		Brote, Flocken und Frühstückscerealien/Flocken, Kleie und Keime	375	29.2	35.1	9.5	
+431	Weizenkleie	Speisekleie	Brote, Flocken und Frühstückscerealien/Flocken, Kleie und Keime	271	15.2	17.7	5.5	
+528	Ziegenmilch		Milch und Milchprodukte/Milch	57	2.8	4.2	3.2	
+506	Ziger weiss		Milch und Milchprodukte/Frischkäse und Quark	122	10.9	3.3	7.2	
+831	Baumnussbrot		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	331	9.2	30.2	17.9	
+822	Butterweggli		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	309	9.4	47.3	8.7	
+14024	Cheeseburger		Gerichte/Fast Food	281	13.2	24.3	14.2	
+13959	Cornet Glace		Süssigkeiten/Glacen auf Milchbasis	292	3.4	37.8	13.5	
+467	Endivie, roh	Frisée Salat	Gemüse/Gemüse frisch	16	1.8	1.2	0.2	
+352	Fenchel, roh		Gemüse/Gemüse frisch	23	1	2.6	0.4	
+481	Flunder, roh		Fisch/Meeresfische	80	16.5	0	1.6	
+289	Forelle, roh	Bachforelle	Fisch/Süsswasserfische	127	17.7	0	6.2	
+817	Fünfkornbier		Alkoholhaltige Getränke/Bier	39	0.6	2	0	
+684	Gulaschsuppe		Gerichte/Eintöpfe und Suppen	67	4.8	6.3	2.4	
+355	Karotte, roh	Rüebli|Möhre	Gemüse/Gemüse frisch	42	0.6	7.6	0.4	
+566	Karottensaft	Rüeblisaft	Alkoholfreie Getränke/Frucht- und Gemüsesäfte;Gemüse/Gemüsesäfte	32	0.7	6.6	0.1	
+394	Kirsche, roh		Früchte/Früchte frisch	62	0.8	13	0.4	
+14303	Kokosmakrone		Süssigkeiten/Guetzli	474	5.8	57.4	22.6	
+13404	Kürbiskernöl		Fette und Öle/Öle	900	0	0	100	
+441	Lattich, roh		Gemüse/Gemüse frisch	17	1.2	1.2	0.3	
+13883	Litschi, roh	Litchi	Früchte/Früchte frisch	77	1.1	16.1	0	
+450	Mangold, roh	Krautstiele	Gemüse/Gemüse frisch	16	1	1.6	0.2	
+898	Marmorkuchen	Marmorcake	Süssigkeiten/Kuchen, Torten und Cake	356	7.4	42.6	17.1	
+457	Morchel, roh		Gemüse/Pilze	29	2.5	0.5	0.3	
+14074	Petit Beurre		Süssigkeiten/Guetzli	431	8.7	70.2	12.4	
+474	Pflaume, roh		Früchte/Früchte frisch	48	0.6	10.2	0.2	
+532	Raclettekäse		Milch und Milchprodukte/Hartkäse	355	25.9	0	27.9	
+361	Rettich, roh		Gemüse/Gemüse frisch	24	1	3.9	0.1	
+718	Rollschinken		Fleisch- und Wurstwaren/Kochwurstware	181	20.3	1.2	10.6	
+364	Rotkohl, roh	Rotkraut|Blaukraut	Gemüse/Gemüse frisch	29	1.1	4.3	0.2	
+757	Sardine, roh		Fisch/Meeresfische	134	19.8	0	6.1	
+415	Scholle, roh	Goldbutt	Fisch/Meeresfische	85	17.1	0	1.9	
+828	Tessinerbrot		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	323	10.3	57.1	5.2	
+460	Thymian, roh		Gemüse/Kräuter	52	1.5	7.3	1.2	
+636	Tomatenpüree	Tomatenmark	Gemüse/Gemüse gekocht (inkl. Konserven)	77	4.5	12.9	0.2	
+667	Tomatensauce		Verschiedenes/Saucen	69	1.8	9.7	2.1	
+670	Tomatensuppe		Gerichte/Eintöpfe und Suppen	39	0.7	6.3	1	
+10542	Wasabi Paste		Verschiedenes/Saucen	308	2.9	49.6	10.6	
+593	Weizenkeimöl		Fette und Öle/Öle	900	0	0	100	
+897	Weizenstärke		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	348	0.4	85.8	0.1	
+398	Zitrone, roh		Früchte/Früchte frisch	24	0.8	2.9	0.6	
+605	Zitronensaft		Früchte/Fruchtsäfte;Alkoholfreie Getränke/Frucht- und Gemüsesäfte	28	0.4	2.5	0.2	
+368	Zwiebel, roh		Gemüse/Gemüse frisch	39	1.1	6.3	0.6	
+379	Aprikose, roh	Marille	Früchte/Früchte frisch	44	0.8	9	0.1	
+351	Broccoli, roh		Gemüse/Gemüse frisch	39	3.6	3.2	0.6	
+447	Chicorée, roh	Brüsseler Endivie	Gemüse/Gemüse frisch	20	1.1	2.8	0.2	
+924	Crèmeschnitte		Süssigkeiten/Sonstige süsse Backwaren	301	4.1	28.8	18.8	
+385	Erdbeere, roh		Früchte/Früchte frisch	38	0.6	6	0.4	
+681	Erdnuss-Flips		Salzige Snacks/Sonstige salzige Snacks	507	13.2	56.5	24.2	
+68	Halbrahm, UHT		Fette und Öle/Rahm	251	2.5	3.7	25.1	
+903	Haselnusskeks	Haselnussguetzli|Sablé mit Haselnuss	Süssigkeiten/Guetzli	473	6.7	47.4	27.7	
+390	Himbeere, roh		Früchte/Früchte frisch	44	1.2	5.8	0.8	
+449	Kohlrabi, roh	Rübkohl	Gemüse/Gemüse frisch	27	1.9	3.7	0.2	
+60	Käsereibutter		Fette und Öle/Fette	747	0.4	0.6	82.5	
+852	Löffelbiscuit		Süssigkeiten/Guetzli	413	12.2	71.8	8.3	
+14294	Nuss-Stängeli		Süssigkeiten/Guetzli	454	10.7	57.6	19.2	
+572	Orangennektar		Alkoholfreie Getränke/Süssgetränke;Alkoholfreie Getränke/Frucht- und Gemüsesäfte	42	0.3	10.1	0	
+462	Rosmarin, roh		Gemüse/Kräuter	62	0.8	7.7	2.5	
+14038	Schoggibrötli		Süssigkeiten/Sonstige süsse Backwaren	366	8.6	49.7	14.3	
+1086	Schweinswurst		Fleisch- und Wurstwaren/Brühwurstware	268	16.2	0.5	22.4	
+791	Schützenwurst		Fleisch- und Wurstwaren/Brühwurstware	244	9.2	0.2	23	
+760	Seehecht, roh		Fisch/Meeresfische	74	17	0	0.6	
+754	Seelachs, roh	Kohlfisch|Köhler|Pollack	Fisch/Meeresfische	84	19.3	0	0.8	
+755	Seezunge, roh		Fisch/Meeresfische	80	18.7	0	0.6	
+592	Traubenkernöl		Fette und Öle/Öle	900	0	0	100	
+768	Traubenzucker	Glukose|Dextrose	Süssigkeiten/Zucker und Süssstoffe	399	0	99.8	0	
+495	Tête de Moine		Milch und Milchprodukte/Hartkäse	416	24.2	0	35.5	
+66	Vollrahm, UHT	Rahm	Fette und Öle/Rahm	335	2	3.1	34.9	
+471	Zucker, braun		Süssigkeiten/Zucker und Süssstoffe	390	0	97.6	0	
+470	Zucker, weiss	Saccharose|Kristallzucker	Süssigkeiten/Zucker und Süssstoffe	400	0	100	0	
+349	Aubergine, roh	Eierfrucht	Gemüse/Gemüse frisch	21	1.1	2.4	0.1	
+13455	Balsamicoessig	Balsamessig|Aceto Balsamico	Verschiedenes/Salz, Gewürze und Aromen	128	0.7	25.8	0	
+464	Basilikum, roh		Gemüse/Kräuter	46	3.1	5.1	0.8	
+787	Bauernschüblig		Fleisch- und Wurstwaren/Rohwurstware	524	21.3	0.3	48.5	
+1211	Berner Alpkäse		Milch und Milchprodukte/Hartkäse	453	27.1	0	38.3	
+13956	Birnendicksaft		Süssigkeiten/Zucker und Süssstoffe	351	3.1	81	1.7	
+613	Brie, vollfett		Milch und Milchprodukte/Weichkäse	297	21.4	0	23.5	
+383	Brombeere, roh		Früchte/Früchte frisch	47	1.1	6.5	0.7	
+420	Buchweizenmehl		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	343	12	65.4	2.8	
+877	Cake Financier	Mandel-Cake	Süssigkeiten/Kuchen, Torten und Cake	440	11.1	38.5	26.1	
+437	Chinakohl, roh	Pekingkohl|Selleriekohl|Japankohl	Gemüse/Gemüse frisch	14	1.4	1.2	0.2	
+10535	Dulce de Leche	Milchkonfitüre	Süssigkeiten/Konfitüren und süsse Brotaufstriche	295	5.7	51.6	7.3	
+13400	Federkohl, roh	Grünkohl	Gemüse/Gemüse frisch	44	4.3	2.5	0.9	
+1092	Geflügellyoner		Fleisch- und Wurstwaren/Brühwurstware	205	13.5	0.9	16.4	
+739	Gerstenflocken		Brote, Flocken und Frühstückscerealien/Flocken, Kleie und Keime	333	8.5	66.1	1.5	
+191	Halbfettbutter		Fette und Öle/Fette	391	4.8	3.5	39.8	
+691	Hinterschinken		Fleisch- und Wurstwaren/Kochwurstware	104	20.2	0.7	2.3	
+14135	Joghurt-Butter		Fette und Öle/Fette	602	1.2	1.5	65.7	
+1080	Kalbsbratwurst		Fleisch- und Wurstwaren/Brühwurstware	228	12.5	1.2	19.2	
+356	Knoblauch, roh		Gemüse/Gemüse frisch	107	6.4	16.3	0.5	
+13458	Kokosnussmilch	Kokosmilch	Fette und Öle/Rahm	214	2.4	3.1	21.3	
+448	Kopfsalat, roh		Gemüse/Gemüse frisch	16	1.3	1.1	0.4	
+397	Mandarine, roh		Früchte/Früchte frisch	45	0.8	9.2	0.2	
+403	Mirabelle, roh		Früchte/Früchte frisch	76	0.6	18	0.2	
+404	Nektarine, roh		Früchte/Früchte frisch	55	1	11.3	0.3	
+493	Olive, schwarz		Nüsse, Samen und Ölfrüchte	176	1.4	0.8	17.2	
+13439	Pastinake, roh		Gemüse/Gemüse frisch	62	1.3	12.1	0.4	
+953	Rahmkaramellen	Rahmbonbons	Süssigkeiten/Bonbons, Frucht- und Kaugummi	351	0.4	79.3	3.6	
+362	Rhabarber, roh		Früchte/Früchte frisch	22	0.8	1.5	0.2	
+363	Rosenkohl, roh		Gemüse/Gemüse frisch	41	4	3.3	0.4	
+10532	Sardellenpaste		Verschiedenes/Aufstriche	272	19.8	0.2	21.3	
+14281	Schalotte, roh		Gemüse/Gemüse frisch	66	1.8	12.2	0	
+14035	Schümliguetzli	Schümli|Schaumgebäck|Schaumkeks	Süssigkeiten/Guetzli	444	4.2	83.5	9.9	
+598	Sonnenblumenöl		Fette und Öle/Öle	900	0	0	100	
+892	Sorbet, Frucht		Süssigkeiten/Glacen auf Wasserbasis	137	0.2	32.1	0	
+455	Steinpilz, roh		Gemüse/Pilze	39	5.4	0.5	0.4	
+1265	Suze (20 vol%)		Alkoholhaltige Getränke/Sonstige alkoholische Getränke	168	0	15.4	0	
+14251	Tempeh, nature		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Proteinlieferanten	157	17.6	7.9	4.7	
+709	Trockenfleisch	Hobelfleisch|Bündnerfleisch	Fleisch- und Wurstwaren/Rohwurstware	190	39.3	0.4	3.5	
+63	Vollmilch, UHT		Milch und Milchprodukte/Milch	68	3.2	4.6	4.1	
+692	Vorderschinken		Fleisch- und Wurstwaren/Kochwurstware	106	18.6	0.4	3.3	
+14016	Waffel, frisch		Süssigkeiten/Sonstige süsse Backwaren	301	8	36.1	13.4	
+453	Weisskohl, roh	Weisskabis	Gemüse/Gemüse frisch	36	1.4	4.6	0.6	
+13951	Zitronenschale		Früchte/Früchte frisch	52	1.5	5.4	0.3	
+367	Zucchetti, roh	Zucchini	Gemüse/Gemüse frisch	17	1.2	1.8	0.3	
+479	Zwetschge, roh		Früchte/Früchte frisch	43	0.6	8.8	0.1	
+868	Amaretti (hart)		Süssigkeiten/Guetzli	464	8.8	76.7	13	
+740	Banane, gedörrt	Bananenchips	Früchte/Früchte getrocknet	370	3.9	80.7	1.8	
+1248	Basler Leckerli		Süssigkeiten/Guetzli	412	7.5	75	7.9	
+350	Blumenkohl, roh		Gemüse/Gemüse frisch	26	1.8	2.1	0.7	
+653	Bolognaisesauce	Tomaten-Hackfleischsauce	Verschiedenes/Saucen	96	6.3	8.3	4	
+619	Camembert, Rahm		Milch und Milchprodukte/Weichkäse	354	17.1	0	31.7	
+375	Champignon, roh		Gemüse/Pilze	25	3.7	1.1	0.3	
+14056	Croque Monsieur	Toast mit Schinken und Käse	Gerichte/Sandwiches	260	16.4	26.6	9.4	
+661	Kalb, Haxe, roh		Fleisch und Innereien/Kalb	116	20.7	0	3.7	
+497	Kartoffelstärke		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	336	0.6	83.1	0.1	
+14289	Meringue-Schale		Süssigkeiten/Sonstige Süssigkeiten	391	5.5	92.3	0	
+13447	Pestosauce, rot		Verschiedenes/Saucen	410	6.1	13.1	36.2	
+373	Petersilie, roh	Peterli	Gemüse/Kräuter	58	3.9	7.4	0.5	
+456	Radieschen, roh	Radisli	Gemüse/Gemüse frisch	14	0.9	1.5	0.1	
+648	Rind, Hals, roh	Voressen|Gulasch	Fleisch und Innereien/Rind	150	19.3	0	8.1	
+575	Saurer Halbrahm		Fette und Öle/Rahm	173	2.7	3.2	16.6	
+13446	Schinkengipfeli		Salzige Snacks/Blätterteiggebäcke;Gerichte/Sonstige salzige/rezente Gerichte	340	11.1	26	20.9	
+594	Schweineschmalz		Fette und Öle/Fette	900	0	0	100	
+14231	Tarte au citron		Süssigkeiten/Kuchen, Torten und Cake	257	6.3	31.1	11.8	
+13441	Topinambur, roh		Gemüse/Gemüse frisch	54	2.4	4	0.4	
+585	Vollmilchpulver		Milch und Milchprodukte/Milch	480	24.7	35.1	26.2	
+13392	Weichkäse, Rahm		Milch und Milchprodukte/Weichkäse	347	17.4	0	30.9	
+514	Wermut, 15 vol%	Wermutwein|Wermuth|Vermouth	Alkoholhaltige Getränke/Wein	132	0.1	12.9	0	
+13939	Worcester Sauce		Verschiedenes/Saucen	124	1.4	29.4	0.1	
+14295	Amaretti (weich)		Süssigkeiten/Guetzli	464	12.4	53.5	21.3	
+1212	Berner Hobelkäse		Milch und Milchprodukte/Hartkäse	491	30	0	41.2	
+353	Bohne, grün, roh	Gartenbohne	Gemüse/Gemüse frisch	32	1.9	4.1	0.2	
+13461	Burger mit Fisch		Gerichte/Fast Food	262	12.2	26.7	11.5	
+376	Eierschwamm, roh	Pfifferling	Gemüse/Pilze	24	2.3	0.2	0.5	
+630	Erbse (Konserve)		Gemüse/Gemüse gekocht (inkl. Konserven)	87	4.8	12.8	0.8	
+369	Erbse, grün, roh	Erbsli	Gemüse/Gemüse frisch	90	6.9	11.3	0.7	
+13882	Granatapfel, roh		Früchte/Früchte frisch	81	1.4	14.3	1.2	
+389	Heidelbeere, roh		Früchte/Früchte frisch	51	0.9	10.6	0.2	
+666	Hollandaisesauce		Verschiedenes/Saucen	212	3	9.3	18	
+1	Kalb, Brust, roh		Fleisch und Innereien/Kalb	204	18.3	0	14.5	
+660	Kalb, Filet, roh		Fleisch und Innereien/Kalb	119	21.2	0	3.8	
+10	Kalb, Leber, roh		Fleisch und Innereien/Kalb	127	19.6	4.6	3.4	
+673	Kalb, Niere, roh		Fleisch und Innereien/Kalb	95	15.8	1	3.1	
+674	Kalb, Zunge, roh		Fleisch und Innereien/Kalb	186	17.2	1.9	12.2	
+762	Kochsalz mit Jod		Verschiedenes/Salz, Gewürze und Aromen	0	0	0	0	
+675	Lamm, Filet, roh		Fleisch und Innereien/Lamm, Schaf	122	20.4	0	4.5	
+578	Magermilchpulver		Milch und Milchprodukte/Milch	348	34.3	50.5	1	
+761	Miesmuschel, roh		Fisch/Meeresfrüchte, Krusten- und Schalentiere	85	11.7	3.4	2.7	
+372	Nüsslisalat, roh	Feldsalat|Rapunzelsalat	Gemüse/Gemüse frisch	18	2	0.8	0.2	
+663	Paprika (Gewürz)		Verschiedenes/Salz, Gewürze und Aromen	358	14.8	34.9	13	
+13459	Pestosauce, grün		Verschiedenes/Saucen	436	5.6	6.6	42.5	
+806	Pudding, Caramel	Flan	Süssigkeiten/Cremen und Pudding	125	3.4	23	2.1	
+809	Pudding, Vanille	Flan	Süssigkeiten/Cremen und Pudding	102	2.8	18	2.1	
+14206	Rahmglace, Aroma		Süssigkeiten/Glacen auf Milchbasis	278	4.1	24.2	17.9	
+28	Reh, Ragout, roh	Rehpfeffer	Fleisch und Innereien/Wild	105	22	0	1.9	
+719	Rind, Brust, roh		Fleisch und Innereien/Rind	188	18.9	0	12.5	
+639	Rind, Filet, roh		Fleisch und Innereien/Rind	123	21.9	0	4	
+657	Rind, Leber, roh		Fleisch und Innereien/Rind	142	20.5	5.3	4.3	
+656	Rind, Zunge, roh		Fleisch und Innereien/Rind	196	16	3.7	13	
+846	Roggenschrotbrot		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	225	7.7	40	1.1	
+10561	Samosa, gebacken		Gerichte/Asiatische Gerichte	353	6.8	32.5	21	
+807	Schokoladencrème		Süssigkeiten/Cremen und Pudding	122	3.6	20	3	
+569	Sirup unverdünnt		Alkoholfreie Getränke/Sirup	286	0.1	70.6	0.1	
+803	Tee, ungezuckert		Alkoholfreie Getränke/Tee	0	0	0	0	
+508	Wein rot, 9 vol%	Rotwein	Alkoholhaltige Getränke/Wein	55	0.2	0.2	0	
+14221	Wienerli im Teig		Gerichte/Fast Food	279	10.7	13.5	20.1	
+512	Apfelwein, 4 vol%	Apfelmost|Saurer Most|Cider	Alkoholhaltige Getränke/Wein	31	0	2.5	0	
+13420	Bier, alkoholfrei		Alkoholhaltige Getränke/Bier	23	0.4	4.9	0	
+433	Birne, getrocknet	Dörrbirne|Trockenbirne	Früchte/Früchte getrocknet	288	2.3	59.7	1.4	
+651	Bratensauce, klar		Verschiedenes/Saucen	44	1.5	3.5	2.5	
+13460	Burger mit Poulet		Gerichte/Fast Food	247	12.7	23.8	11	
+842	Bürli (halbweiss)		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	215	8.6	41.4	1	
+458	Cicorino rot, roh		Gemüse/Gemüse frisch	19	1.4	1.6	0.1	
+272	Edelkastanie, roh	Marroni	Nüsse, Samen und Ölfrüchte	190	2.9	36.5	1.9	
+459	Eisbergsalat, roh		Gemüse/Gemüse frisch	15	0.8	2.1	0.2	
+804	Eistee, gezuckert		Alkoholfreie Getränke/Süssgetränke;Alkoholfreie Getränke/Tee	30	0	7.5	0	
+14060	Fasnachtschüechli		Süssigkeiten/Sonstige süsse Backwaren	553	11.5	51.7	32.9	
+387	Feige, getrocknet	Dörrfeige	Früchte/Früchte getrocknet	267	3.1	55.9	1.2	
+1586	Hirsotto, gekocht		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	146	3.8	24.8	3.2	
+672	Kalb, Milken, roh	Bries	Fleisch und Innereien/Kalb	96	17.2	0	3	
+13884	Mango, getrocknet		Früchte/Früchte getrocknet	293	2.9	61.1	2.2	
+1087	Minipic Würstchen		Fleisch- und Wurstwaren/Rohwurstware	460	26.1	0.8	39.1	
+708	Palmöl - Palmfett		Fette und Öle/Öle;Fette und Öle/Fette	899	0	0	99.9	
+13440	Papaya, reif, roh		Früchte/Früchte frisch	44	0.5	9.5	0.1	
+463	Pfefferminze, roh		Gemüse/Kräuter	49	3.8	5.3	0.7	
+685	Pferd, Filet, roh		Fleisch und Innereien/Sonstige Tierarten	112	21.4	0	2.9	
+987	Preiselbeere, roh	Moosbeere	Früchte/Früchte frisch	36	0.3	6.2	0.5	
+694	Rahmglace, Frucht	Rahmeis	Süssigkeiten/Glacen auf Milchbasis	185	3.5	24.7	8	
+10562	Samosa, frittiert		Gerichte/Asiatische Gerichte	382	6.4	30.6	25.3	
+1088	Saucisson vaudois		Fleisch- und Wurstwaren/Rohwurstware	358	16.5	0.2	32.3	
+374	Schnittlauch, roh		Gemüse/Kräuter	30	3	1.9	0.6	
+197	Schokolade, weiss		Süssigkeiten/Schokolade und Kakaoerzeugnisse	567	6.7	55.8	35.2	
+960	Schokoladenpulver		Süssigkeiten/Schokolade und Kakaoerzeugnisse	398	5.3	71.3	7.8	
+1085	Schweinsbratwurst	Bauernbratwurst	Fleisch- und Wurstwaren/Rohwurstware	236	16.2	0.5	18.8	
+515	Sherry, 18.5 vol%	Jerez	Alkoholhaltige Getränke/Wein	118	0.1	3.6	0	
+466	Sojasprossen, roh	Sojakeime	Gemüse/Sprossen und Keimlinge	55	5.5	4.7	1	
+281	Sonnenblumenkerne		Nüsse, Samen und Ölfrüchte	621	25.1	3.6	54.5	
+400	Stachelbeere, roh		Früchte/Früchte frisch	39	0.8	7.1	0.2	
+402	Wassermelone, roh		Früchte/Früchte frisch	39	0.7	8.3	0.2	
+509	Wein rot, 12 vol%	Rotwein	Alkoholhaltige Getränke/Wein	70	0.2	0.3	0	
+1589	Wienerli, gekocht		Fleisch- und Wurstwaren/Brühwurstware	220	13	0.6	18.4	
+881	Willisauer Ringli		Süssigkeiten/Guetzli	380	5.5	87.5	0.6	
+882	Zuger Kirschtorte		Süssigkeiten/Kuchen, Torten und Cake	307	5.8	27.5	17.1	
+741	Banane, getrocknet		Früchte/Früchte getrocknet	273	3	60.2	1	
+790	Berner Zungenwurst		Fleisch- und Wurstwaren/Brühwurstware	333	17.3	0	29.4	
+928	Blätterteigstängel	Flûtes	Salzige Snacks/Blätterteiggebäcke	490	7.1	40.4	32.9	
+371	Brunnenkresse, roh		Gemüse/Gemüse frisch	19	1.7	1.9	0.2	
+1692	Capuns, zubereitet	Mangoldwickel	Gerichte/Sonstige salzige/rezente Gerichte	166	8.1	9.7	10.4	
+14008	Cookie, Schokolade		Süssigkeiten/Guetzli	502	6.5	59	25.9	
+384	Dattel, getrocknet		Früchte/Früchte getrocknet	287	2.4	64.7	0.4	
+1269	Fermentierter Teig		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	199	7.8	38.3	0.9	
+14270	Fruchtwähe/-kuchen	Fruchtwähe	Süssigkeiten/Kuchen, Torten und Cake	203	3.6	26.8	8.7	
+1587	Gerstotto, gekocht		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	134	3.2	22.3	2.4	
+507	Glarner Schabziger	Glarner Kräuterkäse	Milch und Milchprodukte/Hartkäse	131	31.6	0	0.5	
+14025	Hamburger, doppelt		Gerichte/Fast Food	258	11.9	24.7	12.1	
+14298	Maiswaffel, nature		Brote, Flocken und Frühstückscerealien/Knäckebrote, Zwieback, Crackers und Waffeln	387	7.4	83.5	1.9	
+360	Peperoni, rot, roh		Gemüse/Gemüse frisch	32	0.9	5.9	0.1	
+14137	Puffreis, knusprig		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	385	6.3	86	1.5	
+477	Rosine, getrocknet	Weinbeere|Sultanine	Früchte/Früchte getrocknet	321	3	73.2	0.9	
+14088	Salz, Himalayasalz		Verschiedenes/Salz, Gewürze und Aromen	0	0	0	0	
+781	Saucisse aux choux		Fleisch- und Wurstwaren/Rohwurstware	363	15.9	1.6	32.4	
+452	Schwarzwurzel, roh		Gemüse/Gemüse frisch	54	1.4	2.1	0.3	
+678	Schwein, Haxe, roh		Fleisch und Innereien/Schwein	173	25.6	0.7	7.6	
+995	Sojamehl, vollfett		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	470	40.8	17.3	22.4	
+14162	Spargel, grün, roh		Gemüse/Gemüse frisch	26	1.9	3.1	0.3	
+13406	Süsskartoffel, roh		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	81	1.6	17.1	0.1	
+13463	Tomate, getrocknet		Gemüse/Gemüse getrocknet	282	14.1	43.5	3	
+478	Traube, weiss, roh	Weintraube	Früchte/Früchte frisch	69	0.7	15.2	0.3	
+534	Vacherin Mont d'Or		Milch und Milchprodukte/Weichkäse	278	17.2	0	23.2	
+802	Vollkornreiswaffel		Brote, Flocken und Frühstückscerealien/Knäckebrote, Zwieback, Crackers und Waffeln	390	7.7	81.5	2.8	
+821	Weizenvollkornbrot	Grahambrot	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	213	8.6	38.3	1.3	
+796	Wildfleischterrine		Fleisch und Innereien/Wild	243	16.5	1.6	18.7	
+929	Zwieback, Vollkorn		Brote, Flocken und Frühstückscerealien/Knäckebrote, Zwieback, Crackers und Waffeln	412	17.5	61.2	9.1	
+513	Apfelwein, 6.2 vol%	Apfelmost|Saurer Most|Cider	Alkoholhaltige Getränke/Wein	63	0	7.2	0	
+13937	Barbecue Grillsauce		Verschiedenes/Saucen	131	0.6	30.3	0.6	
+622	Camembert, halbfett	Weichkäse, halbfett|Weichkäse, léger|Tomme léger	Milch und Milchprodukte/Weichkäse	188	24.4	0	10	
+614	Camembert, vollfett		Milch und Milchprodukte/Weichkäse	297	20.8	0	23.7	
+902	Engadiner Nusstorte		Süssigkeiten/Kuchen, Torten und Cake	481	7	49.9	27.7	
+13976	Forelle, geräuchert		Fisch/Süsswasserfische	177	23.4	0	9.3	
+536	Freiburger Vacherin		Milch und Milchprodukte/Hartkäse	368	23.5	0	30.4	
+99	Joghurt, Mokka, Bio		Milch und Milchprodukte/Joghurt und Sauermilch	95	3.4	13.1	3.3	
+662	Kalb, Eckstück, roh	Plätzli	Fleisch und Innereien/Kalb	103	22.2	0	1.6	
+2	Kalb, Kotelett, roh		Fleisch und Innereien/Kalb	161	20.7	0	8.7	
+15	Kalb, Voressen, roh	Ragout	Fleisch und Innereien/Kalb	102	20	0	2.4	
+13486	Kandierte Kastanien		Süssigkeiten/Sonstige Süssigkeiten	316	0.9	75.5	0.5	
+1572	Kebab im Fladenbrot		Gerichte/Sandwiches	121	7.6	14.6	3.4	
+531	Limburger (Münster)		Milch und Milchprodukte/Hartkäse	273	20	0	21.4	
+1619	Maisgriess, gekocht	Polenta	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mais	79	2	16.7	0.2	
+425	Maisgriess, trocken	Polenta	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mais	350	8.8	73.8	1.1	
+1135	Mehl (Durchschnitt)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	344	12	68.8	1.4	
+1044	Mineralwasser Elmer		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+986	Passionsfrucht, roh	Maracuja	Früchte/Früchte frisch	102	2.1	10.9	3	
+359	Peperoni, grün, roh		Gemüse/Gemüse frisch	22	0.9	3	0.3	
+401	Pfirsich, gelb, roh		Früchte/Früchte frisch	43	0.8	8.9	0.1	
+475	Pflaume, getrocknet	Dörrpflaume|Backpflaume	Früchte/Früchte getrocknet	227	1.6	55.4	0.4	
+683	Pilzsauce, gebunden		Verschiedenes/Saucen	132	4.1	8.6	8.9	
+516	Portwein, 18.5 vol%	Porto	Alkoholhaltige Getränke/Wein	148	0.2	11.7	0	
+810	Pudding, Schokolade	Flan	Süssigkeiten/Cremen und Pudding	121	3	21	2.6	
+70	Quark, nature, Rahm		Milch und Milchprodukte/Frischkäse und Quark	183	6.9	3.7	15.6	
+1195	Rahm (Durchschnitt)		Fette und Öle/Rahm	279	2.2	3.3	28.6	
+14240	Rahmspinat, gekocht		Gemüse/Gemüse tiefgekühlt	65	2.9	4	3.8	
+29	Reh, Schnitzel, roh		Fleisch und Innereien/Wild	105	22.5	0	1.7	
+13450	Reisgetränk, nature		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Getränke	54	0.2	10.3	1.3	
+640	Rind, Eckstück, roh	Plätzli	Fleisch und Innereien/Rind	111	22.6	0	2.3	
+38	Rind, Voressen, roh	Ragout	Fleisch und Innereien/Rind	97	21.2	0	1.3	
+677	Schwein, Filet, roh		Fleisch und Innereien/Schwein	121	22.2	0	3.6	
+689	Schwein, Leber, roh		Fleisch und Innereien/Schwein	131	20.7	0.9	4.9	
+996	Sojamehl, entfettet		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	296	51.5	7.5	1.2	
+14161	Spargel, weiss, roh		Gemüse/Gemüse frisch	26	2.4	2.5	0.3	
+792	St. Galler Schüblig		Fleisch- und Wurstwaren/Brühwurstware	237	12.6	0.2	20.7	
+774	Terrine de Campagne	Pâté de campagne	Fleisch- und Wurstwaren/Kochwurstware	298	13.6	0.9	26.5	
+824	Walliser Roggenbrot		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	218	7.6	38.8	1	
+13391	Weichkäse, vollfett		Milch und Milchprodukte/Weichkäse	296	20.6	0	23.7	
+10477	Wein rot, 13.5 vol%	Rotwein	Alkoholhaltige Getränke/Wein	76	0	0.2	0	
+510	Wein weiss, 11 vol%	Weisswein	Alkoholhaltige Getränke/Wein	71	0.1	2	0	
+1588	Weizenotto, gekocht		Gerichte/Sonstige salzige/rezente Gerichte	172	5.3	27.5	3.1	
+465	Zuckerhutsalat, roh		Gemüse/Gemüse frisch	16	1.2	1.5	0.2	
+13397	Amaranth, Samen, roh		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	376	15.8	56.8	7	
+469	Aprikose, getrocknet	Dörraprikose|Marille	Früchte/Früchte getrocknet	239	2.9	59.1	0.5	
+839	Bierhefe, getrocknet	Bäckerhefe|Trockenhefe|Hefepulver	Speziallebensmittel/Supplemente;Verschiedenes/Hefe	354	47.9	26.5	4.2	
+864	Brunsli, hausgemacht		Süssigkeiten/Guetzli	515	14.9	43.3	29.8	
+1460	Butterzopf, Vollkorn		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	272	9.5	40.4	6.4	
+763	Bäckerhefe, gepresst	Bierhefe	Verschiedenes/Hefe;Verschiedenes/Backzutaten	96	16.7	1.1	1.2	
+669	Bündner Gerstensuppe		Gerichte/Eintöpfe und Suppen	42	1.4	6.7	0.9	
+517	Eierlikör, 16.5 vol%		Alkoholhaltige Getränke/Sonstige alkoholische Getränke	285	4	28	7	
+13997	Guacamole, abgepackt		Verschiedenes/Saucen	192	2.2	5.9	16.5	
+14114	Hafergetränk, nature		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Getränke	47	0.5	7.8	1.5	
+422	Hirse, Korn geschält		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	360	10.6	68.8	3.9	
+11	Kalb, Gehacktes, roh	Hackfleisch	Fleisch und Innereien/Kalb	105	20.5	0	2.6	
+357	Knollensellerie, roh		Gemüse/Gemüse frisch	32	1.4	4	0.3	
+918	Knäckebrot, Vollkorn		Brote, Flocken und Frühstückscerealien/Knäckebrote, Zwieback, Crackers und Waffeln	325	12	57.9	1.7	
+210	Lachs, Wildfang, roh		Fisch/Meeresfische	182	19.7	0	11.5	
+13405	Leinöl, kaltgepresst		Fette und Öle/Öle	900	0	0	100	
+13977	Miesmuschel, gekocht		Fisch/Meeresfrüchte, Krusten- und Schalentiere	108	17.2	5.1	2.1	
+1171	Mineralwasser Adello		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+541	Mineralwasser Arkina		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+535	Mineralwasser Vittel		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+550	Mineralwasser Volvic		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+30	Rind, Entrecôte, roh		Fleisch und Innereien/Rind	133	23.2	0	4.5	
+32	Rind, Hohrücken, roh		Fleisch und Innereien/Rind	165	21.1	0	9	
+14269	Rosmarin, getrocknet		Gemüse/Kräuter	328	4.9	21.5	15.2	
+1094	Salami (Billiglinie)		Fleisch- und Wurstwaren/Rohwurstware	422	22	0	37.1	
+408	Sesamsamen, geschält		Nüsse, Samen und Ölfrüchte	660	26.8	4.6	57.4	
+366	Stangensellerie, roh		Gemüse/Gemüse frisch	18	0.6	2.4	0.2	
+553	Appenzeller, vollfett		Milch und Milchprodukte/Hartkäse	383	24.3	0	31.7	
+650	Bratensauce, gebunden		Verschiedenes/Saucen	53	1.6	4.6	3	
+629	Champignon (Konserve)		Gemüse/Pilze	19	2.2	0.5	0.3	
+1504	Flammkuchen, gebacken	Flammkuchen	Gerichte/Kuchen und Gratins	263	7.8	27	13.4	
+16	Kaninchen, Filet, roh		Fleisch und Innereien/Sonstige Tierarten	111	24.3	0	1.5	
+14113	Mandelgetränk, nature		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Getränke	33	1.1	1.3	2.6	
+732	Melasse, Melassesirup		Süssigkeiten/Konfitüren und süsse Brotaufstriche	274	1.2	67.2	0	
+501	Mineralwasser Contrex		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+522	Mineralwasser Henniez		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+524	Mineralwasser Perrier		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+427	Reis poliert, trocken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Reis	352	7.4	78	0.9	
+280	Sesamsamen ungeschält		Nüsse, Samen und Ölfrüchte	619	23.1	4	53.8	
+442	Sojabohne, getrocknet		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	396	38.2	8.7	18.3	
+631	Weichkäse, Doppelrahm		Milch und Milchprodukte/Weichkäse	376	9.7	0	37.5	
+511	Wein weiss, 12.5 vol%	Weisswein	Alkoholhaltige Getränke/Wein	72	0.2	0.1	0	
+632	Zuckermais (Konserve)		Gemüse/Gemüse gekocht (inkl. Konserven)	105	3	18.2	1.7	
+13466	Alge, Nori, getrocknet	Algen, getrocknet	Gemüse/Gemüse getrocknet	255	31.5	10.5	1.6	
+14301	Edelkastanie, geröstet		Nüsse, Samen und Ölfrüchte	210	3.9	41.1	1.7	
+567	Frischkäse, Doppelrahm		Milch und Milchprodukte/Frischkäse und Quark	351	11.1	4.5	32.1	
+1580	Gemüsegratin, gebacken		Gerichte/Kuchen und Gratins	58	2.6	2.4	3.9	
+14292	Guacamole, hausgemacht		Verschiedenes/Saucen	139	1.6	1.7	12.9	
+12	Hirsch, Entrecôte, roh		Fleisch und Innereien/Wild	111	23.1	0	2.1	
+938	Hirseflocken, Vollkorn		Brote, Flocken und Frühstückscerealien/Flocken, Kleie und Keime	360	10.6	68.8	3.9	
+983	Kaffee löslich, Pulver	Instant-Kaffee	Alkoholfreie Getränke/Kaffee	283	11.2	42.6	0	
+878	Madeleine (mit Butter)		Süssigkeiten/Sonstige süsse Backwaren	460	7.3	51.3	24.8	
+48	Mineralwasser Eptinger		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+14067	Petit Beurre, Vollkorn		Süssigkeiten/Guetzli	426	9.6	65.3	12.7	
+1534	Pizza Hawaii, gebacken		Gerichte/Italienische Gerichte	196	9.5	24.3	6.4	
+14280	Rindstatar, zubereitet		Fleisch und Innereien/Rind	126	16.1	3.2	5.2	
+679	Schwein, Eckstück, roh	Plätzli	Fleisch und Innereien/Schwein	115	22.6	0	2.7	
+8	Schwein, Kotelett, roh		Fleisch und Innereien/Schwein	179	21.4	0	10.4	
+9	Schwein, Voressen, roh	Ragout	Fleisch und Innereien/Schwein	135	20.9	0	5.7	
+418	Thon im Öl, abgetropft		Fisch/Meeresfische	199	27.3	0.9	9.6	
+1568	Wurstsalat, zubereitet		Gerichte/Salate	224	7.1	1.3	21.1	
+876	Zimtstern, hausgemacht		Süssigkeiten/Guetzli	505	14.2	50.9	25.9	
+1577	Bami Goreng, zubereitet		Gerichte/Asiatische Gerichte	130	13.5	13.1	2.4	
+473	Bohne, grün, getrocknet	Dörrbohne	Gemüse/Gemüse getrocknet	318	20.2	42.1	2	
+834	Buttergipfeli, Vollkorn	Rusticogipfeli	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	365	6.8	37.3	19.7	
+1188	Café crème, ungezuckert		Alkoholfreie Getränke/Kaffee	13	0.3	0.5	1.1	
+13389	Erbse, reif, getrocknet	Erbse, geschält, getrocknet	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	331	21.3	51.9	1.7	
+14248	Griessköpfli mit Zucker		Süssigkeiten/Cremen und Pudding	118	4.4	18.2	2.9	
+67	Halbrahm, pasteurisiert		Fette und Öle/Rahm	274	2.3	3.3	27.9	
+58	Joghurt Bifidus, nature		Milch und Milchprodukte/Joghurt und Sauermilch	66	4	4.5	3.6	
+391	Johannisbeere, rot, roh		Früchte/Früchte frisch	50	1.6	7.1	0.7	
+439	Kichererbse, getrocknet		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	338	18.6	44.3	4.9	
+526	Kondensmilch, gezuckert		Milch und Milchprodukte/Milch	339	8	54.3	10	
+370	Linse, ganz, getrocknet	Linsen	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	313	24.4	38.8	1.5	
+1173	Mineralwasser Knutwiler		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+537	Mineralwasser Rhäzünser		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+548	Mineralwasser Zurzacher		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+1579	Nasi Goreng, zubereitet		Gerichte/Asiatische Gerichte	125	10.8	16.1	1.8	
+914	Nussgipfel aus Hefeteig		Süssigkeiten/Sonstige süsse Backwaren	318	7.7	41.9	12.6	
+1585	Pilzrisotto, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	129	4.2	18.5	3.9	
+1533	Pizza Calzone, gebacken		Gerichte/Italienische Gerichte	225	11.5	26.7	7.7	
+1665	Ratatouille, zubereitet		Gemüse/Gemüse gekocht (inkl. Konserven)	47	1.4	4.4	2.2	
+419	Reis parboiled, trocken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Reis	356	7.5	78.6	1	
+428	Reis unpoliert, trocken	Vollkornreis	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Reis	350	7.4	71.4	2.8	
+701	Rippli (Nierstück), roh		Fleisch- und Wurstwaren/Kochwurstware	156	21.7	0.5	7.5	
+13503	Salatsauce, französisch		Fette und Öle/Salatsaucen	360	1.4	4.5	37.4	
+13502	Salatsauce, italienisch		Fette und Öle/Salatsaucen	309	0.1	4.9	32.1	
+7	Schwein, Gehacktes, roh	Hackfleisch	Fleisch und Innereien/Schwein	159	20.5	0	8.5	
+42	Schwein, Nierstück, roh		Fleisch und Innereien/Schwein	138	22.9	0	5.1	
+14223	Sojagetränk, Schokolade		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Getränke	76	3.8	8.5	2.6	
+13418	Strudelteig, ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	234	7.6	44.3	2.5	
+65	Vollrahm, pasteurisiert	Rahm	Fette und Öle/Rahm	334	2	3.1	34.8	
+939	Weizenflocken, Vollkorn		Brote, Flocken und Frühstückscerealien/Flocken, Kleie und Keime	335	13.5	59.6	1.8	
+554	Appenzeller, viertelfett		Milch und Milchprodukte/Hartkäse	235	33.1	0	11.4	
+1093	Cotto (Fleischerzeugnis)		Fleisch- und Wurstwaren/Kochwurstware	93	15.7	0.6	3.1	
+14219	Erbse, grün, tiefgekühlt	Erbsli, gefroren	Gemüse/Gemüse tiefgekühlt	81	5.3	10.8	0.7	
+486	Hase (Durchschnitt), roh		Fleisch und Innereien/Sonstige Tierarten	105	22	0	1.9	
+14204	Joghurt mit Rahm, nature		Milch und Milchprodukte/Joghurt und Sauermilch	114	3.6	4.3	9.2	
+581	Kakaopulver, ohne Zucker		Süssigkeiten/Schokolade und Kakaoerzeugnisse	380	22.4	11.6	20.6	
+14	Kalb, Runder Mocken, roh	Saftplätzli	Fleisch und Innereien/Kalb	104	21.9	0	1.8	
+1667	Kalbspiccata, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	217	22.5	5.5	11.6	
+813	Kartoffel, geschält, roh	Kartoffeln	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	76	2	15.6	0.1	
+14124	Kokosnussgetränk, nature		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Getränke	22	0.4	2.8	1	
+1601	Käseschnitte, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	270	13.6	25.9	12	
+879	Mailänderli, hausgemacht		Süssigkeiten/Guetzli	431	7.1	53.2	20.8	
+932	Mais-Chips (Apérogebäck)		Salzige Snacks/Chips	509	7.8	56	27.2	
+1262	Malibu Coconut (21 vol%)		Alkoholhaltige Getränke/Sonstige alkoholische Getränke	188	0	19.3	0	
+538	Mineralwasser Adelbodner		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+818	Ofen-Frites, tiefgekühlt	Ofen-Pommes	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	154	2.4	23.4	5.1	
+1128	Pilz (Durchschnitt), roh		Gemüse/Pilze	26	3.6	1	0.3	
+1532	Pizza al tonno, gebacken	Pizza mit Thon	Gerichte/Italienische Gerichte	225	11.9	26.6	7.5	
+34	Rind, Runder Mocken, roh	Saftplätzli	Fleisch und Innereien/Rind	106	22.4	0	1.8	
+830	Roggenbrot mit Sauerteig		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	210	6.5	39	0.9	
+39	Schwein, Brustspitz, roh		Fleisch und Innereien/Schwein	239	17.9	0	18.6	
+61	Teilentrahmte Milch, UHT		Milch und Milchprodukte/Milch	57	3.3	4.6	2.8	
+1202	Vinaigrette (mit Rapsöl)		Fette und Öle/Salatsaucen	232	4.2	1.8	22.9	
+954	Weichkaramellen, Bonbons		Süssigkeiten/Bonbons, Frucht- und Kaugummi	448	2.1	71.1	17.2	
+10353	Aufschnitt (Durchschnitt)		Fleisch- und Wurstwaren/Brühwurstware	274	13.8	0.7	24	
+421	Buchweizen, Korn geschält		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	341	13.1	62.4	3.1	
+1487	Crêpes nature, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	232	9.4	18.9	13.1	
+798	Doppelrahm, pasteurisiert		Fette und Öle/Rahm	468	1.9	2.7	50	
+1500	Eieromeletten, zubereitet	Französische Omeletten	Gerichte/Sonstige salzige/rezente Gerichte	151	11.4	1.4	11.1	
+1098	Fisch (Durchschnitt), roh		Fisch/Süsswasserfische;Fisch/Meeresfische	124	19.1	0	5.3	
+14208	Flammkuchenteig, gebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	257	8.7	46.3	3.4	
+14061	Frühlingsrolle, frittiert		Gerichte/Asiatische Gerichte	224	6.5	23.1	11.2	
+1666	Gemüselasagne, zubereitet		Gerichte/Italienische Gerichte	133	4.4	11.3	7.6	
+491	Gurke, in Essig eingelegt	Essiggurke|Cornichon	Gemüse/Gemüse gekocht (inkl. Konserven)	14	0.7	2.1	0.1	
+423	Hartweizengriess, trocken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	347	13.3	66.8	1.6	
+753	Heilbutt, Atlantisch, roh	Weisser Heilbutt	Fisch/Meeresfische	118	20.6	0	3.9	
+13	Kalb, Geschnetzeltes, roh		Fleisch und Innereien/Kalb	98	22	0	1.1	
+14197	Kartoffelgnocchi, gekocht		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	177	5	33.6	2.1	
+1116	Kochwürste (Durchschnitt)		Fleisch- und Wurstwaren/Kochwurstware	236	15	1.4	18.8	
+888	Kokosmakrone, hausgemacht		Süssigkeiten/Guetzli	549	6.9	35.1	38.9	
+527	Kondensmilch, ungezuckert		Milch und Milchprodukte/Milch	131	6.4	9.3	7.6	
+13918	Maniok, Wurzelknolle, roh	Cassava|Kassave|Yuca	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	157	1.4	36.3	0.3	
+209	Margarine, 35 - 40 % Fett		Fette und Öle/Fette	357	0.3	1.1	39	
+1136	Mehl, hell (Durchschnitt)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	345	12	69.7	1.3	
+1045	Mineralwasser Acqua Panna		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+915	Nussschnecke aus Hefeteig	Hefeschnecke	Süssigkeiten/Sonstige süsse Backwaren	445	12.2	54.9	18.7	
+37	Rind, Geschnetzeltes, roh		Fleisch und Innereien/Rind	102	22.2	0	1.5	
+413	Sardine im Öl, abgetropft		Fisch/Meeresfische	204	24.4	0.5	11.6	
+883	Schwarzwälder Kirschtorte		Süssigkeiten/Kuchen, Torten und Cake	258	4.5	22.5	15.9	
+41	Schwein, Hals, Steak, roh		Fleisch und Innereien/Schwein	203	18.9	0	14.1	
+799	Teigwaren mit Ei, trocken	Eierteigwaren	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teigwaren	365	13.3	69.9	2.8	
+13924	Weichkäse aus Ziegenmilch		Milch und Milchprodukte/Weichkäse	283	18.4	0	23.3	
+687	Ziege (Durchschnitt), roh		Fleisch und Innereien/Sonstige Tierarten	149	19.5	0	7.9	
+1253	Amaro Ramazzotti (30 vol%)		Alkoholhaltige Getränke/Sonstige alkoholische Getränke	228	0	17.9	0	
+1119	Beeren (Durchschnitt), roh		Früchte/Früchte frisch	43	0.9	7	0.5	
+13395	Blanc battu, nature, mager		Milch und Milchprodukte/Frischkäse und Quark	47	7.8	3.9	0	
+12981	Béchamelsauce, hausgemacht		Verschiedenes/Saucen	146	4.2	10.1	9.8	
+1573	Coleslaw Salat, zubereitet		Gerichte/Salate	119	1.6	4.7	9.8	
+1041	Dinkelmehl, Ruch, Typ 1100		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	348	14.3	65	2.2	
+1043	Dinkelmehl, weiss, Typ 550		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	348	13.3	68.2	1.6	
+1664	Fleischlasagne, zubereitet		Gerichte/Italienische Gerichte	154	9.2	12.8	7	
+1515	Fotzelschnitte ungezuckert		Gerichte/Sonstige süsse Gerichte	221	8	24.3	9.9	
+14293	Garnele, geschält, gekocht		Fisch/Meeresfrüchte, Krusten- und Schalentiere	86	19	0	1.1	
+1152	Gemüse (Durchschnitt), roh		Gemüse/Gemüse frisch	29	1.3	4.3	0.3	
+487	Hirsch (Durchschnitt), roh		Fleisch und Innereien/Wild	112	20.6	0	3.3	
+14282	Kapern, in Essig eingelegt		Gemüse/Gemüse gekocht (inkl. Konserven)	38	2.2	3.5	0.9	
+10457	Kochsalz mit Jod und Fluor	Speisesalz	Verschiedenes/Salz, Gewürze und Aromen	0	0	0	0	
+1662	Kürbis-Piccata, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	140	5.5	9.4	8.5	
+14117	Madeleine (mit Pflanzenöl)		Süssigkeiten/Sonstige süsse Backwaren	434	7.9	55.1	20	
+269	Mandel, geröstet, gesalzen		Salzige Snacks/Gesalzene Nüsse, Samen, Kerne	649	25.6	7.2	55.2	
+612	Milchschokolade mit Nüssen		Süssigkeiten/Schokolade und Kakaoerzeugnisse	568	8.7	46.2	38.1	
+913	Nussgipfel aus Blätterteig		Süssigkeiten/Sonstige süsse Backwaren	419	6.8	36.2	26.9	
+1538	Pizza Prosciutto, gebacken	Pizza mit Schinken	Gerichte/Italienische Gerichte	219	10.7	28.8	6.5	
+1540	Pizza mit Gemüse, gebacken		Gerichte/Italienische Gerichte	125	5.7	17.6	3.2	
+12983	Pommes Chips fettreduziert		Salzige Snacks/Chips	468	5.9	59.2	22.1	
+752	Roggenmehl, Ruch, Typ 1050		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	340	9	67.8	1.2	
+875	Sablé, Butter, hausgemacht		Süssigkeiten/Guetzli	474	5.9	53.1	26.2	
+414	Sardelle im Öl, abgetropft		Fisch/Meeresfische	182	26.4	0.2	8.5	
+767	Scampi (Kaisergranat), roh		Fisch/Meeresfrüchte, Krusten- und Schalentiere	93	19.6	0.8	1.3	
+563	Schmelzkäse, Scheibe, Rahm		Milch und Milchprodukte/Käseerzeugnisse	327	14.3	0	30	
+417	Thon im Wasser, abgetropft		Fisch/Meeresfische	109	24.9	0	1	
+203	Weizenmehl, Ruch, Typ 1100		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	339	13.5	64.6	1.7	
+205	Weizenmehl, weiss, Typ 400		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	346	11.5	71	1.1	
+435	Apfel, geschält, getrocknet	Dörrapfel	Früchte/Früchte getrocknet	264	1.4	55.4	1.6	
+1183	Bier Panache (Durchschnitt)		Alkoholhaltige Getränke/Bier	38	0.2	7.1	0	
+1648	Chili con carne, zubereitet		Gerichte/Eintöpfe und Suppen	118	10.2	9.2	3.5	
+14092	Erdnuss, geröstet, gesalzen		Salzige Snacks/Gesalzene Nüsse, Samen, Kerne	631	26.2	15	50	
+1190	Espresso crème, ungezuckert		Alkoholfreie Getränke/Kaffee	28	0.5	0.8	2.5	
+13419	Flammkuchenteig, ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	221	7.5	39.9	2.9	
+1123	Früchte (Durchschnitt), roh		Früchte/Früchte frisch	56	0.7	11.5	0.3	
+952	Hartkaramellen, Hartbonbons		Süssigkeiten/Bonbons, Frucht- und Kaugummi	385	0.5	95	0.3	
+436	Holunderbeere, schwarz, roh		Früchte/Früchte frisch	63	2.5	7.4	1.7	
+392	Johannisbeere, schwarz, roh		Früchte/Früchte frisch	71	1.3	9.7	0.9	
+3	Kalb, Nierstück, Steak, roh		Fleisch und Innereien/Kalb	113	22.8	0	2.4	
+658	Kalb, Schulter, Braten, roh		Fleisch und Innereien/Kalb	122	20.2	0	4.6	
+634	Kochsalz ohne Jod und Fluor	Speisesalz	Verschiedenes/Salz, Gewürze und Aromen	0	0	0	0	
+539	Käse in Salzlake (Kuhmilch)		Milch und Milchprodukte/Weichkäse	256	16	1.4	20.7	
+13385	Linse, geschält, getrocknet		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	325	27	41.8	1.5	
+73	Mineralwasser Aproz (Aproz)		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+884	Petit Beurre mit Schokolade		Süssigkeiten/Guetzli	482	7.7	63.8	21.3	
+711	Poulet, ganz, mit Haut, roh		Fleisch und Innereien/Geflügel	168	18.8	0	10.3	
+13477	Rhabarberkompott, gezuckert		Früchte/Früchte gekocht (inkl. Konserven)	84	0.7	18.8	0.2	
+638	Rind, Schulter, Braten, roh		Fleisch und Innereien/Rind	117	21.6	0	3.5	
+1605	Rührei mit Käse, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	156	11.7	1.3	11.5	
+43	Schwein, Runder Mocken, roh	Plätzli	Fleisch und Innereien/Schwein	127	20.6	0	4.9	
+1668	Schweinspiccata, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	226	22.9	5.5	12.4	
+14184	Spätzli gebraten mit Butter		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	199	7.3	26.2	6.9	
+637	Tomate, geschält (Konserve)	Pelati	Gemüse/Gemüse gekocht (inkl. Konserven)	22	1.1	3.8	0.1	
+10567	Tomatenrisotto, hausgemacht		Gerichte/Sonstige salzige/rezente Gerichte	125	3.9	20	3.1	
+10479	Wein weiss, gespritzt, süss		Alkoholhaltige Getränke/Wein	54	0.1	4.6	0	
+664	Bouillon, Gemüse, zubereitet	Klare Brühe	Gerichte/Eintöpfe und Suppen	6	0.3	0.4	0.4	
+10486	Calimocho (Rotwein mit Cola)		Alkoholhaltige Getränke/Sonstige alkoholische Getränke	55	0.1	5.2	0	
+499	Colagetränk, mit Süssstoffen		Alkoholfreie Getränke/Süssgetränke energievermindert	0	0	0	0	
+1496	Crêpes mit Speck, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	251	11.2	14.9	16.2	
+14233	Donut mit Schokoladen-Glasur		Süssigkeiten/Sonstige süsse Backwaren	364	6.4	44	17.6	
+14238	Erdnuss, geröstet, ohne Salz		Salzige Snacks/Gesalzene Nüsse, Samen, Kerne	637	26.8	11.3	51.9	
+797	Fondue klassisch, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	306	18.3	1	22	
+951	Gummibonbon mit Fruchtessenz		Süssigkeiten/Bonbons, Frucht- und Kaugummi	341	6.6	78.6	0	
+1612	Joghurt-Salatsauce (ohne Öl)		Fette und Öle/Salatsaucen	58	3.2	4.5	3	
+1118	Kochpökelware (Durchschnitt)		Fleisch- und Wurstwaren/Kochwurstware	223	19.8	0.7	15.6	
+1184	Latte macchiato, ungezuckert		Milch und Milchprodukte/Milch- und Joghurtgetränke;Alkoholfreie Getränke/Kaffee	54	2.5	3.7	3.2	
+521	Mineralwasser Evian (Cachat)		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+525	Mineralwasser San Pellegrino		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+20	Poulet, Brust, mit Haut, roh		Fleisch und Innereien/Geflügel	152	23.3	0	6.5	
+1189	Ristretto crème, ungezuckert		Alkoholfreie Getränke/Kaffee	47	0.8	1.3	4.3	
+1117	Rohpökelwaren (Durchschnitt)		Fleisch- und Wurstwaren/Rohwurstware	240	31	0.4	12.7	
+1607	Russischer Salat, zubereitet		Gerichte/Salate	199	2.5	9.7	16.2	
+14087	Salz, Meersalz, Fleur de sel		Verschiedenes/Salz, Gewürze und Aromen	0	0	0	0	
+40	Schwein, Geschnetzeltes, roh		Fleisch und Innereien/Schwein	134	21.3	0	5.4	
+1660	Sellerie-Piccata, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	136	5.4	8.4	8.2	
+1697	Siedfleischsalat, zubereitet		Gerichte/Salate	203	15	1.5	15.1	
+843	St. Galler Bürli (halbweiss)		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	231	9.1	44.6	1	
+557	Tilsiter, Rohmilch, vollfett		Milch und Milchprodukte/Hartkäse	374	25.6	0	30.2	
+13438	Tofu, seidig (weich), nature	Seidentofu, nature	Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Proteinlieferanten	53	5	1.5	2.9	
+1680	Vitello tonnato mit Garnitur		Fleisch und Innereien/Kalb	172	17.9	0.9	10.6	
+10478	Wein weiss, gespritzt, sauer		Alkoholhaltige Getränke/Wein	36	0.1	0.1	0	
+1569	Wurst-Käse-Salat, zubereitet		Gerichte/Salate	262	13.8	0.7	22.6	
+668	Bouillon, Fleisch, zubereitet	Klare Brühe	Gerichte/Eintöpfe und Suppen	5	0.3	0.2	0.3	
+1498	Crevettencocktail, zubereitet		Gerichte/Salate	168	4.4	4	13.4	
+14267	Erdnuss mit Schokoladeüberzug		Süssigkeiten/Sonstige Süssigkeiten	498	9.5	55.9	25	
+869	Haselnussmakrone, hausgemacht		Süssigkeiten/Guetzli	544	12.2	37.5	37	
+686	Kaninchen (Durchschnitt), roh		Fleisch und Innereien/Sonstige Tierarten	150	20.5	0	7.5	
+5	Lamm, Kotelett, roh (Schweiz)		Fleisch und Innereien/Lamm, Schaf	179	20.2	0	10.9	
+19	Lamm, Voressen, roh (Schweiz)	Ragout	Fleisch und Innereien/Lamm, Schaf	154	19.6	0	8.4	
+1186	Milchkaffee hell, ungezuckert	Schale	Milch und Milchprodukte/Milch- und Joghurtgetränke;Alkoholfreie Getränke/Kaffee	22	1	1.6	1.3	
+540	Mineralwasser Allegra (Malix)		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+1095	Mineralwasser Valais (Montis)		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+36	Rind, Siedfleisch, mager, roh		Fleisch und Innereien/Rind	132	20.7	0	5.5	
+14255	Risotto mit Käse, hausgemacht		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Reis	144	4.2	23.2	3.7	
+1584	Risotto ohne Käse, zubereitet		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Reis	125	2.4	24.9	1.6	
+1686	Schnitzelbrot mit Tartarsauce	Plätzlibrot	Gerichte/Sandwiches	242	13.9	23.2	10.2	
+14039	Schümliguetzli mit Schokolade	Choco-Schümli	Süssigkeiten/Guetzli	486	5.2	71.5	19.4	
+443	Spargel (weiss und grün), roh		Gemüse/Gemüse frisch	26	2.2	2.8	0.3	
+1679	Vitello tonnato ohne Garnitur		Fleisch und Innereien/Kalb	197	21.3	0.7	12.1	
+1661	Zucchetti-Piccata, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	122	5.2	6.5	8.1	
+627	Apfelmus, gezuckert (Konserve)		Früchte/Früchte gekocht (inkl. Konserven)	89	0.3	20.5	0.3	
+1659	Auberginen-Piccata, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	138	5.6	8.9	8.3	
+1127	Blattsalat (Durchschnitt), roh		Gemüse/Gemüse frisch	17	1.3	1.6	0.3	
+13387	Bohne (alle Arten), getrocknet	Weisse Bohne|Rote Bohne|Borlotti Bohne	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	305	20.9	40.7	1.5	
+665	Bouillon, Geflügel, zubereitet	Klare Brühe	Gerichte/Eintöpfe und Suppen	5	0.3	0.3	0.3	
+14144	Cornflakes mit Zucker glasiert		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	382	5.7	86	0.9	
+1494	Crêpes mit Nutella, zubereitet		Gerichte/Sonstige süsse Gerichte	376	7.8	35.7	22.1	
+1042	Dinkelmehl, Vollkorn, Typ 1900		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	345	15	58	2.5	
+815	Erbsen und Karotten (Konserve)	Rüebli	Gemüse/Gemüse gekocht (inkl. Konserven)	68	4.2	9.6	0.6	
+1696	Getreideflocken (Durchschnitt)		Brote, Flocken und Frühstückscerealien/Flocken, Kleie und Keime	352	11.5	63.5	3.7	
+871	Haselnussstängeli, hausgemacht		Süssigkeiten/Guetzli	567	10.5	47	36.6	
+14101	Heidelbeere, gefriergetrocknet		Früchte/Früchte getrocknet	338	6.1	56.4	4.4	
+919	Knäckebrot, Vollkorn mit Sesam		Brote, Flocken und Frühstückscerealien/Knäckebrote, Zwieback, Crackers und Waffeln	354	13.1	52.4	6.9	
+1167	Kohlgemüse (Durchschnitt), roh		Gemüse/Gemüse frisch	32	2.2	3.3	0.5	
+595	Limonade, mit Aroma, gezuckert		Alkoholfreie Getränke/Süssgetränke	37	0	9.1	0	
+772	Mayonnaise, kalorienvermindert		Fette und Öle/Mayonnaisen	327	0.9	3.3	34.5	
+13501	Quark, mit Früchten, gezuckert		Milch und Milchprodukte/Frischkäse und Quark	112	8.4	14.1	2.4	
+748	Roggenmehl, halbweiss, Typ 815		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	334	6.9	71	1	
+1555	Sandwich (Baguette) mit Salami		Gerichte/Sandwiches	156	5.8	18.4	6.2	
+1556	Sandwich (Ruchbrot) mit Salami		Gerichte/Sandwiches	149	5.9	16.2	6.3	
+647	Sauerkraut, in Essig eingelegt	Sauerkohl	Gemüse/Gemüse gekocht (inkl. Konserven)	19	1.3	1.7	0.3	
+559	Schmelzkäse, Scheibe, vollfett		Milch und Milchprodukte/Käseerzeugnisse	316	22.8	0	25	
+14302	Schokoladenmousse, hausgemacht		Gerichte/Sonstige süsse Gerichte	338	5.2	23.1	24.7	
+676	Schwein, Schulter, Braten, roh		Fleisch und Innereien/Schwein	181	24.6	0	9.2	
+204	Weizenmehl (Backmehl), Typ 550		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	344	12	69.5	1.3	
+206	Weizenmehl, Vollkorn, Typ 1700		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	338	13.5	61	2	
+207	Weizenmehl, halbweiss, Typ 720		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	340	13	66.2	1.5	
+1191	Blauschimmelkäse (Durchschnitt)		Milch und Milchprodukte/Hartkäse	370	19.1	0.1	32.6	
+1495	Crêpes mit Schinken, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	191	12.8	13.1	9.6	
+14273	Joghurt-Salatsauce, hausgemacht		Fette und Öle/Salatsaucen	283	2.2	7.9	26.9	
+14214	Kakaogetränk, gezuckert, Pulver		Süssigkeiten/Schokolade und Kakaoerzeugnisse	386	6.5	78.5	3.4	
+14152	Käsealternative, aus Cashewnuss		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Milchprodukten	442	14.5	15.2	35.3	
+14300	Marroni-Püree (für Vermicelles)		Süssigkeiten/Sonstige Süssigkeiten	219	2.1	47	1.4	
+1185	Milchkaffee dunkel, ungezuckert	Schale	Milch und Milchprodukte/Milch- und Joghurtgetränke;Alkoholfreie Getränke/Kaffee	16	0.7	1.2	0.9	
+24	Poulet, Schenkel, mit Haut, roh		Fleisch und Innereien/Geflügel	163	17.9	0	10.2	
+1603	Rührei mit Kräutern, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	140	10.6	1.9	10	
+1606	Rührei mit Schinken, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	143	12.8	1.3	9.6	
+565	Schmelzkäse, streichfähig, Rahm		Milch und Milchprodukte/Käseerzeugnisse	316	12.9	0	29.4	
+1685	Schnitzelbrot mit Cocktailsauce	Plätzlibrot	Gerichte/Sandwiches	262	14.5	25.1	11.2	
+14090	Tofu, geräuchert (Durchschnitt)		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Proteinlieferanten	164	16.4	2.9	9.5	
+1125	Wildfleisch (Durchschnitt), roh		Fleisch und Innereien/Wild	114	21.1	0	3.2	
+489	Wildschwein (Durchschnitt), roh		Fleisch und Innereien/Wild	108	19.5	0	3.3	
+13926	Ziegenfrischkäse, zum Streichen		Milch und Milchprodukte/Frischkäse und Quark	162	10.6	2.4	12.2	
+399	Zuckermelone (Honigmelone), roh	Honigmelone	Früchte/Früchte frisch	62	1.1	14.8	0.1	
+628	Apfelmus, ungezuckert (Konserve)		Früchte/Früchte gekocht (inkl. Konserven)	55	0.3	11.7	0.3	
+14290	Cordon bleu aus Poulet, gebraten		Fleisch und Innereien/Geflügel	238	25.2	10.2	10.6	
+950	Cracker, Salzgebäck, Apérogebäck		Salzige Snacks/Salzsticks und Bretzel	449	9.2	66.3	15.9	
+1489	Crêpes mit Camembert, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	246	11.9	14.7	15.4	
+1476	Fondue mit Apfelwein, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	282	18.7	1.6	21.4	
+1475	Fondue moitié-moitié, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	292	16.8	1	20.8	
+388	Grapefruit (weiss oder rot), roh	Pampelmuse	Früchte/Früchte frisch	39	0.9	8	0.2	
+978	Kakaopulver, entölt, ohne Zucker		Süssigkeiten/Schokolade und Kakaoerzeugnisse	343	24.8	19.6	12	
+1099	Krustentiere (Durchschnitt), roh		Fisch/Meeresfrüchte, Krusten- und Schalentiere	84	18.1	0.4	1.1	
+1673	Lammragout mit Sauce, zubereitet	Voressen	Gerichte/Sonstige salzige/rezente Gerichte	122	11.4	3.1	7	
+633	Maiskölbchen, in Essig eingelegt		Gemüse/Gemüse gekocht (inkl. Konserven)	119	3.4	21	1.4	
+1263	Pastis 51 de Marseille (45 vol%)		Alkoholhaltige Getränke/Sonstige alkoholische Getränke	273	0	2.1	0	
+1539	Pizza Quattro Formaggi, gebacken		Gerichte/Italienische Gerichte	297	12.3	37.2	10.6	
+26	Poulet, Schenkel, ohne Haut, roh		Fleisch und Innereien/Geflügel	135	19.7	0	6.2	
+858	Rösti (Fertig-Rösti), ungebraten		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	108	1.9	14.9	4.1	
+1557	Sandwich (Baguette) mit Schinken		Gerichte/Sandwiches	129	6.3	17.4	3.5	
+1558	Sandwich (Ruchbrot) mit Schinken		Gerichte/Sandwiches	123	6.4	15.3	3.6	
+1609	Taboulé, zubereitet (mit Bulgur)		Gerichte/Salate	110	2.3	11.5	5.5	
+47	Trinkwasser (Mittelwert Schweiz)		Alkoholfreie Getränke/Trinkwasser	0	0	0	0	
+1669	Kalbsragout mit Sauce, zubereitet	Voressen	Gerichte/Sonstige salzige/rezente Gerichte	91	11.3	3.1	3.5	
+1517	Kartoffelsalat mit Essig-Öl-Sauce		Gerichte/Salate	95	1.7	12.7	3.8	
+14136	Mais-Bällchen, knusprig mit Honig		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	379	5.9	83.5	1.5	
+104	Mineralwasser Aquella (Bouillets)		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+1178	Mineralwasser Badoit (St Galmier)		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+1172	Mineralwasser Cristallo (Lostorf)		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+1672	Rindsragout mit Sauce, zubereitet	Voressen	Gerichte/Sonstige salzige/rezente Gerichte	90	12.3	3.1	3	
+14077	Ruchbrot (mit jodiertem Kochsalz)		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	234	9.5	44.3	1.2	
+1521	Sandwich (Baguette) mit Weichkäse		Gerichte/Sandwiches	181	6.3	21.5	7.3	
+1520	Sandwich (Ruchbrot) mit Weichkäse		Gerichte/Sandwiches	172	6.5	18.8	7.4	
+558	Schmelzkäse, Scheibe, viertelfett		Milch und Milchprodukte/Käseerzeugnisse	155	19.4	0	8.6	
+494	Silberzwiebel, in Essig eingelegt		Gemüse/Gemüse gekocht (inkl. Konserven)	28	0.9	4.9	0.2	
+556	Tilsiter, pasteurisiert, vollfett		Milch und Milchprodukte/Hartkäse	348	24.1	0	28	
+734	Weizen (Weichweizen), ganzes Korn		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	327	11.4	59.6	1.8	
+1126	Zitrusfrüchte (Durchschnitt), roh		Früchte/Früchte frisch	40	0.8	7.5	0.3	
+867	Chräbeli (Anisgebäck), hausgemacht		Süssigkeiten/Guetzli	366	8.6	75.3	2.9	
+1502	Eieromeletten mit Käse, zubereitet	Französische Omeletten	Gerichte/Sonstige salzige/rezente Gerichte	192	14	1.2	14.5	
+1120	Früchte (Durchschnitt), getrocknet	Dörrfrüchte (Durchschnitt)|Früchte, gedörrt (Durchschnitt)	Früchte/Früchte getrocknet	278	2.5	60.5	1.1	
+13399	Halbentrahmte Milch 1.5% Fett, UHT		Milch und Milchprodukte/Milch	46	3.2	4.8	1.5	
+920	Knäckebrot, Vollkorn mit Leinsamen		Brote, Flocken und Frühstückscerealien/Knäckebrote, Zwieback, Crackers und Waffeln	345	12.9	52.4	5.8	
+1682	Mayonnaise mit Rapsöl, hausgemacht		Fette und Öle/Mayonnaisen	794	2.4	0.1	87.1	
+1523	Mehlomeletten mit Käse, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	194	9.9	18.2	8.8	
+654	Milchschokolade mit Alkoholfüllung		Süssigkeiten/Schokolade und Kakaoerzeugnisse	484	5.6	59.1	22.8	
+1670	Pferderagout mit Sauce, zubereitet	Voressen	Gerichte/Sonstige salzige/rezente Gerichte	99	12.4	3.1	3.9	
+14158	Pizzateig (mit Olivenöl), gebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	266	8.2	47.9	4.1	
+35	Rind, Siedfleisch, durchzogen, roh		Fleisch und Innereien/Rind	227	19.5	0	16.6	
+1675	Riz Casimir mit Poulet, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	126	7.4	16.1	3.3	
+1604	Rührei mit Champignons, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	127	9.8	1.5	9	
+1551	Sandwich (Baguette) mit Aufschnitt		Gerichte/Sandwiches	154	5.3	17.3	6.8	
+1561	Sandwich (Baguette) mit Mozzarella		Gerichte/Sandwiches	161	5.9	20.2	5.9	
+1552	Sandwich (Ruchbrot) mit Aufschnitt		Gerichte/Sandwiches	148	5.5	15.3	6.8	
+1562	Sandwich (Ruchbrot) mit Mozzarella		Gerichte/Sandwiches	153	6.1	17.7	6	
+13978	Sardine, in Tomatensauce, Konserve		Fisch/Meeresfische	177	18.5	0.9	10.8	
+1610	Taboulé, zubereitet (mit Couscous)		Gerichte/Salate	132	3.1	15	6.2	
+59	Teilentrahmte Milch, pasteurisiert		Milch und Milchprodukte/Milch	56	3.1	4.7	2.8	
+13413	Vanillecrème, hausgemacht, gekocht		Süssigkeiten/Cremen und Pudding	109	4.3	12.7	4.6	
+1503	Eieromeletten mit Speck, zubereitet	Französische Omeletten	Gerichte/Sonstige salzige/rezente Gerichte	175	12.5	1.3	13.4	
+13451	Joghurtalternative aus Soja, nature		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Milchprodukten	43	4.1	2.1	1.9	
+1176	Kuchenteig (mit Butter), ungebacken	Wähenteig	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	375	6.7	38.5	21.2	
+1656	Kürbisscheiben, paniert, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	144	4.7	16.7	5.8	
+1527	Mehlomeletten mit Speck, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	187	9.3	17.2	8.9	
+1096	Mineralwasser Appenzell (Gontenbad)		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+1537	Pizza Prosciutto e Funghi, gebacken	Pizza mit Schinken und Pilzen	Gerichte/Italienische Gerichte	205	10.8	24	7	
+1505	Sandwich (Baguette) mit Fleischkäse		Gerichte/Sandwiches	217	8	25.3	9	
+1549	Sandwich (Baguette) mit Rohschinken		Gerichte/Sandwiches	162	8.8	18.8	5.4	
+1506	Sandwich (Ruchbrot) mit Fleischkäse		Gerichte/Sandwiches	207	8.2	22	9.1	
+1550	Sandwich (Ruchbrot) mit Rohschinken		Gerichte/Sandwiches	155	9	16.4	5.5	
+561	Schmelzkäse, streichfähig, vollfett		Milch und Milchprodukte/Käseerzeugnisse	247	14.1	0	21.2	
+620	Birne in Sirup, Konserve, abgetropft		Früchte/Früchte gekocht (inkl. Konserven)	71	0.4	15.2	0.4	
+520	Branntwein aus Zuckerrohr (z.B. Rum)	Zuckerrohrschnaps	Alkoholhaltige Getränke/Spirituosen	234	0	0	0	
+1112	Brühwürste geräuchert (Durchschnitt)		Fleisch- und Wurstwaren/Brühwurstware	249	14	0.5	21.2	
+1493	Crêpes mit Gemüsefüllung, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	165	6	13.8	9.1	
+13448	Getreideriegel mit Schokoladeüberzug		Süssigkeiten/Riegel	460	8.7	57.9	20.3	
+948	Knuspermüeslimischung mit Schokolade		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	443	9	59	17.4	
+278	Mandel, geröstet ohne Fett, gesalzen		Salzige Snacks/Gesalzene Nüsse, Samen, Kerne	637	25.4	10.1	52.5	
+492	Olive, grün, in Salzlake, abgetropft		Nüsse, Samen und Ölfrüchte	154	1.3	0	15.7	
+907	Pizzateig (mit Olivenöl), ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	229	7	41.2	3.6	
+1114	Rohwürste/Dauerwürste (Durchschnitt)		Fleisch- und Wurstwaren/Rohwurstware	443	22.2	0.2	39.2	
+1687	Saltimbocca, gebraten in HOLL-Rapsöl		Fleisch und Innereien/Kalb	216	28.8	0.1	11.2	
+1559	Sandwich (Baguette) mit Halbhartkäse		Gerichte/Sandwiches	176	6.7	20.2	7.3	
+1560	Sandwich (Ruchbrot) mit Halbhartkäse		Gerichte/Sandwiches	169	6.9	17.6	7.4	
+1671	Schweinsragout mit Sauce, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	112	12.1	3.1	5.5	
+801	Teigwaren ohne Ei, Vollkorn, trocken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teigwaren	338	12.6	60.6	2.5	
+617	Ananas in Sirup, Konserve, abgetropft		Früchte/Früchte gekocht (inkl. Konserven)	70	0.5	15.9	0.1	
+14171	Joghurtalternative aus Mandel, nature		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Milchprodukten	60	1.3	4.8	4	
+1681	Kalbsplätzli, gebraten in HOLL-Rapsöl		Fleisch und Innereien/Kalb	185	26.8	0	8.6	
+1012	Kefe, gedämpft (ohne Zugabe von Salz)	Kiefelerbse|Zuckerschote	Gemüse/Gemüse gekocht (inkl. Konserven)	52	4.1	6.9	0.3	
+1543	Käsekuchen, gebacken (mit Kuchenteig)	Käsewähe	Gerichte/Kuchen und Gratins	302	14.2	14.5	20.7	
+832	Laugenbrötli (mit jodiertem Kochsalz)	Silserli	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	285	9.3	48.9	5.3	
+1032	Mais, gedämpft (ohne Zugabe von Salz)	Zuckermais|Gemüsemais	Gemüse/Gemüse gekocht (inkl. Konserven)	92	3.5	13.6	1.9	
+14266	Mehlomelette mit Apfelmus, zubereitet		Gerichte/Sonstige süsse Gerichte	112	3.5	16.7	3.2	
+1695	Mehlomeletten mit Nutella, zubereitet		Gerichte/Sonstige süsse Gerichte	265	6.7	30.3	12.7	
+1655	Selleriescheiben, paniert, zubereitet		Gemüse/Gemüse gekocht (inkl. Konserven)	139	4.7	15.4	5.7	
+646	Spirituosen 40 vol% (z.B. Vodka, Gin)		Alkoholhaltige Getränke/Spirituosen	234	0	0	0	
+14277	Vollkornreiswaffel mit süssem Überzug		Brote, Flocken und Frühstückscerealien/Knäckebrote, Zwieback, Crackers und Waffeln	500	6.1	63.6	23.9	
+1030	Wirz, gedämpft (ohne Zugabe von Salz)	Wirsingkohl	Gemüse/Gemüse gekocht (inkl. Konserven)	26	1.9	2.9	0.1	
+1113	Brühwürste ungeräuchert (Durchschnitt)		Fleisch- und Wurstwaren/Brühwurstware	250	13.3	0.8	21.5	
+1649	Cordon bleu aus Kalbsplätzli, gebraten		Fleisch und Innereien/Kalb	233	22.9	10.3	11.1	
+1488	Crêpes mit Zimt und Zucker, zubereitet		Gerichte/Sonstige süsse Gerichte	253	8.2	28.8	11.4	
+1501	Eieromeletten mit Schinken, zubereitet	Französische Omeletten	Gerichte/Sonstige salzige/rezente Gerichte	143	12.8	1.3	9.6	
+773	Fischstäbchen, paniert und vorfritiert		Fisch/Meeresfische	232	15.5	15.5	11.9	
+1130	Fruchtsaft (Durchschnitt), ungezuckert		Früchte/Fruchtsäfte;Alkoholfreie Getränke/Frucht- und Gemüsesäfte	47	0.4	10.8	0.1	
+14078	Halbweissbrot (mit jodiertem Kochsalz)		Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	240	9.4	46.4	1.1	
+1599	Kartoffelgratin dauphinois, zubereitet		Gerichte/Kuchen und Gratins	127	2.5	11.2	7.8	
+1544	Käsekuchen, gebacken (mit Blätterteig)	Käsewähe	Gerichte/Kuchen und Gratins	298	13.7	11.6	21.8	
+4	Lamm, Gigot, roh (Schweiz, Neuseeland)	Keule	Fleisch und Innereien/Lamm, Schaf	155	20.2	0	8.2	
+14296	Laugengebäck trocken (Bretzel, Sticks)		Salzige Snacks/Salzsticks und Bretzel	388	11.5	73.7	4.3	
+835	Laugengipfeli (mit jodiertem Kochsalz)	Silsergipfeli	Brote, Flocken und Frühstückscerealien/Brote und Brotwaren	423	9.1	39.4	25	
+208	Margarine, ohne Butter, 70 - 80 % Fett		Fette und Öle/Fette	696	0	0.2	77	
+1526	Mehlomeletten mit Schinken, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	155	9.7	17.2	5.1	
+1522	Mehlomeletten, hausgemacht, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	174	6.9	22	6.3	
+14044	Mürbeteig (mit Butter), süss, gebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	530	9.8	57.3	28.6	
+1019	Rande, gedämpft (ohne Zugabe von Salz)	Rote Beete	Gemüse/Gemüse gekocht (inkl. Konserven)	56	2	10	0.4	
+749	Roggenmehl, Vollkorn, Schrot, Typ 1800		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mehle und Stärke	321	10.8	56.6	1.5	
+1553	Sandwich (Baguette) mit Trockenfleisch		Gerichte/Sandwiches	139	7.2	18.4	3.7	
+1554	Sandwich (Ruchbrot) mit Trockenfleisch		Gerichte/Sandwiches	132	7.4	16.2	3.8	
+560	Schmelzkäse, streichfähig, viertelfett		Milch und Milchprodukte/Käseerzeugnisse	150	16.4	0	9.3	
+14230	Schokoladenkuchen, feucht, hausgemacht	Schokoladenfondant	Süssigkeiten/Kuchen, Torten und Cake	503	6.3	44.6	32.8	
+1598	Teigwarensalat mit französischer Sauce		Gerichte/Salate	126	5.6	12.6	5.6	
+1597	Teigwarensalat mit italienischer Sauce		Gerichte/Salate	130	5.5	12.6	6	
+1657	Zucchettischeiben, paniert, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	125	4.5	13.3	5.6	
+621	Aprikose in Sirup, Konserve, abgetropft	Marille	Früchte/Früchte gekocht (inkl. Konserven)	62	0.9	13.7	0.1	
+1658	Auberginenscheiben, paniert, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	136	4.7	14.6	5.8	
+910	Hefeteig (mit Butter), süss, ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	311	8.7	43.2	11.1	
+1600	Kartoffelgratin Savoyer Art, zubereitet		Gerichte/Kuchen und Gratins	78	2.3	10.5	2.6	
+14151	Käsealternative, aus Kokosöl und Stärke		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Milchprodukten	272	0	21.2	20.1	
+1020	Kürbis, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	29	1.1	4.7	0.1	
+643	Milchschokolade mit Mandel-Honig-Nougat		Süssigkeiten/Schokolade und Kakaoerzeugnisse	534	7.3	54.8	31.3	
+624	Pfirsich in Sirup, Konserve, abgetropft		Früchte/Früchte gekocht (inkl. Konserven)	82	0.7	18.6	0.1	
+1069	Rapsöl HOLL (high oleic, low linolenic)		Fette und Öle/Öle	900	0	0	100	
+1677	Riz Casimir mit Kalbfleisch, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	124	6.7	16.1	3.4	
+1025	Spinat, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	31	3.3	1.6	0.8	
+1566	Spinatkuchen, gebacken (mit Kuchenteig)	Spinatwähe	Gerichte/Kuchen und Gratins	192	6.4	13.8	11.9	
+14149	Wurst, vegan, aus Tofu oder Sojaeiweiss		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Fleisch, Fleischwaren, Fisch oder Ei	229	13.4	5.7	16.3	
+519	Branntwein aus Wein (z.B.Cognac, Brandy)		Alkoholhaltige Getränke/Spirituosen	240	0	2	0	
+901	Cake, nature "Gleichschwer", hausgemacht		Süssigkeiten/Kuchen, Torten und Cake	430	6.9	44.7	24.7	
+1491	Crêpes mit Champignonfüllung, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	138	5.8	7.8	8.9	
+1008	Fenchel, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	22	1	2.5	0.4	
+1133	Hülsenfrüchte (Durchschnitt), getrocknet		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	335	25.1	37.7	4.9	
+14170	Joghurtalternative aus Kokosnuss, nature		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Milchprodukten	92	0.7	5	7.6	
+1002	Karotte, gedämpft (ohne Zugabe von Salz)	Rüebli	Gemüse/Gemüse gekocht (inkl. Konserven)	44	0.7	8	0.4	
+1016	Mangold, gedämpft (ohne Zugabe von Salz)	Krautstiel	Gemüse/Gemüse gekocht (inkl. Konserven)	20	1.3	2	0.3	
+523	Mineralwasser Passugger (Theophilquelle)		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+14043	Mürbeteig (mit Butter), süss, ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	424	7.8	45.8	22.9	
+1567	Spinatkuchen, gebacken (mit Blätterteig)	Spinatwähe	Gerichte/Kuchen und Gratins	189	6	11.4	12.8	
+1618	Tomatenkuchen, gebacken (mit Kuchenteig)	Tomatenwähe	Gerichte/Kuchen und Gratins	174	4.3	13.5	11.2	
+1616	Zwiebelkuchen, gebacken (mit Kuchenteig)	Zwiebelwähe	Gerichte/Kuchen und Gratins	189	5.2	16.1	11.2	
+13449	Artischocken, Herz, abgetropft (Konserve)		Gemüse/Gemüse gekocht (inkl. Konserven)	27	1.8	2.3	0	
+859	Biber (Mandel- und/oder Haselnussfüllung)	Biberli	Süssigkeiten/Sonstige süsse Backwaren	392	8.5	65.1	10.2	
+1005	Broccoli, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	35	3.3	2.9	0.5	
+1644	Cannelloni mit Fleischfüllung, zubereitet		Gerichte/Italienische Gerichte	191	9.8	14.3	10.1	
+1006	Chicorée, gedämpft (ohne Zugabe von Salz)	Brüsseler Endivie	Gemüse/Gemüse gekocht (inkl. Konserven)	20	1.1	2.8	0.2	
+1650	Cordon bleu aus Schweinsplätzli, gebraten		Fleisch und Innereien/Schwein	241	23.2	10.3	11.8	
+13488	Getreideriegel, ohne Ueberzug und Füllung		Süssigkeiten/Riegel	418	8.2	64	13	
+1582	Hackbraten, hausgemacht, im Ofen gebacken		Gerichte/Sonstige salzige/rezente Gerichte	175	15	8.1	9	
+1590	Hot Dog in Weissbrot mit Ketchup und Senf		Gerichte/Sonstige salzige/rezente Gerichte	216	9.1	29.6	6.3	
+590	Joghurt mit Aroma, mager, mit Süssstoffen		Milch und Milchprodukte/Joghurt und Sauermilch	47	4.4	7	0.1	
+1014	Kohlrabi, gedämpft (ohne Zugabe von Salz)	Rübkohl	Gemüse/Gemüse gekocht (inkl. Konserven)	28	2	3.9	0.2	
+549	Käse in Salzlake (Schaf- und Ziegenmilch)	Feta	Milch und Milchprodukte/Weichkäse	281	14.8	0.7	24.3	
+18	Lamm, Racks, roh (Australien, Neuseeland)		Fleisch und Innereien/Lamm, Schaf	156	20.3	0	8.3	
+14148	Nugget, vegan, aus Pflanzenproteinen, roh		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Fleisch, Fleischwaren, Fisch oder Ei	250	15.5	19.7	10.9	
+13443	Pastinake, gekocht (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	58	1.2	11.4	0.4	
+1536	Pizza mit Mascarpone und Rucola, gebacken		Gerichte/Italienische Gerichte	239	9.5	27.6	9.7	
+1182	Quarkblätterteig (mit Butter), ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	401	7.1	29	28.3	
+917	Spitzbube (Mürbeteiggebäck mit Konfitüre)		Süssigkeiten/Sonstige süsse Backwaren	499	5.8	60.3	25.6	
+14180	Spätzli, gekocht, abgetropft, hausgemacht		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	146	6.7	24.2	2.3	
+1611	Teigwarenauflauf mit Schinken, zubereitet		Gerichte/Kuchen und Gratins	163	10.2	14.4	7	
+14121	Tofu, geräuchert (hergestellt mit Nigari)		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Proteinlieferanten	164	16.4	2.9	9.5	
+1617	Tomatenkuchen, gebacken (mit Blätterteig)	Tomatenwähe	Gerichte/Kuchen und Gratins	171	3.9	11	12.1	
+1615	Zwiebelkuchen, gebacken (mit Blätterteig)	Zwiebelwähe	Gerichte/Kuchen und Gratins	186	4.8	13.9	12	
+14094	Ananas in Ananassaft, Konserve, abgetropft		Früchte/Früchte gekocht (inkl. Konserven)	60	0.5	13.6	0.1	
+1653	Aubergine, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	21	1.1	2.4	0.1	
+1508	Griessschnitte, zubereitet (mit Vollmilch)		Gerichte/Sonstige salzige/rezente Gerichte	154	6.3	14.8	7.5	
+1541	Quiche Lorraine, gebacken (mit Kuchenteig)		Gerichte/Kuchen und Gratins	307	9.1	14.5	23.6	
+1021	Rosenkohl, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	37	3.6	3	0.4	
+1068	Sonnenblumenöl HO (high oleic), raffiniert		Fette und Öle/Öle	900	0	0	100	
+13442	Topinambur, gekocht (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	52	2.3	3.8	0.4	
+14278	Vollkornreiswaffel mit Honig oder Früchten		Brote, Flocken und Frühstückscerealien/Knäckebrote, Zwieback, Crackers und Waffeln	379	6.6	81	2.4	
+1028	Weisskohl, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	35	1.3	4.4	0.6	
+1654	Zucchetti, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	18	1.3	1.9	0.3	
+1004	Blumenkohl, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	26	1.8	2.1	0.7	
+1111	Fleisch (Durchschnitt exkl. Innereien), roh		Fleisch und Innereien	140	21.5	0	6	
+1516	Kartoffelsalat mit Mayonnaise-Joghurt-Sauce		Gerichte/Salate	78	1.8	12.3	2.1	
+1525	Mehlomeletten mit Gemüsefüllung, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	144	5.3	17.6	5.5	
+1542	Quiche Lorraine, gebacken (mit Blätterteig)		Gerichte/Kuchen und Gratins	304	8.5	11.5	24.8	
+14119	Tofu, fest, nature (hergestellt mit Nigari)		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Proteinlieferanten	148	14.7	2.9	8.5	
+14291	Trutenbrust, gepökelt, gekocht, in Scheiben		Fleisch- und Wurstwaren/Kochwurstware	100	20.9	0	1.7	
+14150	Wurst, vegan, aus Seitan oder Weizeneiweiss		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Fleisch, Fleischwaren, Fisch oder Ei	250	29.1	7.5	10.5	
+10378	Zunge (Durchschnitt aus Kalb und Rind), roh		Fleisch und Innereien/Kalb;Fleisch und Innereien/Rind	191	16.6	2.8	12.6	
+1009	Bohne, grün, gedämpft (ohne Zugabe von Salz)	Gartenbohne	Gemüse/Gemüse gekocht (inkl. Konserven)	33	2	4.3	0.2	
+1010	Erbse, grün, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	99	7.6	12.5	0.8	
+1109	Geflügelfleisch mit Haut (Durchschnitt), roh		Fleisch und Innereien/Geflügel	161	20	0	9	
+588	Joghurt mit Früchten, mager, mit Süssstoffen		Milch und Milchprodukte/Joghurt und Sauermilch	49	4.5	7	0.1	
+697	Konfitüre, energievermindert mit Süssstoffen	Marmelade	Süssigkeiten/Konfitüren und süsse Brotaufstriche	136	0.5	31.9	0.5	
+10450	Pommes Frites (im Ofen gebacken), ungesalzen	Ofen-Pommes	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	213	3.8	32.6	6.6	
+14133	Reisgetränk, nature mit Calcium angereichert		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Getränke	54	0.2	10.3	1.3	
+904	Blätterteig, hausgemacht (Butter), ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	364	5.2	29.4	24.7	
+1199	Essig-Öl-Salatsauce, hausgemacht (mit Rapsöl)		Fette und Öle/Salatsaucen	287	0.7	2.5	30.2	
+14066	Falafel, frittiert (in HOLL Rapsöl frittiert)		Gerichte/Orientalische Gerichte	229	8.4	26.9	7.9	
+775	Fruchtcocktail in Sirup, Konserve, abgetropft		Früchte/Früchte gekocht (inkl. Konserven)	77	0.6	17.3	0.2	
+945	Knuspermüeslimischung mit Früchten, gezuckert		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	426	8.7	60	15.1	
+13417	Kuchenteig, Vollkorn (mit Butter), ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	372	7.6	33.8	21.5	
+17	Lamm, Nierstück, roh (Australien, Neuseeland)		Fleisch und Innereien/Lamm, Schaf	117	21.8	0	3.3	
+1694	Mehlomeletten mit Zimt und Zucker, zubereitet		Gerichte/Sonstige süsse Gerichte	186	6.6	26	5.9	
+14200	Rollgerste, gekocht in Salzwasser (unjodiert)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	134	3.6	25.5	0.8	
+1267	Wurzel- und Knollengemüse (Durchschnitt), roh		Gemüse/Gemüse frisch	42	0.9	7.2	0.4	
+14098	Birne mit Süssungsmittel, Konserve, abgetropft		Früchte/Früchte gekocht (inkl. Konserven)	50	0.5	9.9	0.3	
+13445	Blätterteig (mit pflanzichem Fett), ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	385	5.7	35.1	24.3	
+518	Branntwein aus Getreide, 40 vol% (z.B. Whisky)	Getreideschnaps	Alkoholhaltige Getränke/Spirituosen	247	0	0.1	0	
+14115	Burger, vegan aus Soja-oder Erbsenprotein, roh		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Fleisch, Fleischwaren, Fisch oder Ei	197	18	4.1	11.1	
+10456	Fruchtwähe/-kuchen (Durchschnitt), hausgemacht		Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	176	3.2	19.5	8.9	
+1676	Kalbsgeschnetzeltes an Currysauce, hausgemacht		Fleisch und Innereien/Kalb	116	13.9	3.3	5.1	
+906	Kuchenteig (mit pflanzlichem Fett), ungebacken	Wähenteig	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	394	6.6	38.1	23.5	
+1047	Mineralwasser Valser Silence (St. Paulsquelle)		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+1170	Samen, Kerne, Nüsse (Durchschnitt), ungesalzen		Nüsse, Samen und Ölfrüchte	618	20.8	9.4	52.9	
+1023	Schwarzwurzel, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	56	1.5	2.2	0.3	
+13407	Süsskartoffel, gedämpft (ohne Zugabe von Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	81	1.6	17.1	0.1	
+1684	Tartarsauce mit Rapsöl-Mayonnaise, hausgemacht		Verschiedenes/Saucen	385	3.7	1.8	40.2	
+14122	Tofu, geräuchert (hergestellt mit Calciumsalz)		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Proteinlieferanten	164	16.4	2.9	9.5	
+14304	Waffelguetzli, gefüllt, mit Schokoladenüberzug		Süssigkeiten/Guetzli	534	6.6	56.6	30.5	
+14096	Ananas mit Süssungsmittel, Konserve, abgetropft		Früchte/Früchte gekocht (inkl. Konserven)	42	0.5	9.4	0.1	
+14160	Edamame (unreife Sojabohne), geschält, gefroren		Gemüse/Gemüse tiefgekühlt	143	11.5	5.1	7.4	
+1193	Hart- und Halbhartkäse, vollfett (Durchschnitt)		Milch und Milchprodukte/Hartkäse	395	26.6	0	32.1	
+14220	Kakaogetränk, gezuckert, zubereitet (mit Milch)		Alkoholfreie Getränke/Kakaogetränke;Milch und Milchprodukte/Milch- und Joghurtgetränke	81	3.4	10	3	
+14104	Knuspermüeslimischung, gezuckert (Durchschnitt)		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	432	9.4	58.8	15.9	
+1524	Mehlomeletten mit Champignonfüllung, zubereitet		Gerichte/Sonstige salzige/rezente Gerichte	129	5.4	11.6	6.5	
+1674	Pouletgeschnetzeltes an Currysauce, hausgemacht		Fleisch und Innereien/Geflügel	123	15.8	3.3	5.1	
+1132	Sirup zubereitet (verdünnt im Verhältnis 1:5.5)		Alkoholfreie Getränke/Süssgetränke	55	0	13.6	0	
+14147	Soja, texturiert (Granulat, Schnetzel), trocken		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Proteinlieferanten	322	49.9	9	4.4	
+13490	Tomate, getrocknet, in Öl eingelegt, abgetropft		Gemüse/Gemüse getrocknet	187	4.3	13.4	11.7	
+14095	Ananas in Ananassaft, Konserve, nicht abgetropft		Früchte/Früchte gekocht (inkl. Konserven)	59	0.4	13.6	0.1	
+1121	Cappuccino (ohne Schokoladenpulver), ungezuckert		Milch und Milchprodukte/Milch- und Joghurtgetränke;Alkoholfreie Getränke/Kaffee	43	2	2.9	2.5	
+1683	Cocktailsauce mit Rapsöl-Mayonnaise, hausgemacht		Verschiedenes/Saucen	697	2.3	3.8	74.7	
+766	Garnele, geschält, roh (frisch oder tiefgekuhlt)	Shrimp|Scampi|Crevetten	Fisch/Meeresfrüchte, Krusten- und Schalentiere	74	16.6	0	0.8	
+1519	Kartoffelstock, zubereitet (mit Rahm und Butter)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	138	2	12.9	8.4	
+1013	Knollensellerie, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	32	1.4	4	0.3	
+1015	Lauch, gedünstet (ohne Zugabe von Fett und Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	34	2.1	4.2	0.2	
+1201	Salatsauce französisch, hausgemacht (mit Rapsöl)		Fette und Öle/Salatsaucen	377	0.9	1.3	40.8	
+14198	Spätzli gebraten (ohne Zugabe von Fett und Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	168	7.7	27.8	2.6	
+1026	Stangensellerie, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	19	0.6	2.4	0.2	
+1613	Thonsalat an Essig-Öl-Sauce (aus Thon im Wasser)		Gerichte/Salate	108	8.8	6.8	4.8	
+14120	Tofu, fest, nature (hergestellt mit Calciumsalz)		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Proteinlieferanten	148	14.7	2.9	8.5	
+14097	Aprikose mit Süssungsmittel, Konserve, abgetropft		Früchte/Früchte gekocht (inkl. Konserven)	41	0.9	8.2	0.1	
+1646	Cannelloni mit Spinat-Ricotta-Füllung, zubereitet		Gerichte/Italienische Gerichte	221	7.8	14.6	14.3	
+14145	Gehacktes, vegan aus Soja-oder Erbsenprotein, roh		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Fleisch, Fleischwaren, Fisch oder Ei	167	14.8	5	8.4	
+10377	Leber (Durchschnitt aus Rind, Kalb, Schwein), roh		Fleisch und Innereien	133	20.3	3.6	4.2	
+14045	Mürbeteig (mit pflanzlichem Fett), süss, gebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	494	8	58.4	24.9	
+625	Pfirsich mit Süssungsmittel, Konserve, abgetropft		Früchte/Früchte gekocht (inkl. Konserven)	40	0.8	8.1	0.1	
+889	Schokoladencake/ -gugelhopf/ -muffin, hausgemacht		Süssigkeiten/Kuchen, Torten und Cake	424	8.1	47.3	21.9	
+1027	Tomate, gedünstet (ohne Zugabe von Fett und Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	26	1.1	4	0.3	
+1036	Zwiebel, geröstet (ohne Zugabe von Fett und Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	92	2.6	14.9	1.5	
+14139	Gepuffter Weizen mit Honig oder andere Zuckerarten		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	377	8.4	78.2	2.2	
+1177	Hefeteig (mit pflanzlichem Fett), süss, ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	300	9.2	39.9	11.1	
+742	Kokosnuss, getrocknet (Kokosrapseln, Kokosflocken)		Nüsse, Samen und Ölfrüchte	653	7.6	5.3	61.3	
+641	Milchschokolade mit Weinbeeren, Nüssen und Mandeln		Süssigkeiten/Schokolade und Kakaoerzeugnisse	509	8.4	52.7	28.5	
+1039	Morchel, gedünstet (ohne Zugabe von Fett und Salz)		Gemüse/Pilze	34	2.8	0.6	0.4	
+1115	Rohwürste mit abgebrochener Reifung (Durchschnitt)		Fleisch- und Wurstwaren/Rohwurstware	312	17.6	0.7	26.5	
+1022	Rotkohl, gedünstet (ohne Zugabe von Fett und Salz)	Rotkraut|Blaukraut	Gemüse/Gemüse gekocht (inkl. Konserven)	25	1	3.7	0.2	
+1200	Salatsauce italienisch, hausgemacht (mit Olivenöl)		Fette und Öle/Salatsaucen	421	0.3	1	46.1	
+13341	Saucisson, gekocht (ohne Zusatz von Fett und Salz)		Fleisch- und Wurstwaren/Rohwurstware	442	21.1	0.6	39.4	
+1061	Sojabohne, gekocht (ohne Zugabe von Fett und Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	157	15	3.3	7.3	
+1035	Zwiebel, gedünstet (ohne Zugabe von Fett und Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	43	1.2	7	0.7	
+1011	Erbse (Konserve), aufgewärmt (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	89	4.9	13.1	0.8	
+1100	Geflügelfleisch (Durchschnitt exkl. Innereien), roh		Fleisch und Innereien/Geflügel	134	21.6	0.1	5.3	
+14138	Getreide-Flakes aus Vollkornweizen und Reis, nature		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	382	8.5	80.7	1.5	
+655	Milchschokolade mit Crèmefüllung (Gianduja, Nougat)		Süssigkeiten/Schokolade und Kakaoerzeugnisse	571	7.9	47.6	38.1	
+909	Mürbeteig (mit pflanzlichem Fett), süss, ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	395	6.4	46.7	19.9	
+1003	Aubergine, gedünstet (ohne Zugabe von Fett und Salz)	Eierfrucht	Gemüse/Gemüse gekocht (inkl. Konserven)	24	1.3	2.8	0.2	
+642	Branchli (Milchschokolade mit Haselnusscrèmefüllung)	Schokoladenstängeli	Süssigkeiten/Schokolade und Kakaoerzeugnisse	556	8.3	49.1	35.4	
+1007	Chinakohl, gedünstet (ohne Zugabe von Fett und Salz)	Pekingkohl|Selleriekohl|Japankohl	Gemüse/Gemüse gekocht (inkl. Konserven)	14	1.3	1.2	0.2	
+13401	Federkohl, gedünstet (ohne Zugabe von Salz und Fett)	Grünkohl	Gemüse/Gemüse gekocht (inkl. Konserven)	44	4.3	2.6	0.9	
+14205	Joghurt mit Rahm, mit Früchten oder Aroma, gezuckert		Milch und Milchprodukte/Joghurt und Sauermilch	138	3.3	12.5	8.3	
+1071	Kalb, Brust, gekocht (ohne Zugabe von Fett und Salz)		Fleisch und Innereien/Kalb	234	23.5	0	15.5	
+1107	Kotelett (Durchschnitt aus Kalb, Schwein, Lamm), roh		Fleisch und Innereien	177	21.3	0	10.2	
+1060	Linse, ganz, gekocht (ohne Zugabe von Fett und Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	111	8.8	13.5	0.5	
+14054	Maniok, Wurzelknolle, gekocht (ohne Zugabe von Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	147	1.4	33.8	0.3	
+1181	Quarkblätterteig (mit pflanzlichem Fett), ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	388	7.1	28.8	26.9	
+1055	Quitte, gekocht, abgetropft (ohne Zugabe von Zucker)		Früchte/Früchte gekocht (inkl. Konserven)	49	0.5	7.3	0.6	
+1072	Rind, Brust, gekocht (ohne Zugabe von Fett und Salz)		Fleisch und Innereien/Rind	254	28.3	0	15.6	
+1040	Steinpilz, gedünstet (ohne Zugabe von Fett und Salz)		Gemüse/Pilze	46	6.1	0.6	0.5	
+1029	Weisskohl, gedünstet (ohne Zugabe von Fett und Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	37	1.4	4.6	0.6	
+1031	Zucchetti, gedünstet (ohne Zugabe von Fett und Salz)	Zucchini	Gemüse/Gemüse gekocht (inkl. Konserven)	20	1.5	2.2	0.3	
+1049	Apfel, gedünstet, abgetropft (ohne Zugabe von Zucker)		Früchte/Früchte gekocht (inkl. Konserven)	56	0.3	12.2	0.3	
+1050	Birne, gedünstet, abgetropft (ohne Zugabe von Zucker)		Früchte/Früchte gekocht (inkl. Konserven)	57	0.6	11.3	0.4	
+1037	Champignon, gedünstet (ohne Zugabe von Fett und Salz)		Gemüse/Pilze	29	4.2	1.2	0.3	
+14143	Getreide-Kissen, gefüllt mit Schokolade und Haselnuss		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	446	6.3	66.6	16.1	
+1507	Griessschnitte, zubereitet (mit teilentrahmter Milch)		Gerichte/Sonstige salzige/rezente Gerichte	139	6.3	14.7	5.8	
+13377	Kalb, Haxe, geschmort (ohne Zugabe von Fett und Salz)		Fleisch und Innereien/Kalb	158	29.7	0	4.3	
+863	Kartoffelstock, zubereitet (mit Vollmilch und Butter)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	95	2.2	12.9	3.5	
+944	Knuspermüeslimischung mit Nüssen and Samen, gezuckert		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	432	11.3	56.2	16.2	
+13304	Lamm, Gigot, gebraten (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Lamm, Schaf	203	28.6	0	9.8	
+13333	Rollschinken, gekocht (ohne Zusatz von Fett und Salz)		Fleisch- und Wurstwaren/Kochwurstware	188	23.3	1.4	9.9	
+1038	Eierschwamm, gedünstet (ohne Zugabe von Fett und Salz)	Pfifferling	Gemüse/Pilze	28	2.6	0.2	0.6	
+13349	Forelle, ganz, gekocht (ohne Zusatz von Fett und Salz)		Fisch/Süsswasserfische	115	16.6	0	5.4	
+10455	Fruchtwähe/-kuchen mit süssem Mürbeteig (Durchschnitt)		Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	215	3.3	22.5	11.7	
+14146	Geschnetzeltes, vegan aus Soja-oder Erbsenprotein, roh		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Fleisch, Fleischwaren, Fisch oder Ei	139	20.7	3.5	3.3	
+13316	Kalbsplätzli, gebraten (ohne Zugabe von Fett und Salz)		Fleisch und Innereien/Kalb	128	28.4	0	1.6	
+13328	Pferd, Filet, gebraten (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Sonstige Tierarten	139	27.8	0	3.1	
+13489	Teigwaren, frisch, gefüllt mit Spinat und Ricotta, roh		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teigwaren	212	8.7	30	5.7	
+1197	Weichkäse (Durchschnitt ohne fettreduzierte Varianten)		Milch und Milchprodukte/Weichkäse	327	19.4	0	27.7	
+1122	Beeren (Durchschnitt), gekocht (ohne Zugabe von Zucker)		Früchte/Früchte gekocht (inkl. Konserven)	38	0.9	5.9	0.5	
+13350	Dorsch, Filet, gedämpft (ohne Zusatz von Fett und Salz)		Fisch/Meeresfische	74	17	0	0.6	
+14068	Dörrbohne, eingeweicht, gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	76	4.8	10.1	0.5	
+777	Fruchtcocktail mit Süssungsmittel, Konserve, abgetropft		Früchte/Früchte gekocht (inkl. Konserven)	47	0.7	9.5	0.2	
+1052	Kirsche, gedünstet, abgetropft (ohne Zugabe von Zucker)		Früchte/Früchte gekocht (inkl. Konserven)	58	0.9	12	0.5	
+13416	Kuchenteig, Vollkorn (mit pflanzichem Fett), ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	359	7.6	33.7	20.2	
+1054	Pflaume, gedünstet, abgetropft (ohne Zugabe von Zucker)		Früchte/Früchte gekocht (inkl. Konserven)	48	0.7	10.1	0.2	
+13398	Amaranth, Samen, gekocht (ohne Zugabe von Fett und Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	119	5	18.1	2.1	
+1051	Aprikose, gedünstet, abgetropft (ohne Zugabe von Zucker)	Marille	Früchte/Früchte gekocht (inkl. Konserven)	45	1	9	0.2	
+1485	Brombeerwähe/-kuchen, hausgemacht (mit süssem Mürbeteig)		Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	215	3.2	22.3	11.7	
+13351	Flunder, Filet, gedämpft (ohne Zusatz von Fett und Salz)		Fisch/Meeresfische	78	15.5	0	1.8	
+1124	Früchte (Durchschnitt), gekocht (ohne Zugabe von Zucker)		Früchte/Früchte gekocht (inkl. Konserven)	50	0.6	10.1	0.3	
+1583	Hackplätzli (Rind), hausgemacht, gebraten in Rapsöl HOLL		Fleisch und Innereien/Rind	231	17.8	6.4	14.7	
+14183	Kalbsbratwurst, gebraten (ohne Zusatz von Fett und Salz)		Fleisch- und Wurstwaren/Brühwurstware	232	13	1.3	19.4	
+1110	Lamm/Schaf (Durchschnitt exkl. Innereien, Kotelett), roh		Fleisch und Innereien/Lamm, Schaf	137	20.5	0	6.1	
+13386	Linse, geschält, gekocht (ohne Zugabe von Fett und Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	131	11	16.5	0.6	
+1018	Peperoni, rot, gedünstet (ohne Zugabe von Fett und Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	39	1.1	7.2	0.1	
+13269	Schwein, Filet, gebraten (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Schwein	153	29.3	0	4	
+13289	Schwein, Haxe, geschmort (ohne zusatz von Fett und Salz)		Fleisch und Innereien/Schwein	239	36.6	0.9	9.9	
+1033	Zuckermais (Konserve), aufgewärmt (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	107	3.1	18.6	1.7	
+1480	Apfelwähe/-kuchen, hausgemacht, gebacken (mit Kuchenteig)	Apfelwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	162	2.9	20.5	7.3	
+13465	Energy Drink mit Koffein, Taurin und Vitaminen, gezuckert		Alkoholfreie Getränke/Süssgetränke	42	0	10.4	0	
+1106	Kalbfleisch (Durchschnitt exkl. Innereien, Kotelett), roh		Fleisch und Innereien/Kalb	127	21.1	0	4.8	
+45	Mineralwasser Valser Classic/Naturelle (St. Petersquelle)		Alkoholfreie Getränke/Mineralwasser	0	0	0	0	
+1053	Mirabelle, gedünstet, abgetropft (ohne Zugabe von Zucker)		Früchte/Früchte gekocht (inkl. Konserven)	70	0.7	16.6	0.2	
+1017	Peperoni, grün, gedünstet (ohne Zugabe von Fett und Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	27	1.1	3.7	0.4	
+10546	Polenta nera (aus Maisgriess und Buchweizenmehl), gekocht		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Mais	113	4.2	13	4.8	
+1024	Spargel (weiss und grün), gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	25	2	2.7	0.3	
+1056	Zwetschge, gedünstet, abgetropft (ohne Zugabe von Zucker)		Früchte/Früchte gekocht (inkl. Konserven)	43	0.7	8.7	0.1	
+1479	Apfelwähe/-kuchen, hausgemacht, gebacken (mit Blätterteig)	Apfelwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	160	2.7	19.7	7.5	
+1484	Birnenwähe/-kuchen, hausgemacht, gebacken (mit Kuchenteig)	Birnenwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	163	3.1	19.9	7.3	
+14153	Getreide-Flakes aus Vollkornweizen und Reis mit Schokolade		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	408	8.1	76.2	6.6	
+13960	Glaceriegel oder Stängel (Rahmglace) mit Schokoladeüberzug		Süssigkeiten/Glacen auf Milchbasis	359	5.1	35.8	21.4	
+866	Instant-Kartoffelstock, zubereitet (mit Wasser und Butter)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	80	2	11.5	2.8	
+10449	Pommes Frites (in HO Sonnenblumenöl frittiert), ungesalzen		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	286	3.2	32.4	15.4	
+1483	Birnenwähe/-kuchen, hausgemacht, gebacken (mit Blätterteig)	Birnenwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	161	2.8	19.2	7.5	
+13388	Bohne (alle Arten), gekocht (ohne Zugabe von Fett und Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	111	7.7	14.5	0.6	
+14207	Frischkäsezubereitung zum Streichen (rund 20% Fett), nature		Milch und Milchprodukte/Käseerzeugnisse	226	7.5	1.4	21.2	
+14130	Hafergetränk, nature mit Calcium und Vitaminen angereichert		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Getränke	48	0.5	7.8	1.5	
+13283	Schwein, Kotelett, gebraten (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Schwein	240	31.3	0	12.8	
+14089	Schweinsbratwurst, gebraten (ohne Zusatz von Fett und Salz)		Fleisch- und Wurstwaren/Rohwurstware	283	19.8	0.6	22.3	
+14129	Sojagetränk, nature, mit Calcium and Vitaminen angereichert		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Getränke	40	3.6	1.5	2.1	
+905	Blätterteig, hausgemacht (mit pflanzlichem Fett), ungebacken		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teige	349	5.2	29.3	23.2	
+1596	Brombeerwähe/-kuchen, hausgemacht, gebacken (mit Kuchenteig)	Brombeerwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	158	3.5	16.7	7.6	
+1592	Johannisbeerwähe/-kuchen, hausgemacht (mit süssem Mürbeteig)		Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	216	3.5	22.6	11.7	
+1546	Kirschenwähe/-kuchen, hausgemacht, gebacken (mit Kuchenteig)	Kirschenwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	169	3.3	21.5	7.4	
+1530	Pflaumenwähe/-kuchen, hausgemacht, gebacken (mit Kuchenteig)		Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	159	3.2	19.4	7.3	
+1103	Rindfleisch (Durchschnitt exkl. Innereien, Rippensteak), roh		Fleisch und Innereien/Rind	137	21.4	0	5.7	
+1482	Aprikosenwähe/-kuchen, hausgemacht, gebacken (mit Kuchenteig)	Aprikosenwähe|Marille	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	156	3.3	18.6	7.2	
+1594	Brombeerwähe/-kuchen, hausgemacht, gebacken (mit Blätterteig)	Brombeerwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	156	3.3	16	7.8	
+10454	Fruchtwähe/-kuchen mit Kuchenteig (Durchschnitt), hausgemacht		Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	158	3.3	18.4	7.4	
+1108	Geflügelfleisch ohne Haut (Durchschnitt exkl. Innereien), roh		Fleisch und Innereien/Geflügel	114	22.9	0.1	2.5	
+1105	Gehacktes (Durchschnitt aus Rind, Kalb, Schwein, Poulet), roh		Fleisch und Innereien	183	20.1	0	11.4	
+1511	Haferbrei, zubereitet (mit Vollmilch, ohne Zugabe von Zucker)		Gerichte/Müesli und Brei	150	6.3	16.1	6.3	
+1545	Kirschenwähe/-kuchen, hausgemacht, gebacken (mit Blätterteig)	Kirschenwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	167	3.1	20.7	7.6	
+13354	Lachs, Zucht, Filet, gedämpft (ohne Zusatz von Fett und Salz)		Fisch/Meeresfische	200	18.7	0	13.9	
+14131	Mandelgetränk, nature, mit Calcium und Vitaminen angereichert		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Getränke	33	1.1	1.3	2.6	
+1514	Milchreis, zubereitet (mit Vollmilch, ohne Zugabe von Zucker)		Gerichte/Müesli und Brei	145	5.2	19.3	5.1	
+1528	Pflaumenwähe/-kuchen, hausgemacht, gebacken (mit Blätterteig)	Pflaumenwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	156	2.9	18.6	7.5	
+1101	Plätzli (Durchschnitt aus Rind, Kalb, Schwein, Geflügel), roh		Fleisch und Innereien	110	22.6	0.2	2.1	
+1548	Rhabarberwähe/-kuchen, hausgemacht, gebacken (mit Kuchenteig)	Rhabarberwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	136	3.3	13	7.3	
+1481	Aprikosenwähe/-kuchen, hausgemacht, gebacken (mit Blätterteig)	Aprikosenwähe|Marille	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	154	3.1	17.8	7.4	
+13436	Energy Drink mit Koffein, Taurin und Vitaminen mit Süssstoffen		Alkoholfreie Getränke/Süssgetränke energievermindert	1	0	0.2	0	
+10453	Fruchtwähe/-kuchen mit Blätterteig (Durchschnitt), hausgemacht		Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	155	3.1	17.6	7.6	
+14193	Gemüse (Durchschnitt), gekocht (ohne Zugabe von Salz und Fett)		Gemüse/Gemüse gekocht (inkl. Konserven)	28	1.2	4	0.3	
+14141	Gepufftes oder extrudiertes Getreide mit Kakao oder Schokolade		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	380	8.9	76.6	2.8	
+14154	Getreide-Flakes aus Vollkornweizen und Reis mit roten Früchten		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	379	8.4	79.5	1.6	
+1510	Griessbrei, zubereitet (mit Vollmilch, ohne Zugabe von Zucker)		Gerichte/Müesli und Brei	94	4.8	11.5	3.1	
+13325	Kalb, Geschnetzeltes, gebraten (ohne Zugabe von Fett und Salz)		Fleisch und Innereien/Kalb	123	28.2	0	1.1	
+13273	Lamm, Filet, "medium" gebraten (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Lamm, Schaf	147	25.8	0	4.8	
+1129	Pilz (Durchschnitt), gedünstet (ohne Zugabe von Fett und Salz)		Gemüse/Pilze	30	4.1	1.2	0.3	
+1547	Rhabarberwähe/-kuchen, hausgemacht, gebacken (mit Blätterteig)	Rhabarberwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	133	3	12.3	7.5	
+13284	Schwein, Hals, Steak, gebraten (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Schwein	255	26.4	0	16.6	
+1531	Zwetschgenwähe/-kuchen, hausgemacht, gebacken (mit Kuchenteig)	Zwetschgenwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	155	3.2	18.4	7.2	
+13453	Joghurtalternative aus Soja, mit Früchten oder Aroma, gezuckert		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Milchprodukten	76	3.6	11.1	1.7	
+14132	Kokosnussgetränk, nature mit Calcium und Vitaminen angereichert		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Getränke	22	0.4	2.8	1	
+13262	Rind, Filet, "medium" gebraten (ohne Zustatz von Fett und Salz)		Fleisch und Innereien/Rind	147	27.7	0	4	
+14086	Salz, Meersalz, Standard, weiss, ohne zugesetztes Jod und Fluor		Verschiedenes/Salz, Gewürze und Aromen	0	0	0	0	
+14262	Süsskartoffel, im Ofen gebacken (ohne Zubage von Fett und Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	100	1.9	21.1	0.1	
+1529	Zwetschgenwähe/-kuchen, hausgemacht, gebacken (mit Blätterteig)	Zwetschgenwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	153	2.9	17.6	7.4	
+13390	Erbse, reif, getrocknet, gekocht (ohne Zusatz von Fett und Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	137	9	21.2	0.7	
+1168	Fischstäbchen (paniert und vorfritiert), gebraten in HOLL-Rapsöl		Fisch/Meeresfische	302	16	16.8	18.9	
+14250	Hackplätzli (Rind), hausgemacht, gebraten (ohne Zugabe von Fett)		Fleisch und Innereien/Rind	208	18.3	6.5	12	
+1595	Johannisbeerwähe/-kuchen, hausgemacht, gebacken (mit Kuchenteig)		Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	160	3.9	17.1	7.6	
+1593	Johannisbeerwähe/-kuchen, hausgmacht, gebacken (mit Blätterteig)	Johannisbeerwähe	Süssigkeiten/Kuchen, Torten und Cake;Gerichte/Kuchen und Gratins	158	3.6	16.4	7.8	
+13324	Kalb, Nierstück, Steak, gebraten (ohne Zugabe von Fett und Salz)		Fleisch und Innereien/Kalb	144	27.3	0	3.9	
+1518	Kartoffelstock, zubereitet (mit halbentrahmter Milch und Butter)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	91	2.2	12.9	3	
+14123	Knuspermüeslimischung, angereichert mit Vitaminen und Mineralien		Brote, Flocken und Frühstückscerealien/Müeslimischungen und Frühstückscerealien	420	10.3	63.4	11.9	
+13309	Poulet, ganz, mit Haut, gebraten (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Geflügel	193	25.1	0	10.3	
+1034	Erbsen und Karotten (Konserve), aufgewärmt (ohne Zugabe von Salz)	Rüebli	Gemüse/Gemüse gekocht (inkl. Konserven)	70	4.3	9.8	0.6	
+14112	Gehacktes/Geschnetzeltes/Pätzli, vegetarisch aus Mykoprotein, roh		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Fleisch, Fleischwaren, Fisch oder Ei	92	13.4	1.6	2.3	
+14174	Joghurtalternative aus Mandel, mit Früchten oder Aroma, gezuckert		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Milchprodukten	99	2.3	10.3	5.4	
+13329	Kaninchen (Durchschnitt), gekocht (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Sonstige Tierarten	177	26.1	0	8	
+13292	Rind, Siedfleisch, mager, gekocht (ohne Zusatz von Fett and Salz)		Fleisch und Innereien/Rind	186	31.1	0	6.9	
+13285	Schwein, Geschnetzeltes, gebraten (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Schwein	176	29.8	0	6.4	
+860	Kartoffelflocken mit Milchpulver und Salz (Instant-Kartoffelstock)	Instant-Kartoffelstock	Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	365	11.3	65.5	5.3	
+10582	Kohlgemüse (Durchschnitt), gekocht (ohne Zugabe von Salz und Fett)		Gemüse/Gemüse gekocht (inkl. Konserven)	31	2.1	3.1	0.5	
+13258	Rind, Entrecôte, "medium" gebraten (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Rind	162	30.2	0	4.6	
+1102	Schweinefleisch (Durchschnitt exkl. Innereien, Kotelett, Haxe), roh		Fleisch und Innereien/Schwein	160	21.4	0	8.3	
+13281	Wildfleisch (Durchschnitt), gekocht (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Wild	146	27.5	0	4	
+1104	Geschnetzeltes (Durchschnitt aus Rind, Kalb, Schwein, Geflügel), roh		Fleisch und Innereien	111	22.5	0.2	2.3	
+14172	Joghurtalternative aus Kokosnuss, mit Früchten oder Aroma, gezuckert		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Milchprodukten	107	0.7	12.3	5.9	
+13310	Poulet, Schenkel, mit Haut, gebraten (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Geflügel	187	23.9	0	10.2	
+13270	Schwein, Eckstück, Plätzli, gebraten (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Schwein	162	33	0	3.3	
+13345	Fisch (Durchschnitt), Filet, gedämpft (ohne Zusatz von Fett und Salz)		Fisch	123	17.9	0	5.8	
+1131	Fruchtsaft-Schorle (Durchschnitt, 60% Saft - 40% Wasser), ungezuckert		Alkoholfreie Getränke/Frucht- und Gemüsesäfte	28	0.3	6.5	0.1	
+1134	Hülsenfrüchte (Durchschnitt), gekocht (ohne Zugabe von Fett und Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Hülsenfrüchte	127	9.6	14	1.9	
+13291	Rind, Siedfleisch, durchzogen, gekocht (ohne Zusatz von Fett und Salz)		Fleisch und Innereien/Rind	276	26.6	0	18.9	
+14258	Kartoffel, ungeschält, im Ofen gebacken (ohne Zugabe von Fett und Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Kartoffeln und andere stärkereiche Knollen	100	2.5	20.7	0.2	
+1165	Blattgemüse (Durchschnitt exkl. Salate), gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	23	1.4	2.7	0.3	
+1512	Haferbrei, zubereitet (mit teilentrahmter Milch, ohne Zugabe von Zucker)		Gerichte/Müesli und Brei	136	6.4	16.1	4.7	
+1073	Kalb, Schulter, Braten, im Ofen gebraten (ohne Zugabe von Fett und Salz)		Fleisch und Innereien/Kalb	161	28.6	0	5.2	
+13434	Malzgetränk mit Kakao, mit Vitaminen und Mineralien angereichert, Pulver		Süssigkeiten/Schokolade und Kakaoerzeugnisse	372	10.7	76.4	1.8	
+1513	Milchreis, zubereitet (mit teilentrahmter Milch, ohne Zugabe von Zucker)		Gerichte/Müesli und Brei	124	5.3	19.4	2.8	
+1509	Griessbrei, zubereitet (mit teilentrahmter Milch, ohne Zugabe von Zucker)		Gerichte/Müesli und Brei	88	4.7	11.6	2.4	
+14168	Tofu, geräuchert (Durchschnitt), gebraten (ohne Zugabe von Fett und Salz)		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Proteinlieferanten	163	17.5	3.2	8.8	
+1162	Wurzel- und Knollengemüse (Durchschnitt), gedämpft (ohne Zugabe von Salz)		Gemüse/Gemüse gekocht (inkl. Konserven)	42	0.9	7.3	0.4	
+13452	Joghurtalternative aus Soja, nature, mit Calcium und Vitaminen angereichert		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Milchprodukten	40	3.9	1.1	2.1	
+14052	Plätzli (Durchschnitt aus Rind, Kalb, Schwein, Geflügel), paniert, gebraten	Fleisch paniert|Schnitzel, paniert	Fleisch und Innereien	229	23.9	10.2	10.2	
+14167	Tofu, fest, nature (Durchschnitt), gebraten (ohne Zugabe von Fett und Salz)		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Pflanzliche Proteinlieferanten	168	18	3.6	8.9	
+13317	Gehacktes (Durchschnitt aus Rind, Kalb, Schwein, Poulet), gebraten (ohne Zusatz		Fleisch und Innereien	205	24.4	0	12	
+13318	Geschnetzeltes (Durchschnitt aus Rind, Kalb, Schwein, Geflügel), gebraten (ohne		Fleisch und Innereien	142	29.5	0.2	2.6	
+13322	Kotelett (Durchschnitt aus Kalb, Schwein, Lamm), gebraten (ohne Zusatz von Fett		Fleisch und Innereien	215	28.5	0	11.2	
+13319	Plätzli (Durchschnitt aus Geflügel, Kalb, Rind, Schwein), gebraten (ohne Zusatz		Fleisch und Innereien	141	29.7	0.2	2.4	
+1074	Rind, Schulter, Braten "rare", im Ofen gebraten (ohne Zugabe von Fett und Salz)		Fleisch und Innereien/Rind	135	26.3	0	3.3	
+13462	Teigwaren, frisch, gefüllt mit Fleisch, gekocht (ohne Zugabe von Fett und Salz)		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teigwaren	174	6.9	25.1	4.7	
+1166	Blattgemüse (Durchschnitt exkl. Salate), gedünstet (ohne Zugabe von Salz und Fet		Gemüse/Gemüse gekocht (inkl. Konserven)	24	1.4	2.8	0.3	
+1164	Blattgemüse (Durchschnitt exkl. Salate), gekocht (ohne Zugabe von Salz und Fett)		Gemüse/Gemüse gekocht (inkl. Konserven)	22	1.3	2.6	0.3	
+14191	Couscous-Körner (vorgekochtes Hartweizengriess), gekocht (ohne Zugabe von Fett u		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	158	5	31	1	
+1169	Fischstäbchen (paniert und vorfritiert), im Ofen gebacken (ohne Zugabe von Fett)		Fisch/Meeresfische	251	16.7	17.6	12.4	
+14192	Hartweizen, vorgekochtes geschältest Korn, gekocht (ohne Zugabe von Salz und Fet		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Sonstige Getreideprodukte	149	5.9	27.4	0.9	
+13454	Joghurtalternative aus Soja, mit Früchten oder Aroma, gezuckert, mit Calcium und		Pflanzliche Proteinlieferanten und Alternativen zu tierischen Produkten/Alternativen zu Milchprodukten	85	3	12.9	2.3	
+13320	Leber (Durchschnitt aus Rind, Kalb, Schwein), gebraten (ohne Zusatz von Fett und		Fleisch und Innereien	155	23.5	4.4	4.9	
+14050	Malzgetränk mit Kakao, mit Vitaminen und Mineralien angereichert, zubereitet (mi		Alkoholfreie Getränke/Malzextrakthaltige Getränke;Milch und Milchprodukte/Milch- und Joghurtgetränke	80	3.7	9.7	2.9	
+1075	Rind, Schulter, Braten "medium", im Ofen gebraten (ohne Zugabe von Fett und Salz		Fleisch und Innereien/Rind	146	28.5	0	3.6	
+1076	Rind, Schulter, Braten "well done", im Ofen gebraten (ohne Zugabe von Fett und S		Fleisch und Innereien/Rind	170	33.1	0	4.2	
+1077	Schwein, Schulter, Braten "medium", im Ofen gebraten (ohne Zugabe von Fett und S		Fleisch und Innereien/Schwein	202	29.6	0	9.3	
+1079	Schwein, Schulter, Braten "well done", im Ofen gebraten (ohne Zugabe von Fett un		Fleisch und Innereien/Schwein	221	32.5	0	10.2	
+13498	Teigwaren, frisch, gefüllt mit Spinat und Ricotta, gekocht (ohne Zugabe von Fett		Getreideprodukte, Hülsenfrüchte und Kartoffeln/Teigwaren	175	7.4	24.5	4.8	
+13275	Truthahn, Brust, Schnitzel oder Geschnetzeltes, gebraten (ohne Zusatz von Fett u		Fleisch und Innereien/Geflügel	141	31.8	0	1.5	
+1163	Wurzel- und Knollengemüse (Durchschnitt), gedünstet (ohne Zugabe von Fett und Sa		Gemüse/Gemüse gekocht (inkl. Konserven)	36	0.8	6.3	0.3	
+1161	Wurzel- und Knollengemüse (Durchschnitt), gekocht (ohne Zugabe von Fett und Salz		Gemüse/Gemüse gekocht (inkl. Konserven)	38	0.8	6.5	0.3	

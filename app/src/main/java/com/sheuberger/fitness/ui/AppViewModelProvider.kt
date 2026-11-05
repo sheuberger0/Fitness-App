@@ -38,7 +38,13 @@ object AppViewModelProvider {
         initializer {
             val app = this[APPLICATION_KEY] as FitnessApplication
             // Die Suche bei Open Food Facts als Funktion: Im Test ersetzt eine Attrappe das Internet.
-            AddFoodViewModel(app.nutrition, app.mensaClient, app.mensaSettings, lookup = app.foodFacts::lookup)
+            AddFoodViewModel(
+                app.nutrition,
+                app.mensaClient,
+                app.mensaSettings,
+                lookup = app.foodFacts::lookup,
+                catalog = app.foodCatalog,
+            )
         }
     }
 }

@@ -60,6 +60,7 @@ import com.sheuberger.fitness.data.FoodEntry
 import com.sheuberger.fitness.data.FoodSource
 import com.sheuberger.fitness.data.MealSlot
 import com.sheuberger.fitness.nutrition.Barcode
+import com.sheuberger.fitness.nutrition.FoodCatalog
 import com.sheuberger.fitness.nutrition.OpenFoodFactsClient
 import com.sheuberger.fitness.nutrition.toEntry
 import com.sheuberger.fitness.nutrition.units
@@ -109,7 +110,8 @@ fun FoodLogSheet(
     // Favorisieren den neuen Stand aus der Datenbank herein; Barcode und ID bleiben dabei gleich, also bleibt auch
     // die getippte Menge stehen. Erst ein anderes Lebensmittel fängt frisch an. Zuerst nach dem Barcode: Ein neues
     // von Open Food Facts hat noch die ID 0 und bekommt seine echte erst beim Speichern, der Barcode bleibt.
-    val identity = food.barcode ?: food.id.toString()
+    // Aus der Nährwerttabelle (ohne Barcode) gilt der Name, aus demselben Grund.
+    val identity = food.barcode ?: if (food.source == FoodSource.MANUAL) food.id.toString() else "${food.source}:${food.name}"
     var savedUnit by rememberSaveable(identity) { mutableStateOf(units.first()) }
     var amountText by rememberSaveable(identity) { mutableStateOf(amountText(defaultAmount(food, units.first()), units.first())) }
     var slot by rememberSaveable(identity) { mutableStateOf(initialSlot) }
@@ -204,9 +206,9 @@ fun FoodLogSheet(
 
             Spacer(Modifier.height(20.dp))
             FoodLogSummary(preview, remainingKcal)
-            if (food.source == FoodSource.OFF) {
+            attribution(food.source)?.let { text ->
                 Spacer(Modifier.height(8.dp))
-                FoodSheetsAttribution()
+                FoodSheetsAttribution(text)
             }
 
             Spacer(Modifier.height(24.dp))
@@ -286,10 +288,9 @@ fun FoodEditSheet(
     AppSheet(onDismiss = onDismiss, dismissOnScrimTap = false) {
         AppSheetHeader(
             title = if (initial == null) "Neues Lebensmittel" else "Lebensmittel bearbeiten",
-            subtitle = when {
-                initial?.source == FoodSource.OFF && initial.edited -> "${OpenFoodFactsClient.ATTRIBUTION}, von dir angepasst"
-                initial?.source == FoodSource.OFF -> OpenFoodFactsClient.ATTRIBUTION
-                else -> "Werte wie auf der Packung"
+            subtitle = when (val source = initial?.source?.let(::attribution)) {
+                null -> "Werte wie auf der Packung"
+                else -> if (initial.edited) "$source, von dir angepasst" else source
             },
             action = { QuietButton("Abbrechen", onClick = { dismiss() }, tone = ButtonTone.Neutral) },
         )
@@ -546,9 +547,9 @@ private fun FoodLogSummary(entry: FoodEntry?, remainingKcal: Double?) {
 
 /** Quellenangabe für Daten von Open Food Facts (Pflicht laut Lizenz). */
 @Composable
-private fun FoodSheetsAttribution() {
+private fun FoodSheetsAttribution(text: String) {
     Text(
-        text = OpenFoodFactsClient.ATTRIBUTION,
+        text = text,
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(start = 4.dp),
@@ -666,7 +667,7 @@ private data class FoodFormTexts(
  * Baut aus den Eingaben das Lebensmittel. null, wenn eine Pflichtangabe fehlt.
  *
  * Unveränderte Zahlenfelder behalten den alten, genauen Wert: Das Formular zeigt 12,35 g als "12,4", und
- * Speichern ohne Änderung soll daraus nicht 12,4 machen. Bei Daten von Open Food Facts wird jede echte
+ * Speichern ohne Änderung soll daraus nicht 12,4 machen. Bei Daten von außen (Open Food Facts, BLV) wird jede echte
  * Änderung als `edited` markiert, damit ein späteres Neuladen sie nicht überschreibt.
  */
 private fun buildFood(
@@ -701,5 +702,12 @@ private fun buildFood(
         portionG = value(portion, texts.portion, initial?.portionG),
     )
     val changed = initial != null && result != initial
-    return if (changed && result.source == FoodSource.OFF) result.copy(edited = true) else result
+    return if (changed && result.source != FoodSource.MANUAL) result.copy(edited = true) else result
+}
+
+/** Quellenangabe zu Daten von außen (Pflicht laut Lizenz). null bei selbst eingegebenen Werten. */
+private fun attribution(source: FoodSource): String? = when (source) {
+    FoodSource.OFF -> OpenFoodFactsClient.ATTRIBUTION
+    FoodSource.BLV -> FoodCatalog.BLV_ATTRIBUTION
+    FoodSource.MANUAL -> null
 }

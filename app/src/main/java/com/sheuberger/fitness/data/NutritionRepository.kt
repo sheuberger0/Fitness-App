@@ -65,12 +65,21 @@ class NutritionRepository(private val db: AppDatabase) {
     /**
      * Speichert ein Lebensmittel und gibt seine ID zurück. Jeder Barcode gehört zu höchstens einem
      * Lebensmittel: Ein neues mit bekanntem Barcode aktualisiert das vorhandene, statt ein zweites anzulegen.
+     * Dasselbe gilt für Einträge aus der eingebauten Tabelle ohne Barcode (gleiche Quelle, Name und Marke):
+     * Wer "Hühnerei, ganz, roh" zweimal einträgt, hat es danach einmal in "Meine Lebensmittel".
      */
     suspend fun saveFood(food: Food): Long = db.withTransaction {
         val sameCode = food.barcode?.let { foodDao.findByBarcode(it) }
+            ?: if (food.id == 0L && food.barcode == null && food.source != FoodSource.MANUAL) {
+                foodDao.findCatalogCopy(food.source.name, food.name, food.brand.orEmpty())
+            } else {
+                null
+            }
         when {
             food.id == 0L && sameCode != null -> {
-                foodDao.update(food.copy(id = sameCode.id, favorite = food.favorite || sameCode.favorite))
+                // Hast du das vorhandene korrigiert (edited), bleiben deine Werte. Nur ein neuer Favorit kommt dazu.
+                val merged = if (sameCode.edited) sameCode else food.copy(id = sameCode.id)
+                foodDao.update(merged.copy(favorite = food.favorite || sameCode.favorite))
                 sameCode.id
             }
             food.id == 0L -> foodDao.insert(food)
