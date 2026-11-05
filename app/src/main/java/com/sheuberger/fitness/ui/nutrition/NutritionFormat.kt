@@ -1,7 +1,12 @@
 package com.sheuberger.fitness.ui.nutrition
 
+import com.sheuberger.fitness.data.EntrySource
 import com.sheuberger.fitness.data.EntryUnit
+import com.sheuberger.fitness.data.FoodEntry
+import com.sheuberger.fitness.nutrition.NutritionGoals
 import com.sheuberger.fitness.nutrition.PortionOrigin
+import com.sheuberger.fitness.nutrition.TargetSuggestion
+import com.sheuberger.fitness.nutrition.Trend
 import com.sheuberger.fitness.ui.components.Format
 import com.sheuberger.fitness.ui.mensa.MensaFormat
 import java.math.RoundingMode
@@ -97,6 +102,88 @@ object NutritionFormat {
         PortionOrigin.PUBLISHED -> if (estimated) "Angaben der Mensa, Protein berechnet" else "Angaben der Mensa"
         PortionOrigin.LAST_TIME -> "Werte vom letzten Mal"
         PortionOrigin.GUESS -> "≈ Schätzung"
+    }
+
+    /** Name für Schnell-Einträge ohne eigenen Namen. */
+    const val QUICK_NAME = "Schnell eingetragen"
+
+    /**
+     * Was bis zum Tagesziel fehlt: "Noch 1450 kcal", "Ziel erreicht" oder "320 kcal drüber".
+     * Bis 50 kcal daneben zählt als erreicht: Das ist etwa ein Teelöffel Öl, so genau misst niemand.
+     */
+    fun remaining(remainingKcal: Double): String {
+        val rounded = remainingKcal.roundToInt()
+        return when {
+            rounded > NutritionGoals.KCAL_STEP -> "Noch $rounded kcal"
+            rounded < -NutritionGoals.KCAL_STEP -> "${-rounded} kcal drüber"
+            else -> "Ziel erreicht"
+        }
+    }
+
+    /**
+     * Hinweis beim Eintragen, was nach diesem Eintrag bis zum Ziel bleibt: "Danach noch 220 kcal bis zum Ziel",
+     * "Damit erreichst du dein Ziel" oder "Damit 120 kcal über dem Ziel". Gleiche Toleranz wie [remaining].
+     */
+    fun afterLogging(remainingAfterKcal: Double): String {
+        val rounded = remainingAfterKcal.roundToInt()
+        return when {
+            rounded > NutritionGoals.KCAL_STEP -> "Danach noch $rounded kcal bis zum Ziel"
+            rounded < -NutritionGoals.KCAL_STEP -> "Damit ${-rounded} kcal über dem Ziel"
+            else -> "Damit erreichst du dein Ziel"
+        }
+    }
+
+    /** true, wenn [remaining] "Ziel erreicht" sagt. */
+    fun goalReached(remainingKcal: Double): Boolean = abs(remainingKcal.roundToInt()) <= NutritionGoals.KCAL_STEP
+
+    /**
+     * Zweite Zeile eines Eintrags: "Polymensa · Street", "250 g", "1,5 Portionen".
+     * Bei Mensa-Gerichten steht die Menge nur da, wenn es nicht genau eine Portion war. Bei Schnell-Einträgen
+     * ist "1 Portion" nichtssagend und fällt weg (null).
+     */
+    fun entryDetail(entry: FoodEntry): String? {
+        val onePortion = entry.unit == EntryUnit.PORTION && entry.amount == 1.0
+        return when (entry.source) {
+            EntrySource.MENSA -> {
+                val place = listOfNotNull(entry.mensa, entry.mensaLine).joinToString(" · ").ifEmpty { "Mensa" }
+                if (onePortion) place else "$place · ${amount(entry.amount, entry.unit)}"
+            }
+            EntrySource.FOOD -> amount(entry.amount, entry.unit)
+            EntrySource.QUICK -> if (onePortion) null else amount(entry.amount, entry.unit)
+        }
+    }
+
+    /** "1 Eintrag", "3 Einträge" */
+    fun entries(count: Int): String = if (count == 1) "1 Eintrag" else "$count Einträge"
+
+    /** Name in deutschen Anführungszeichen, lange Namen gekürzt, z. B. für Snackbars: „Pasta Bolognese“ */
+    fun quoted(name: String, maxLength: Int = 28): String {
+        val trimmed = name.trim()
+        val short = if (trimmed.length <= maxLength) trimmed else trimmed.take(maxLength - 1).trimEnd() + "…"
+        return "„$short“"
+    }
+
+    /**
+     * Ein Satz zum Zielvorschlag: geplante und tatsächliche Änderung pro Woche. "Zuletzt" heißt: Durchschnitt
+     * dieser Woche gegenüber dem der Woche davor (so rechnet [Trend]). Beide Male "pro Woche", damit die
+     * tatsächliche Zahl nicht wie die Summe über zwei Wochen klingt.
+     */
+    fun suggestionReason(suggestion: TargetSuggestion): String =
+        "Geplant sind ${weeklyGoal(suggestion.goalWeeklyChangeKg)}, " +
+            "zuletzt waren es ${weeklyGoal(suggestion.actualWeeklyChangeKg)}."
+
+    /**
+     * Was das Wochenziel pro Tag bedeutet, als Merksatz: +0,25 kg pro Woche sind 0,25 · 7700 kcal ÷ 7 Tage
+     * ≈ 275 kcal Überschuss pro Tag. Auf 5 gerundet, mehr Genauigkeit gibt es bei solchen Schätzungen nicht.
+     */
+    fun dailyBalance(weeklyGoalKg: Double): String {
+        val perDay = Math.round(abs(weeklyGoalKg) * Trend.KCAL_PER_KG / 7 / 5).toInt() * 5
+        val why = "weil 1 kg Körpergewicht etwa ${Trend.KCAL_PER_KG.roundToInt()} kcal entspricht"
+        return when {
+            perDay == 0 -> "Gewicht halten: so viel essen, wie du verbrauchst."
+            weeklyGoalKg > 0 -> "${weeklyGoal(weeklyGoalKg)} ≈ $perDay kcal Überschuss pro Tag, $why."
+            else -> "${weeklyGoal(weeklyGoalKg)} ≈ $perDay kcal Defizit pro Tag, $why."
+        }
     }
 
     /** Liest "1,5" und "1.5". null bei leerer oder ungültiger Eingabe. */
