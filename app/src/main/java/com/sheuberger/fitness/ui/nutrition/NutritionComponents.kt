@@ -388,6 +388,7 @@ internal fun LabeledTextField(
 /**
  * Antippbare Zeile in einer Liste im Sheet: Titel und Untertitel links, Werte rechts.
  * Außen 12 dp + innen 12 dp, damit der Text bündig mit dem Sheet-Titel (24 dp) steht, wie in der Übungsauswahl.
+ * [subtitleBadge] steht hinter dem Untertitel, z. B. [FitsBadge].
  */
 @Composable
 internal fun SheetRow(
@@ -399,6 +400,7 @@ internal fun SheetRow(
     trailingSub: String? = null,
     titleIcon: ImageVector? = null,
     onClickLabel: String = "Eintragen",
+    subtitleBadge: (@Composable () -> Unit)? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     Row(
@@ -425,14 +427,24 @@ internal fun SheetRow(
                     Icon(titleIcon, contentDescription = null, tint = colors.primary, modifier = Modifier.size(16.dp))
                 }
             }
-            if (subtitle != null) {
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = colors.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+            if (subtitle != null || subtitleBadge != null) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (subtitle != null) {
+                        Text(
+                            text = subtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colors.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            // fill = false: Der Text nimmt nur so viel Platz, wie er braucht, das Abzeichen folgt direkt.
+                            modifier = Modifier.weight(1f, fill = false),
+                        )
+                    }
+                    if (subtitleBadge != null) {
+                        if (subtitle != null) Spacer(Modifier.width(8.dp))
+                        subtitleBadge()
+                    }
+                }
             }
         }
         if (trailing != null) {

@@ -120,6 +120,19 @@ object NutritionFormat {
         }
     }
 
+    /**
+     * Hinweis beim Eintragen, was nach diesem Eintrag bis zum Ziel bleibt: "Danach noch 220 kcal bis zum Ziel",
+     * "Damit erreichst du dein Ziel" oder "Damit 120 kcal über dem Ziel". Gleiche Toleranz wie [remaining].
+     */
+    fun afterLogging(remainingAfterKcal: Double): String {
+        val rounded = remainingAfterKcal.roundToInt()
+        return when {
+            rounded > NutritionGoals.KCAL_STEP -> "Danach noch $rounded kcal bis zum Ziel"
+            rounded < -NutritionGoals.KCAL_STEP -> "Damit ${-rounded} kcal über dem Ziel"
+            else -> "Damit erreichst du dein Ziel"
+        }
+    }
+
     /** true, wenn [remaining] "Ziel erreicht" sagt. */
     fun goalReached(remainingKcal: Double): Boolean = abs(remainingKcal.roundToInt()) <= NutritionGoals.KCAL_STEP
 
