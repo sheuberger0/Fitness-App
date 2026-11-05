@@ -101,13 +101,18 @@ class AddFoodViewModel(
         }
         loadJobs[date]?.cancel()
         loadJobs[date] = viewModelScope.launch {
-            val hadData = menus.value[date] is MenuLoad.Loaded
-            if (!hadData) menus.update { it + (date to MenuLoad.Loading) }
+            if (menus.value[date] !is MenuLoad.Loaded) menus.update { it + (date to MenuLoad.Loading) }
             val menu = mensaClient.load(date, refresh)
             val allFailed = menu.meals.isEmpty() && menu.failed.isNotEmpty()
-            menus.update {
-                // Beim erneuten Laden ohne Netz lieber die alten Menüs behalten.
-                if (allFailed && hadData) it else it + (date to if (allFailed) MenuLoad.Offline else MenuLoad.Loaded(menu))
+            menus.update { current ->
+                when {
+                    !allFailed -> current + (date to MenuLoad.Loaded(menu))
+                    // Beim erneuten Laden ohne Netz lieber die alten Menüs behalten.
+                    current[date] is MenuLoad.Loaded -> current
+                    // Noch keine eigenen: Vielleicht hat der Mensa-Tab den Tag schon geladen (der Zwischenspeicher
+                    // bleibt bei einem Fehlschlag erhalten). Erst wenn auch dort nichts ist, gilt der Tag als offline.
+                    else -> current + (date to (mensaClient.cached(date)?.let { MenuLoad.Loaded(it) } ?: MenuLoad.Offline))
+                }
             }
         }
     }
