@@ -25,6 +25,19 @@ object MensaFormat {
     fun longDay(date: LocalDate): String = longDay.format(date)
     fun shortWeekday(date: LocalDate): String = weekdays[date.dayOfWeek.value - 1]
 
+    /** So nah am Kalorienziel zählt es als erreicht: ein Schritt beim Einstellen des Ziels. So genau isst niemand. */
+    const val GOAL_TOLERANCE_KCAL = 50
+
+    /** Der Hinweis im Kopf der Mensa: "Heute noch 1450 kcal", "Ziel erreicht" oder "320 kcal über dem Ziel". */
+    fun remainingToday(remainingKcal: Double): String {
+        val rounded = remainingKcal.roundToInt()
+        return when {
+            rounded > GOAL_TOLERANCE_KCAL -> "Heute noch $rounded kcal"
+            rounded < -GOAL_TOLERANCE_KCAL -> "${-rounded} kcal über dem Ziel"
+            else -> "Ziel erreicht"
+        }
+    }
+
     /** Zahl ohne Einheit für eine Kennzahl. */
     fun metricValue(meal: RankedMeal, by: RankBy): String = when (by) {
         RankBy.Protein -> meal.nutrition.proteinG.roundToInt().toString()
