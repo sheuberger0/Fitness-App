@@ -70,7 +70,10 @@ fun LineChart(
     val textMeasurer = rememberTextMeasurer()
     val haptics = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
-    val labelStyle = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
+    // Beschriftungen werden ohne Farbe vermessen, die Farbe kommt erst beim Zeichnen dazu. So bleibt das Raster
+    // dasselbe Objekt, wenn nur das Farbschema wechselt, und gilt nicht fälschlich als "neue Daten".
+    val labelStyle = MaterialTheme.typography.labelSmall
+    val labelColor = MaterialTheme.colorScheme.onSurfaceVariant
     val tooltipStyle = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onSurface)
     val tooltipColor = MaterialTheme.colorScheme.surfaceContainerHighest
     val gridColor = MaterialTheme.colorScheme.outlineVariant
@@ -152,11 +155,11 @@ fun LineChart(
         val current = anim.currentGrid
         if (current != null && current !== grid) {
             // Neue Daten, Animation startet gleich: bis dahin das alte Raster zeigen.
-            drawGrid(geometry, current, gridColor, 1f)
+            drawGrid(geometry, current, gridColor, labelColor, 1f)
         } else {
-            anim.previousGrid?.let { if (fade < 1f) drawGrid(geometry, it, gridColor, 1f - fade) }
-            drawGrid(geometry, grid, gridColor, fade)
-            drawXLabels(geometry, xLabels, fade)
+            anim.previousGrid?.let { if (fade < 1f) drawGrid(geometry, it, gridColor, labelColor, 1f - fade) }
+            drawGrid(geometry, grid, gridColor, labelColor, fade)
+            drawXLabels(geometry, xLabels, labelColor, fade)
         }
 
         // Waagerecht auf die Zeichenfläche begrenzen (beim Zoomen liegen Punkte kurz außerhalb)
@@ -175,17 +178,25 @@ fun LineChart(
     }
 }
 
-/** Hält die animierten Achsenwerte, damit nur die Zeichenphase neu läuft. */
-private class ChartAnimation {
-    var started = false
+/**
+ * Hält die animierten Achsenwerte, damit nur die Zeichenphase neu läuft.
+ *
+ * Alles, was der Graph beim Zeichnen liest, ist ein beobachteter Zustand (mutableStateOf bzw. Animatable).
+ * Compose zeichnet nur neu, wenn sich etwas ändert, das beim letzten Zeichnen gelesen wurde. War [started]
+ * früher eine normale Variable, lief das erste Zeichnen oft vor dem Start der Animation: Der Graph sah
+ * "noch nicht gestartet", zeichnete nichts und wurde danach nie wieder gezeichnet. Die Kurve erschien erst,
+ * wenn ein Tipp auf einen Zeitraum ihn neu aufbaute.
+ */
+internal class ChartAnimation {
+    var started by mutableStateOf(false)
     val progress = Animatable(0f)
     val fade = Animatable(1f)
     val minValue = Animatable(0f)
     val maxValue = Animatable(1f)
     val minDay = Animatable(0f)
     val maxDay = Animatable(1f)
-    var currentGrid: Grid? = null
-    var previousGrid: Grid? = null
+    var currentGrid by mutableStateOf<Grid?>(null)
+    var previousGrid by mutableStateOf<Grid?>(null)
 
     suspend fun snapTo(scale: YScale, domain: DayDomain) {
         minValue.snapTo(scale.min.toFloat())
@@ -209,10 +220,10 @@ private class ChartAnimation {
 }
 
 /** Beschriftete Linien der y-Achse. */
-private class Grid(val ticks: List<Double>, val labels: List<TextLayoutResult>)
+internal class Grid(val ticks: List<Double>, val labels: List<TextLayoutResult>)
 
 /** Zeitbereich in Epochentagen; ein einzelner Tag bekommt etwas Breite, damit er mittig liegt. */
-private class DayDomain(val min: Float, val max: Float) {
+internal class DayDomain(val min: Float, val max: Float) {
     companion object {
         fun from(points: List<ChartPoint>): DayDomain {
             if (points.isEmpty()) return DayDomain(0f, 1f)
@@ -224,7 +235,7 @@ private class DayDomain(val min: Float, val max: Float) {
 }
 
 /** Wertebereich und Beschriftungen der y-Achse. */
-private class YScale(val min: Double, val max: Double, val ticks: List<Double>) {
+internal class YScale(val min: Double, val max: Double, val ticks: List<Double>) {
     companion object {
         fun from(values: List<Double>): YScale {
             if (values.isEmpty()) return YScale(0.0, 1.0, emptyList())
@@ -318,6 +329,7 @@ private fun DrawScope.drawGrid(
     geometry: ChartGeometry,
     grid: Grid,
     gridColor: Color,
+    labelColor: Color,
     alpha: Float,
 ) {
     if (alpha <= 0f) return
@@ -334,13 +346,14 @@ private fun DrawScope.drawGrid(
             alpha = alpha,
         )
         val label = grid.labels[i]
-        drawText(label, topLeft = Offset(geometry.labelX, y - label.size.height / 2f), alpha = alpha)
+        drawText(label, color = labelColor, topLeft = Offset(geometry.labelX, y - label.size.height / 2f), alpha = alpha)
     }
 }
 
 private fun DrawScope.drawXLabels(
     geometry: ChartGeometry,
     labels: List<Pair<LocalDate, TextLayoutResult>>,
+    labelColor: Color,
     alpha: Float,
 ) {
     if (alpha <= 0f) return
@@ -354,7 +367,7 @@ private fun DrawScope.drawXLabels(
             i == labels.lastIndex -> geometry.right - width + 8.dp.toPx()
             else -> anchor - width / 2f
         }
-        drawText(layout, topLeft = Offset(x.coerceAtLeast(0f), y), alpha = alpha)
+        drawText(layout, color = labelColor, topLeft = Offset(x.coerceAtLeast(0f), y), alpha = alpha)
     }
 }
 
