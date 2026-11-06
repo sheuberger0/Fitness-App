@@ -50,7 +50,8 @@ val LightOutlineVariant = Color(0xFFE5E3DA)
 val LightErrorContainer = Color(0xFFF9DEDA)
 val LightOnErrorContainer = Color(0xFF5F150F)
 
-// Dunkles Theme
+// Dunkles Theme (das Original "Terrakotta"; die weiteren Farbschemata stehen in ColorSchemes.kt)
+val DarkDim = Color(0xFF1A1918)
 val DarkBackground = Color(0xFF1F1E1D)
 val DarkCard = Color(0xFF262624)
 val DarkContainer = Color(0xFF2B2A28)

@@ -22,6 +22,17 @@ interface FoodDao {
     @Query("SELECT * FROM foods WHERE barcode = :barcode LIMIT 1")
     suspend fun findByBarcode(barcode: String): Food?
 
+    /**
+     * Die gespeicherte Kopie eines Eintrags aus der eingebauten Tabelle, der keinen Barcode hat (z. B. "Hühnerei,
+     * ganz, roh" aus der Schweizer Nährwertdatenbank): gleiche Quelle, gleicher Name, gleiche Marke.
+     * [source] als Text ("BLV"), so wie Room die Spalte speichert.
+     */
+    @Query(
+        "SELECT * FROM foods WHERE barcode IS NULL AND source = :source AND name = :name " +
+            "AND IFNULL(brand, '') = :brand LIMIT 1",
+    )
+    suspend fun findCatalogCopy(source: String, name: String, brand: String): Food?
+
     @Insert
     suspend fun insert(food: Food): Long
 

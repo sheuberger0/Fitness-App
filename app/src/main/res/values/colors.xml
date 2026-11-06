@@ -2,6 +2,8 @@
 <resources>
     <!-- Gleiche Werte wie in ui/theme/Color.kt. Werden nur gebraucht, bevor Compose zeichnet (Startbildschirm). -->
     <color name="window_background">#FFFAF9F5</color>
+    <!-- Startbildschirm der immer dunklen Farbschemata (Theme.Fitness.Dunkel). -->
+    <color name="window_background_dunkel">#FF1F1E1D</color>
     <!-- App-Icon: Hantel im Akzent "Clay" auf warmem Fast-Schwarz. -->
     <color name="icon_background">#FF1F1E1D</color>
     <color name="icon_foreground">#FFD97757</color>

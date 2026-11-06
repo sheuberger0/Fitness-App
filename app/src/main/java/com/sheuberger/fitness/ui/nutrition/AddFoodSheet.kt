@@ -39,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -52,12 +53,18 @@ import androidx.compose.ui.unit.dp
 import com.sheuberger.fitness.data.EntrySource
 import com.sheuberger.fitness.data.Food
 import com.sheuberger.fitness.data.FoodEntry
+import com.sheuberger.fitness.data.FoodSource
 import com.sheuberger.fitness.data.MealSlot
 import com.sheuberger.fitness.data.TemplateWithItems
 import com.sheuberger.fitness.mensa.Meal
 import com.sheuberger.fitness.mensa.MealTime
 import com.sheuberger.fitness.mensa.Mensa
+import com.sheuberger.fitness.nutrition.CatalogFood
+import com.sheuberger.fitness.nutrition.CatalogResults
+import com.sheuberger.fitness.nutrition.FoodCatalog
 import com.sheuberger.fitness.nutrition.MensaEstimate
+import com.sheuberger.fitness.nutrition.OpenFoodFactsClient
+import com.sheuberger.fitness.nutrition.SearchText
 import com.sheuberger.fitness.nutrition.mensaTimeFor
 import com.sheuberger.fitness.ui.components.AppFieldShape
 import com.sheuberger.fitness.ui.components.AppMenu
@@ -77,6 +84,7 @@ import com.sheuberger.fitness.ui.mensa.MenuLoad
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlinx.coroutines.launch
 
 /** Woher ein neuer Eintrag kommt: die Segmente im Sheet "Eintragen". */
 internal enum class AddSource(val label: String) {
@@ -173,6 +181,10 @@ fun AddFoodSheet(
     LaunchedEffect(source, date) {
         if (source == AddSource.Mensa) addFood.loadMensa(date)
     }
+    // Die eingebauten Nährwert-Tabellen gleich beim Öffnen laden (im Hintergrund): Bis du tippst, sind sie da.
+    LaunchedEffect(Unit) { addFood.preloadCatalog() }
+    // Jede Eingabe im Suchfeld geht ans ViewModel; das sucht in den Tabellen, sobald du kurz nicht tippst.
+    LaunchedEffect(query) { addFood.searchCatalog(query) }
 
     AppSheet(onDismiss = onDismiss, state = sheetState, fillHeight = true) {
         AppSheetHeader(
@@ -254,12 +266,14 @@ fun AddFoodSheet(
                     )
                     AddSource.Foods -> FoodList(
                         foods = latest.foods,
+                        catalog = latest.catalog,
                         query = query,
                         onQueryChange = { query = it },
                         listState = foodList,
                         onScan = { child = AddChild.Barcode() },
                         onCreate = { child = AddChild.EditFood(food = null) },
                         onFood = { child = AddChild.LogFood(it) },
+                        onCatalogFood = { child = AddChild.LogFood(it.toFood()) },
                     )
                     AddSource.Quick -> QuickForm(
                         onLog = { name, kcal, protein ->
@@ -317,16 +331,27 @@ fun AddFoodSheet(
             onDismiss = { if (child === current) child = null },
         )
         is AddChild.LogFood -> key(current.food.id) {
+            // Der aktuelle Stand aus der Datenbank, damit z. B. der Favoriten-Stern gleich umspringt. Bei einem Eintrag
+            // aus der eingebauten Tabelle (ID 0) ist das die gespeicherte Kopie, sobald es eine gibt (nach dem Stern).
+            val shown = latest.foods.savedVersionOf(current.food) ?: current.food
             FoodLogSheet(
-                // Der aktuelle Stand aus der Datenbank, damit z. B. der Favoriten-Stern gleich umspringt.
-                food = latest.foods.firstOrNull { it.id == current.food.id } ?: current.food,
+                food = shown,
                 date = date,
                 initialSlot = slot,
-                onLog = ::logAndClose,
+                onLog = { entry ->
+                    if (shown.id == 0L) {
+                        // Noch nicht gespeichert: Das ViewModel legt es als eigenes Lebensmittel an und trägt dann ein.
+                        addFood.logCatalogFood(shown, entry)
+                        close("${NutritionFormat.quoted(entry.name)} eingetragen")
+                    } else {
+                        logAndClose(entry)
+                    }
+                },
                 onEdit = { child = AddChild.EditFood(food = it) },
                 onToggleFavorite = { food ->
                     // Vom gespeicherten Stand ausgehen: Zweimal schnell tippen schaltet dann sicher hin und zurück.
-                    val saved = latest.foods.firstOrNull { it.id == food.id } ?: food
+                    // Noch nicht gespeichert (aus der Tabelle): Dann ist es noch kein Favorit.
+                    val saved = latest.foods.savedVersionOf(food) ?: current.food
                     addFood.saveFood(saved.copy(favorite = !saved.favorite))
                 },
                 onDismiss = { if (child === current) child = null },
@@ -339,7 +364,8 @@ fun AddFoodSheet(
             onSave = { food -> addFood.saveFood(food) { saved -> child = AddChild.LogFood(saved) } },
             onDismiss = { if (child === current) child = null },
             barcode = current.barcode,
-            onDelete = if (current.food != null) addFood::deleteFood else null,
+            // Aus der eingebauten Tabelle und noch nicht gespeichert (ID 0): Da gibt es nichts zu löschen.
+            onDelete = if (current.food != null && current.food.id != 0L) addFood::deleteFood else null,
         )
         is AddChild.DeleteTemplate -> ConfirmDialog(
             title = "Vorlage löschen?",
@@ -604,30 +630,47 @@ private fun FailedHint(failed: Set<Mensa>, onRetry: () -> Unit) {
 
 // --- Lebensmittel ---
 
+/**
+ * Suchen und eintragen: zuerst deine eigenen Lebensmittel, dann die eingebauten Tabellen. "Nährwerttabelle" sind
+ * allgemeine Lebensmittel aus der Schweizer Nährwertdatenbank ("Hühnerei, ganz, roh"), "Produkte" die aus
+ * Schweizer Läden von Open Food Facts ("Vollmilch UHT, M-Classic"). Ohne Suche: Barcode, Neues Lebensmittel und
+ * deine Liste. Beim Suchen stehen die Treffer ganz oben, "Neues Lebensmittel" rutscht ans Ende.
+ */
 @Composable
 private fun FoodList(
     foods: List<Food>,
+    catalog: CatalogResults,
     query: String,
     onQueryChange: (String) -> Unit,
     listState: LazyListState,
     onScan: () -> Unit,
     onCreate: () -> Unit,
     onFood: (Food) -> Unit,
+    onCatalogFood: (CatalogFood) -> Unit,
 ) {
     val trimmed = query.trim()
-    // Name und Marke, Groß- und Kleinschreibung egal. Die Datenbank sortiert schon: Favoriten zuerst, dann nach Name.
-    val shown = remember(foods, trimmed) {
-        if (trimmed.isEmpty()) {
-            foods
-        } else {
-            foods.filter { it.name.contains(trimmed, ignoreCase = true) || it.brand?.contains(trimmed, ignoreCase = true) == true }
-        }
+    val searching = trimmed.isNotEmpty()
+    val shown = remember(foods, trimmed) { foods.matching(trimmed) }
+    // Treffer einer älteren Eingabe bleiben stehen, bis die neuen da sind: Das flackert weniger als eine leere Liste.
+    // Was oben schon unter "Meine Lebensmittel" steht, nicht noch einmal. Nur das: Hast du den Brotaufstrich über
+    // "nutella" gefunden und gespeichert, passt die Kopie nicht mehr zu "nutella" (die Suchwörter der Tabelle hat
+    // sie nicht). Dann bleibt er in der Tabelle stehen, und Antippen öffnet deine Kopie.
+    val results = remember(catalog, shown, searching) {
+        if (searching) catalog.without(shown) else CatalogResults()
     }
+    val tooShort = searching && trimmed.length < FoodCatalog.MIN_QUERY_LENGTH
+    val nothing = searching && !tooShort && shown.isEmpty() && results.isEmpty && !results.loading &&
+        results.query.trim() == trimmed
+    val scope = rememberCoroutineScope()
     Column(Modifier.fillMaxSize()) {
         SearchField(
             query = query,
-            onQueryChange = onQueryChange,
-            placeholder = "Lebensmittel suchen",
+            // Bei jeder Eingabe wieder oben anfangen: Dort stehen die besten Treffer.
+            onQueryChange = { text ->
+                onQueryChange(text)
+                scope.launch { listState.scrollToItem(0) }
+            },
+            placeholder = "Lebensmittel oder Produkt suchen",
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp),
         )
         LazyColumn(
@@ -636,48 +679,168 @@ private fun FoodList(
                 .fillMaxWidth()
                 .weight(1f),
         ) {
-            item(key = "scan") {
-                CreateRow(
-                    title = "Barcode scannen",
-                    subtitle = "Packung scannen oder Nummer eintippen",
-                    onClick = onScan,
-                    icon = Icons.Outlined.QrCodeScanner,
-                    modifier = Modifier.padding(top = 4.dp),
-                )
-            }
-            item(key = "create") {
-                CreateRow(title = "Neues Lebensmittel", subtitle = "Werte selbst eingeben", onClick = onCreate)
-            }
-            when {
-                foods.isEmpty() -> item(key = "empty") {
-                    ListMessage(
-                        title = "Noch keine Lebensmittel",
-                        text = "Gescannte und selbst angelegte Lebensmittel erscheinen hier, deine Favoriten ganz oben.",
+            // Ein Eintrag, den es immer gibt, ganz oben. Eine LazyColumn hält beim Ändern der Liste den ersten
+            // sichtbaren Eintrag fest. Ohne diesen Anker war das beim Tippen oft "Neues Lebensmittel" (die Treffer
+            // kommen erst einen Moment später), die Treffer rutschten darüber, und die Liste stand plötzlich am Ende.
+            item(key = "top") { Spacer(Modifier.height(4.dp)) }
+            if (!searching) {
+                item(key = "scan") {
+                    CreateRow(
+                        title = "Barcode scannen",
+                        subtitle = "Packung scannen oder Nummer eintippen",
+                        onClick = onScan,
+                        icon = Icons.Outlined.QrCodeScanner,
                     )
                 }
-                shown.isEmpty() -> item(key = "none") {
-                    ListMessage(title = "Nichts gefunden", text = "Kein Lebensmittel passt zu ${NutritionFormat.quoted(trimmed)}.")
+                item(key = "create") {
+                    CreateRow(title = "Neues Lebensmittel", subtitle = "Werte selbst eingeben", onClick = onCreate)
                 }
-                else -> {
-                    item(key = "foods-label") { ListLabel("Meine Lebensmittel", Modifier.animateItem()) }
-                    items(shown, key = { "food:${it.id}" }) { food ->
-                        SheetRow(
-                            title = food.name,
-                            onClick = { onFood(food) },
-                            subtitle = listOfNotNull(food.brand, food.proteinG?.let { NutritionFormat.protein(it) })
-                                .joinToString(" · ")
-                                .ifEmpty { null },
-                            trailing = NutritionFormat.kcal(food.kcal),
-                            trailingSub = food.basis.label,
-                            titleIcon = if (food.favorite) Icons.Filled.Star else null,
-                            modifier = Modifier.animateItem(),
+            }
+            if (!searching && foods.isEmpty()) {
+                item(key = "empty") {
+                    ListMessage(
+                        title = "Einfach oben eintippen",
+                        text = "Zum Beispiel „Ei“, „Ruchbrot“ oder „Migros Joghurt“. Dabei sind über 80'000 Lebensmittel " +
+                            "und Produkte aus Schweizer Läden, auch ohne Internet. Was du einträgst, erscheint danach hier.",
+                    )
+                }
+            }
+            if (shown.isNotEmpty()) {
+                item(key = "foods-label") { ListLabel("Meine Lebensmittel", Modifier.animateItem()) }
+                items(shown, key = { "food:${it.id}" }) { food ->
+                    SheetRow(
+                        title = food.name,
+                        onClick = { onFood(food) },
+                        subtitle = listOfNotNull(food.brand, food.proteinG?.let { NutritionFormat.protein(it) })
+                            .joinToString(" · ")
+                            .ifEmpty { null },
+                        trailing = NutritionFormat.kcal(food.kcal),
+                        trailingSub = food.basis.label,
+                        titleIcon = if (food.favorite) Icons.Filled.Star else null,
+                        modifier = Modifier.animateItem(),
+                    )
+                }
+            }
+            if (searching) {
+                if (results.loading) {
+                    item(key = "catalog-loading") {
+                        ListMessage(title = "Einen Moment …", text = "Die Nährwerttabelle wird zum ersten Mal geladen.")
+                    }
+                }
+                if (results.generic.isNotEmpty()) {
+                    item(key = "generic-label") { ListLabel("Nährwerttabelle", Modifier.animateItem()) }
+                    items(results.generic, key = { "${it.source}:${it.position}" }) { food ->
+                        CatalogRow(food, onClick = { onCatalogFood(food) }, modifier = Modifier.animateItem())
+                    }
+                }
+                if (results.products.isNotEmpty()) {
+                    item(key = "products-label") { ListLabel("Produkte", Modifier.animateItem()) }
+                    items(results.products, key = { "${it.source}:${it.position}" }) { food ->
+                        CatalogRow(food, onClick = { onCatalogFood(food) }, modifier = Modifier.animateItem())
+                    }
+                }
+                if (nothing) {
+                    item(key = "none") {
+                        ListMessage(
+                            title = "Nichts gefunden",
+                            text = "Kein Lebensmittel passt zu ${NutritionFormat.quoted(trimmed)}. Versuch ein anderes Wort " +
+                                "oder scanne die Packung.",
                         )
                     }
+                }
+                item(key = "create-bottom") {
+                    CreateRow(
+                        title = "Neues Lebensmittel",
+                        subtitle = "Nicht dabei? Werte selbst eingeben",
+                        onClick = onCreate,
+                        modifier = Modifier.animateItem(),
+                    )
+                }
+                item(key = "scan-bottom") {
+                    CreateRow(
+                        title = "Barcode scannen",
+                        subtitle = "Packung scannen oder Nummer eintippen",
+                        onClick = onScan,
+                        icon = Icons.Outlined.QrCodeScanner,
+                        modifier = Modifier.animateItem(),
+                    )
+                }
+                if (!results.isEmpty) {
+                    item(key = "catalog-source") { CatalogAttribution(Modifier.animateItem()) }
                 }
             }
             item(key = "bottom") { Spacer(Modifier.height(12.dp)) }
         }
     }
+}
+
+/** Ein Treffer aus den eingebauten Tabellen: Name, Marke und Protein, rechts die Kalorien pro 100 g. */
+@Composable
+private fun CatalogRow(food: CatalogFood, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    SheetRow(
+        title = food.name,
+        onClick = onClick,
+        subtitle = listOfNotNull(food.brand, food.proteinG?.let { NutritionFormat.protein(it) })
+            .joinToString(" · ")
+            .ifEmpty { null },
+        trailing = NutritionFormat.kcal(food.kcal),
+        trailingSub = "pro 100 g",
+        modifier = modifier,
+    )
+}
+
+/** Quellenangabe für beide Tabellen. Das BLV und die Lizenz von Open Food Facts (ODbL) verlangen sie. */
+@Composable
+private fun CatalogAttribution(modifier: Modifier = Modifier) {
+    Text(
+        text = "${FoodCatalog.BLV_ATTRIBUTION} · ${OpenFoodFactsClient.ATTRIBUTION}",
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+    )
+}
+
+/**
+ * Deine Lebensmittel, die zur Suche passen: gleiche Regeln wie in den eingebauten Tabellen ([SearchText]), also
+ * Umlaute egal ("muesli" findet "Müesli") und jedes Wort muss im Namen oder in der Marke vorkommen. Gute Treffer
+ * zuerst; bei gleich guten bleibt die Reihenfolge der Datenbank (Favoriten zuerst, dann nach Name).
+ */
+internal fun List<Food>.matching(query: String): List<Food> {
+    val tokens = SearchText.tokens(query)
+    if (tokens.isEmpty()) return this
+    return mapNotNull { food ->
+        val points = SearchText.score(SearchText.key(food.name), SearchText.EMPTY_KEY, SearchText.key(food.brand.orEmpty()), tokens)
+        if (points < 0) null else points to food
+    }.sortedBy { it.first }.map { it.second } // sortedBy ist stabil: Gleich gute behalten ihre Reihenfolge.
+}
+
+/**
+ * Ohne das, was schon unter "Meine Lebensmittel" steht: Produkte mit einem der Barcodes, Einträge ohne Barcode
+ * mit gleicher Quelle, gleichem Namen und gleicher Marke, wie
+ * [com.sheuberger.fitness.data.NutritionRepository.saveFood] sie erkennt.
+ */
+internal fun CatalogResults.without(foods: List<Food>): CatalogResults {
+    if (foods.isEmpty() || isEmpty) return this
+    val codes = foods.mapNotNullTo(HashSet()) { it.barcode }
+    val copies = foods.filter { it.barcode == null && it.source != FoodSource.MANUAL }
+        .mapTo(HashSet()) { Triple(it.source, it.name, it.brand.orEmpty()) }
+    fun saved(item: CatalogFood): Boolean =
+        item.barcodes.any { it in codes } || Triple(item.source, item.name, item.brand.orEmpty()) in copies
+    return copy(generic = generic.filterNot(::saved), products = products.filterNot(::saved))
+}
+
+/**
+ * Die gespeicherte Fassung von [food]: gleiche ID. Bei einem Eintrag aus der eingebauten Tabelle (ID 0) die Kopie
+ * mit gleichem Barcode, oder ohne Barcode mit gleicher Quelle, gleichem Namen und gleicher Marke.
+ * Genauso erkennt [com.sheuberger.fitness.data.NutritionRepository.saveFood] die Kopie.
+ */
+internal fun List<Food>.savedVersionOf(food: Food): Food? = when {
+    food.id != 0L -> firstOrNull { it.id == food.id }
+    food.barcode != null -> firstOrNull { it.barcode == food.barcode }
+    food.source != FoodSource.MANUAL -> firstOrNull {
+        it.barcode == null && it.source == food.source && it.name == food.name && it.brand.orEmpty() == food.brand.orEmpty()
+    }
+    else -> null
 }
 
 // --- Schnell ---
