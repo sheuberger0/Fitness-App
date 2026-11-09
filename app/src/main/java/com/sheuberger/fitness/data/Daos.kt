@@ -75,6 +75,13 @@ interface WorkoutDao {
 
     @Query("DELETE FROM workout_exercises WHERE workoutId = :workoutId AND exerciseId = :exerciseId")
     suspend fun deleteLink(workoutId: Long, exerciseId: Long)
+
+    /** Nimmt alle Workouts aus der Trainingsreihenfolge. */
+    @Query("UPDATE workouts SET rotationPosition = NULL")
+    suspend fun clearRotation()
+
+    @Query("UPDATE workouts SET rotationPosition = :position WHERE id = :workoutId")
+    suspend fun setRotationPosition(workoutId: Long, position: Int)
 }
 
 @Dao
@@ -93,6 +100,21 @@ interface ExerciseLogDao {
 
     @Delete
     suspend fun delete(log: ExerciseLog)
+
+    /**
+     * Die höchste ID aller Einträge (0, wenn es keine gibt). Die Datenbank vergibt IDs aufsteigend und nie
+     * doppelt (AUTOINCREMENT), ein neuerer Eintrag hat also immer eine größere ID als alle älteren.
+     */
+    @Query("SELECT COALESCE(MAX(id), 0) FROM exercise_logs")
+    suspend fun maxId(): Long
+
+    /** Ordnet Einträge nachträglich einem Workout zu. */
+    @Query("UPDATE exercise_logs SET workoutId = :workoutId WHERE id IN (:logIds)")
+    suspend fun setWorkout(logIds: List<Long>, workoutId: Long)
+
+    /** Vergisst bei allen Einträgen eines Workouts, dass sie dort eingetragen wurden (vor dem Löschen des Workouts). */
+    @Query("UPDATE exercise_logs SET workoutId = NULL WHERE workoutId = :workoutId")
+    suspend fun clearWorkout(workoutId: Long)
 }
 
 @Dao

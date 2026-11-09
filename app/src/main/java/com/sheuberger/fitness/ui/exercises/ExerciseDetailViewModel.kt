@@ -12,6 +12,8 @@ import com.sheuberger.fitness.ui.components.dailyBest
 import com.sheuberger.fitness.ui.components.inRange
 import com.sheuberger.fitness.ui.components.latest
 import com.sheuberger.fitness.ui.components.personalBest
+import com.sheuberger.fitness.ui.nutrition.defaultViewModelScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -46,8 +48,14 @@ data class ExerciseDetailUiState(
 class ExerciseDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val repository: FitnessRepository,
-) : ViewModel() {
+    // Im Test ein eigener Scope statt des Haupt-Threads (siehe defaultViewModelScope).
+    scope: CoroutineScope = defaultViewModelScope(),
+) : ViewModel(scope) {
     private val exerciseId: Long = checkNotNull(savedStateHandle.get<Long>("exerciseId"))
+
+    // Aus einem Workout heraus geöffnet: Neue Einträge merken sich dieses Workout (wie das "+" im Workout).
+    // Aus dem Übungen-Tab geöffnet fehlt das Argument (bzw. ist -1), dann bleibt es offen.
+    private val workoutId: Long? = savedStateHandle.get<Long>("workoutId")?.takeIf { it > 0 }
     private val range = MutableStateFlow(TimeRange.ThreeMonths)
 
     val uiState: StateFlow<ExerciseDetailUiState> = combine(
@@ -81,19 +89,14 @@ class ExerciseDetailViewModel(
         range.value = value
     }
 
-    /** [existing] ist null für einen neuen Eintrag, sonst der Eintrag, der bearbeitet wird. */
+    /**
+     * [existing] ist null für einen neuen Eintrag, sonst der Eintrag, der bearbeitet wird. Beim Bearbeiten bleibt
+     * alles andere erhalten (copy), auch in welchem Workout der Satz eingetragen wurde.
+     */
     fun saveLog(existing: ExerciseLog?, date: LocalDate, weightKg: Double, reps: Int?) {
-        viewModelScope.launch {
-            repository.saveLog(
-                ExerciseLog(
-                    id = existing?.id ?: 0,
-                    exerciseId = exerciseId,
-                    date = date,
-                    weightKg = weightKg,
-                    reps = reps,
-                ),
-            )
-        }
+        val log = existing?.copy(date = date, weightKg = weightKg, reps = reps)
+            ?: ExerciseLog(exerciseId = exerciseId, date = date, weightKg = weightKg, reps = reps, workoutId = workoutId)
+        viewModelScope.launch { repository.saveLog(log) }
     }
 
     fun deleteLog(log: ExerciseLog) {

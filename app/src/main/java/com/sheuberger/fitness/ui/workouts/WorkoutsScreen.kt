@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Repeat
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +53,7 @@ import com.sheuberger.fitness.ui.components.AnimatedFab
 import com.sheuberger.fitness.ui.components.AppCardShape
 import com.sheuberger.fitness.ui.components.AppFab
 import com.sheuberger.fitness.ui.components.AppMenu
+import com.sheuberger.fitness.ui.components.AppMenuDivider
 import com.sheuberger.fitness.ui.components.AppMenuItem
 import com.sheuberger.fitness.ui.components.CircleIconButton
 import com.sheuberger.fitness.ui.components.CircleIconButtonStyle
@@ -79,6 +81,8 @@ fun WorkoutsScreen(
     var showCreate by rememberSaveable { mutableStateOf(false) }
     var renameTarget by remember { mutableStateOf<Workout?>(null) }
     var deleteTarget by remember { mutableStateOf<Workout?>(null) }
+    var showRotation by rememberSaveable { mutableStateOf(false) }
+    var showPicker by rememberSaveable { mutableStateOf(false) }
     val entrance = rememberEntrance()
     // Beim Herunterscrollen schrumpft der FAB zum Kreis, beim Hochscrollen bekommt er seinen Text zurück.
     val fabScroll = rememberFabScrollState()
@@ -141,15 +145,44 @@ fun WorkoutsScreen(
                                 .padding(start = 4.dp, bottom = 8.dp),
                         )
                     }
+                    // Ganz oben, was heute dran ist. Solange es keine Reihenfolge gibt, ein Hinweis zum Einrichten.
+                    val next = state.next
+                    if (next != null) {
+                        item(key = "next") {
+                            NextWorkoutCard(
+                                next = next,
+                                onOpen = { onOpenWorkout(next.workout.workout.id) },
+                                onSkip = viewModel::skip,
+                                onChooseOther = { showPicker = true },
+                                onEditOrder = { showRotation = true },
+                                modifier = Modifier
+                                    .animateItem()
+                                    .entrance(entrance, 1)
+                                    .padding(bottom = 8.dp),
+                            )
+                        }
+                    } else if (state.showRotationHint) {
+                        item(key = "hint") {
+                            RotationHintCard(
+                                onSetUp = { showRotation = true },
+                                onDismiss = viewModel::dismissRotationHint,
+                                modifier = Modifier
+                                    .animateItem()
+                                    .entrance(entrance, 1)
+                                    .padding(bottom = 8.dp),
+                            )
+                        }
+                    }
                     itemsIndexed(state.workouts, key = { _, it -> it.workout.id }) { index, summary ->
                         WorkoutCard(
                             summary = summary,
                             onClick = { onOpenWorkout(summary.workout.id) },
                             onRename = { renameTarget = summary.workout },
+                            onEditOrder = { showRotation = true },
                             onDelete = { deleteTarget = summary.workout },
                             modifier = Modifier
                                 .animateItem()
-                                .entrance(entrance, index + 1),
+                                .entrance(entrance, index + 2),
                         )
                     }
                 }
@@ -182,6 +215,34 @@ fun WorkoutsScreen(
                 viewModel.renameWorkout(workout, name)
                 renameTarget = null
             },
+        )
+    }
+
+    if (showRotation) {
+        RotationSheet(
+            workouts = state.workouts,
+            initial = state.rotation.map { it.id },
+            onChange = viewModel::saveRotation,
+            onDismiss = { showRotation = false },
+        )
+    }
+
+    // Am Trainingstag: "Was hast du heute trainiert?", sonst: "Was ist als Nächstes dran?"
+    val pickerNext = state.next
+    if (showPicker && pickerNext != null) {
+        val today = remember { pickerNext.trainedToday }
+        val byId = state.workouts.associateBy { it.workout.id }
+        RotationPickerSheet(
+            title = if (today) "Was hast du heute trainiert?" else "Was ist als Nächstes dran?",
+            subtitle = if (today) {
+                "Die heutigen Einträge zählen dann für dieses Workout."
+            } else {
+                "Danach geht es in der Reihenfolge von dort aus weiter."
+            },
+            rotation = state.rotation.mapNotNull { byId[it.id] },
+            selectedId = pickerNext.workout.workout.id,
+            onPick = { id -> if (today) viewModel.setTodayWorkout(id) else viewModel.chooseNext(id) },
+            onDismiss = { showPicker = false },
         )
     }
 
@@ -244,6 +305,7 @@ private fun WorkoutCard(
     summary: WorkoutSummary,
     onClick: () -> Unit,
     onRename: () -> Unit,
+    onEditOrder: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -302,6 +364,15 @@ private fun WorkoutCard(
                             onRename()
                         },
                     )
+                    AppMenuItem(
+                        text = "Reihenfolge bearbeiten",
+                        icon = Icons.Outlined.Repeat,
+                        onClick = {
+                            menuOpen = false
+                            onEditOrder()
+                        },
+                    )
+                    AppMenuDivider()
                     AppMenuItem(
                         text = "Löschen",
                         icon = Icons.Outlined.Delete,

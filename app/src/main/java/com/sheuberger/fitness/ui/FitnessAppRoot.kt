@@ -74,9 +74,12 @@ private enum class Tab(val route: String, val label: String, val icon: ImageVect
 
 private object Routes {
     const val WORKOUT = "workout/{workoutId}"
-    const val EXERCISE = "exercise/{exerciseId}"
+
+    // workoutId ist optional: gesetzt, wenn die Übung aus einem Workout heraus geöffnet wurde.
+    const val EXERCISE = "exercise/{exerciseId}?workoutId={workoutId}"
     fun workout(id: Long) = "workout/$id"
-    fun exercise(id: Long) = "exercise/$id"
+    fun exercise(id: Long, workoutId: Long? = null) =
+        if (workoutId != null) "exercise/$id?workoutId=$workoutId" else "exercise/$id"
 }
 
 /**
@@ -176,15 +179,22 @@ fun FitnessAppRoot(
                 composable(
                     route = Routes.WORKOUT,
                     arguments = listOf(navArgument("workoutId") { type = NavType.LongType }),
-                ) {
+                ) { entry ->
+                    val workoutId = entry.arguments?.getLong("workoutId")
                     WorkoutDetailScreen(
                         onBack = { navController.popBackStack() },
-                        onOpenExercise = { navController.navigate(Routes.exercise(it)) },
+                        onOpenExercise = { navController.navigate(Routes.exercise(it, workoutId)) },
                     )
                 }
                 composable(
                     route = Routes.EXERCISE,
-                    arguments = listOf(navArgument("exerciseId") { type = NavType.LongType }),
+                    arguments = listOf(
+                        navArgument("exerciseId") { type = NavType.LongType },
+                        navArgument("workoutId") {
+                            type = NavType.LongType
+                            defaultValue = -1L
+                        },
+                    ),
                 ) {
                     ExerciseDetailScreen(onBack = { navController.popBackStack() })
                 }

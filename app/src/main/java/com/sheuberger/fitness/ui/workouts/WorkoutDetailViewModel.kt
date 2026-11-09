@@ -9,6 +9,8 @@ import com.sheuberger.fitness.data.FitnessRepository
 import com.sheuberger.fitness.data.Workout
 import com.sheuberger.fitness.ui.components.dailyBest
 import com.sheuberger.fitness.ui.components.latest
+import com.sheuberger.fitness.ui.nutrition.defaultViewModelScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -37,7 +39,9 @@ data class WorkoutDetailUiState(
 class WorkoutDetailViewModel(
     savedStateHandle: SavedStateHandle,
     private val repository: FitnessRepository,
-) : ViewModel() {
+    // Im Test ein eigener Scope statt des Haupt-Threads (siehe defaultViewModelScope).
+    scope: CoroutineScope = defaultViewModelScope(),
+) : ViewModel(scope) {
 
     private val workoutId: Long = checkNotNull(savedStateHandle.get<Long>("workoutId"))
 
@@ -100,9 +104,12 @@ class WorkoutDetailViewModel(
         viewModelScope.launch { repository.moveExercise(workoutId, exerciseId, up) }
     }
 
+    /** Der Eintrag merkt sich dieses Workout. Daran erkennt die Trainingsreihenfolge, was du heute trainiert hast. */
     fun logWeight(exerciseId: Long, date: LocalDate, weightKg: Double, reps: Int?) {
         viewModelScope.launch {
-            repository.saveLog(ExerciseLog(exerciseId = exerciseId, date = date, weightKg = weightKg, reps = reps))
+            repository.saveLog(
+                ExerciseLog(exerciseId = exerciseId, date = date, weightKg = weightKg, reps = reps, workoutId = workoutId),
+            )
         }
     }
 

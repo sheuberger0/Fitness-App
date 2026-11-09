@@ -30,7 +30,14 @@ class FitnessRepository(private val db: AppDatabase) {
 
     suspend fun renameWorkout(workout: Workout, name: String) = workoutDao.update(workout.copy(name = name))
 
-    suspend fun deleteWorkout(workout: Workout) = workoutDao.delete(workout)
+    /**
+     * Löscht das Workout. Die Gewichtseinträge bleiben, sie vergessen nur, in welchem Workout sie eingetragen
+     * wurden. Die Verknüpfungen zu den Übungen löscht die Datenbank selbst (CASCADE).
+     */
+    suspend fun deleteWorkout(workout: Workout) = db.withTransaction {
+        logDao.clearWorkout(workout.id)
+        workoutDao.delete(workout)
+    }
 
     suspend fun addExerciseToWorkout(workoutId: Long, exerciseId: Long) = db.withTransaction {
         val nextPosition = (workoutDao.getLinks(workoutId).maxOfOrNull { it.position } ?: -1) + 1
@@ -48,6 +55,22 @@ class FitnessRepository(private val db: AppDatabase) {
         if (index == -1 || target !in links.indices) return@withTransaction
         val reordered = links.toMutableList().apply { add(target, removeAt(index)) }
         workoutDao.updateLinks(reordered.mapIndexed { i, link -> link.copy(position = i) })
+    }
+
+    // --- Trainingsreihenfolge ---
+
+    /** Speichert die Reihenfolge: [workoutIds] in genau dieser Folge, alle anderen Workouts gehören nicht dazu. */
+    suspend fun setRotation(workoutIds: List<Long>) = db.withTransaction {
+        workoutDao.clearRotation()
+        workoutIds.forEachIndexed { position, id -> workoutDao.setRotationPosition(id, position) }
+    }
+
+    /** ID des neuesten Gewichtseintrags, 0 ohne Einträge. Neuere Einträge bekommen immer größere IDs. */
+    suspend fun latestLogId(): Long = logDao.maxId()
+
+    /** Ordnet Einträge nachträglich einem Workout zu, z. B. "Heute war ein anderes Workout". */
+    suspend fun assignLogsToWorkout(logIds: List<Long>, workoutId: Long) {
+        if (logIds.isNotEmpty()) logDao.setWorkout(logIds, workoutId)
     }
 
     // --- Übungen ---

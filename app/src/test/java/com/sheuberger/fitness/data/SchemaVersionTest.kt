@@ -19,6 +19,7 @@ class SchemaVersionTest {
     private val releasedSchemas = mapOf(
         1 to "cf393a7711f74144f794b354d8c2db4f", // App 1.0 bis 1.9
         2 to "4eb14667442c37d8f93fbe3568affe56", // App 2.0: Kalorien-Tracker
+        3 to "c45414bd8a4437f2114b424c1d4d4f8b", // App 2.3: Trainingsreihenfolge
     )
 
     private val schemaDir = File("schemas/${AppDatabase::class.java.name}")

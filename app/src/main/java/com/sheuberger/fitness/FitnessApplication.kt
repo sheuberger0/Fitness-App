@@ -9,6 +9,7 @@ import com.sheuberger.fitness.mensa.MensaSettings
 import com.sheuberger.fitness.nutrition.FoodCatalog
 import com.sheuberger.fitness.nutrition.NutritionSettings
 import com.sheuberger.fitness.nutrition.OpenFoodFactsClient
+import com.sheuberger.fitness.rotation.RotationSettings
 import com.sheuberger.fitness.ui.theme.ThemeSettings
 
 /**
@@ -35,4 +36,7 @@ class FitnessApplication : Application() {
 
     // Gewähltes Farbschema (Zahnrad im Workouts-Screen).
     val themeSettings: ThemeSettings by lazy { ThemeSettings(this) }
+
+    // Trainingsreihenfolge: das von Hand gewählte nächste Workout ("Überspringen").
+    val rotationSettings: RotationSettings by lazy { RotationSettings(this) }
 }
