@@ -26,6 +26,11 @@ data class Workout(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val createdAt: Long = System.currentTimeMillis(),
+    /**
+     * Stelle in deiner Trainingsreihenfolge (0 = das erste Workout), oder null, wenn das Workout nicht dazugehört.
+     * Die Lücken nach dem Löschen eines Workouts stören nicht, es zählt nur die Sortierung. Seit Datenbankversion 3.
+     */
+    val rotationPosition: Int? = null,
 )
 
 /**
@@ -77,6 +82,15 @@ data class ExerciseLog(
     val date: LocalDate,
     val weightKg: Double,
     val reps: Int? = null,
+    /**
+     * In welchem Workout der Satz eingetragen wurde, oder null: Einträge von vor App 2.3 und solche aus dem
+     * Übungen-Tab. Daran erkennt die App, welches Workout du an einem Tag trainiert hast (siehe `Rotation`).
+     *
+     * Bewusst ohne Fremdschlüssel: So kommt die Spalte beim Update mit einem einfachen `ALTER TABLE` dazu, und
+     * die Tabelle mit all deinen Einträgen muss nicht umgebaut werden. Wird ein Workout gelöscht, setzt
+     * [FitnessRepository.deleteWorkout] die Spalte bei seinen Einträgen wieder auf null. Seit Datenbankversion 3.
+     */
+    val workoutId: Long? = null,
 )
 
 /** Ein Körpergewichts-Eintrag. Pro Tag gibt es höchstens einen Eintrag. */

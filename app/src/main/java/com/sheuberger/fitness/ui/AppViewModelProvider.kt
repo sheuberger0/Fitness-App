@@ -22,7 +22,10 @@ import com.sheuberger.fitness.ui.workouts.WorkoutsViewModel
  */
 object AppViewModelProvider {
     val Factory = viewModelFactory {
-        initializer { WorkoutsViewModel(repository()) }
+        initializer {
+            val app = this[APPLICATION_KEY] as FitnessApplication
+            WorkoutsViewModel(app.repository, app.rotationSettings)
+        }
         initializer { WorkoutDetailViewModel(createSavedStateHandle(), repository()) }
         initializer { ExercisesViewModel(repository()) }
         initializer { ExerciseDetailViewModel(createSavedStateHandle(), repository()) }

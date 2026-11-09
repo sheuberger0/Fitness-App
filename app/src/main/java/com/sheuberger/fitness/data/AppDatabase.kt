@@ -41,6 +41,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase
     autoMigrations = [
         // Version 2 fügt nur neue Tabellen hinzu (Kalorien-Tracker). Das kann Room selbst erzeugen.
         AutoMigration(from = 1, to = 2),
+        // Version 3 fügt zwei leere Spalten hinzu (Trainingsreihenfolge): ALTER TABLE … ADD COLUMN, die
+        // vorhandenen Zeilen bekommen dort null. Auch das erzeugt Room selbst.
+        AutoMigration(from = 2, to = 3),
     ],
 )
 @TypeConverters(Converters::class)
@@ -56,9 +59,10 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         /**
          * Aktuelle Schema-Version. Version 1: App 1.0 bis 1.9. Version 2 (App 2.0): Tabellen für den
-         * Kalorien-Tracker (foods, food_entries, meal_templates, meal_template_items).
+         * Kalorien-Tracker (foods, food_entries, meal_templates, meal_template_items). Version 3 (App 2.3):
+         * Trainingsreihenfolge (workouts.rotationPosition) und das Workout eines Eintrags (exercise_logs.workoutId).
          */
-        const val VERSION = 2
+        const val VERSION = 3
 
         const val FILE_NAME = "fitness.db"
 

@@ -86,6 +86,68 @@ class DatabaseUpdateTest {
     }
 
     @Test
+    fun entriesFromVersion2SurviveUpdate() = runBlocking {
+        helper.createDatabase(DB, 2).apply {
+            // Eine Installation von App 2.0 bis 2.2: Workouts, Gewichtseinträge und ein Essens-Eintrag.
+            execSQL("INSERT INTO exercises (id, name, muscleGroup) VALUES (1, 'Bankdrücken', 'Brust')")
+            execSQL("INSERT INTO exercises (id, name, muscleGroup) VALUES (2, 'Kniebeugen', 'Beine')")
+            execSQL("INSERT INTO workouts (id, name, createdAt) VALUES (1, 'Upper A', 1760000000000)")
+            execSQL("INSERT INTO workouts (id, name, createdAt) VALUES (2, 'Lower A', 1760000001000)")
+            execSQL("INSERT INTO workout_exercises (workoutId, exerciseId, position) VALUES (1, 1, 0)")
+            execSQL("INSERT INTO workout_exercises (workoutId, exerciseId, position) VALUES (2, 2, 0)")
+            execSQL("INSERT INTO exercise_logs (id, exerciseId, date, weightKg, reps) VALUES (1, 1, ${day(3)}, 80.0, 8)")
+            execSQL("INSERT INTO exercise_logs (id, exerciseId, date, weightKg, reps) VALUES (2, 2, ${day(5)}, 100.0, 5)")
+            execSQL("INSERT INTO body_weights (date, weightKg) VALUES (${day(3)}, 78.4)")
+            execSQL(
+                "INSERT INTO food_entries (date, loggedAt, meal, name, kcal, amount, unit, source, estimated) " +
+                    "VALUES (${day(3)}, 1760000000000, 'LUNCH', 'Mensa-Menü', 850.0, 1.0, 'PORTION', 'MENSA', 0)",
+            )
+            close()
+        }
+
+        val db = open()
+
+        // Alles ist noch da, die neuen Spalten sind leer: kein Workout in der Reihenfolge, Einträge ohne Workout.
+        val workouts = db.workoutDao().observeAll().first()
+        assertEquals(listOf("Lower A", "Upper A"), workouts.map { it.name })
+        assertTrue(workouts.all { it.rotationPosition == null })
+        val logs = db.exerciseLogDao().observeAll().first()
+        assertEquals(listOf(80.0, 100.0), logs.map { it.weightKg })
+        assertEquals(listOf(8, 5), logs.map { it.reps })
+        assertTrue(logs.all { it.workoutId == null })
+        assertEquals(listOf(78.4), db.bodyWeightDao().observeAll().first().map { it.weightKg })
+        assertEquals(listOf("Mensa-Menü"), db.foodEntryDao().getDay(LocalDate.of(2026, 10, 3)).map { it.name })
+
+        // Die neuen Spalten lassen sich nutzen: Reihenfolge festlegen, Satz im Workout eintragen.
+        val repository = FitnessRepository(db)
+        repository.setRotation(listOf(1, 2))
+        repository.saveLog(ExerciseLog(exerciseId = 1, date = LocalDate.of(2026, 10, 7), weightKg = 82.5, workoutId = 1))
+        assertEquals(
+            listOf("Upper A" to 0, "Lower A" to 1),
+            db.workoutDao().observeAll().first().sortedBy { it.rotationPosition }.map { it.name to it.rotationPosition },
+        )
+        assertEquals(listOf(null, null, 1L), db.exerciseLogDao().observeAll().first().map { it.workoutId })
+        assertEquals(3, repository.latestLogId())
+    }
+
+    @Test
+    fun deletingWorkoutKeepsItsEntries() = runBlocking {
+        val db = open()
+        val repository = FitnessRepository(db)
+        val workoutId = repository.createWorkout("Upper A")
+        val exerciseId = db.exerciseDao().findByName("Bankdrücken")!!.id
+        repository.addExerciseToWorkout(workoutId, exerciseId)
+        repository.saveLog(ExerciseLog(exerciseId = exerciseId, date = LocalDate.of(2026, 11, 9), weightKg = 80.0, workoutId = workoutId))
+
+        repository.deleteWorkout(db.workoutDao().observe(workoutId).first()!!)
+
+        // Der Satz bleibt, er weiß nur nicht mehr, in welchem (gelöschten) Workout er eingetragen wurde.
+        val logs = db.exerciseLogDao().observeAll().first()
+        assertEquals(listOf(80.0), logs.map { it.weightKg })
+        assertEquals(listOf<Long?>(null), logs.map { it.workoutId })
+    }
+
+    @Test
     fun updateAddsNewDefaultExercisesButNotDeletedOnes() = runBlocking {
         // Alte Installation: "Bankdrücken" wurde gelöscht, eine eigene "Beinpresse" gibt es schon.
         helper.createDatabase(DB, AppDatabase.VERSION).apply {
