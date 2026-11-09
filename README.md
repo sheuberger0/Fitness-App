@@ -7,6 +7,12 @@ es gibt kein Konto und keine Werbung. Ins Internet geht die App nur, um die Mens
 
 - **Workouts**: Trainingspläne wie „Push“ oder „Oberkörper A“ anlegen und Übungen hinzufügen, entfernen
   und sortieren. Mit dem „+“ neben einer Übung trägst du direkt nach dem Satz das Gewicht ein.
+- **Trainingsreihenfolge**: Trainierst du deine Workouts im Wechsel (z. B. Upper A, Lower A, Upper B, Lower B),
+  legst du die Reihenfolge einmal fest. Oben im Workouts-Tab steht dann immer, welches Workout als Nächstes dran ist,
+  am Trainingstag „Heute“ mit dem Fortschritt. Abhaken musst du nichts: Die App erkennt an deinen Einträgen, welches
+  Workout du an einem Tag trainiert hast, auch an den Einträgen von vor dieser Funktion. Über das Menü der Karte kannst
+  du ein Workout überspringen oder ein anderes wählen. Wie die Erkennung genau funktioniert, steht oben in
+  `rotation/Rotation.kt`.
 - **Übungen**: Eine Bibliothek mit 51 gängigen Übungen, viele davon an Maschinen und am Kabelzug,
   nach Muskelgruppe sortiert und durchsuchbar.
   Eigene Übungen kannst du jederzeit anlegen.
@@ -49,7 +55,7 @@ Alternativ auf der Kommandozeile (Android SDK muss installiert sein):
 ### Fertige APK direkt installieren
 
 Ohne Android Studio geht es auch mit einer fertigen APK-Datei. Die aktuelle Version liegt in
-[`apk/Fitness-2.2.apk`](apk/Fitness-2.2.apk). Ist eine ältere Version (ab 1.1) schon installiert, wird sie
+[`apk/Fitness-2.3.apk`](apk/Fitness-2.3.apk). Ist eine ältere Version (ab 1.1) schon installiert, wird sie
 einfach aktualisiert, deine Einträge bleiben erhalten.
 
 1. Die APK aufs Handy laden, z. B. per Download oder per Kabel kopieren.
@@ -102,6 +108,7 @@ app/src/main/java/com/sheuberger/fitness/
 │   ├── Converters.kt          Speichert Datumswerte als Zahl
 │   ├── MuscleGroups.kt        Muskelgruppen und Standardübungen
 │   └── FitnessRepository.kt   Einzige Schnittstelle der Oberfläche zu den Daten
+├── rotation/                  Trainingsreihenfolge: welches Workout als Nächstes dran ist
 └── ui/
     ├── FitnessAppRoot.kt      Navigation: drei Tabs unten plus Detailseiten
     ├── AppViewModelProvider.kt Erzeugt die ViewModels und gibt ihnen das Repository
